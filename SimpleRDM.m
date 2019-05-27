@@ -24,11 +24,13 @@ end
 try
     [inf]               = GetSubInfo(inf);              % Gather Pp information
     
-    [Scr]               = InitializeWindow(inf);        % Turn on Screen
+    scrNum = 0;  % specific to Conor's set-up -- use 0 to make the display screen the personal laptop (external monitor is for MATLAB)
+    debug_mode_flag = false;
+    [Scr]               = InitializeWindow(inf,scrNum,debug_mode_flag);        % Turn on Screen
     
-    [inst]              = InstructionsPIC(inf,Scr);     % Load pictures with instructions
+%     [inst]              = InstructionsPIC(inf,Scr);     % Load pictures with instructions
     
-    [Scr,inf,myVar]     = SetUpConstants(Scr,inf);% setUp VARIABLES
+    [Scr,inf,myVar]     = SetUpConstants(Scr,inf);        % setUp VARIABLES
     
     [el,inf]            = EyeLinkON(Scr,inf);           % Turn on EyeLink
     
@@ -36,8 +38,8 @@ try
         [myVar, block]  = SetUpTrialsMixed(inf, myVar); % setUp CONDITIONS
         
         % Show general instructions
-        Screen('DrawTexture', Scr.w, inst.intro); % intro instruction
-        Screen('Flip',Scr.w); KbStrokeWait; bl = 1;
+%         Screen('DrawTexture', Scr.w, inst.intro); % intro instruction
+%         Screen('Flip',Scr.w); KbStrokeWait; bl = 1;
         
     else % IF AFTER BREAK
         fName = strcat(inf.subNo, '__allData.mat');
@@ -60,7 +62,8 @@ try
         tr = 1;
         while tr <= length(block(bl).trials)
             
-            [inf,block,el,tr] = RunSingleTrial(Scr,inf,myVar,el,bl,tr,block,block(bl).trials(tr));
+%             [inf,block,el,tr] = RunSingleTrial(Scr,inf,myVar,el,bl,tr,block,block(bl).trials(tr));
+            [inf,block,el,tr] = run_trial(Scr,inf,myVar,el,bl,tr,block,block(bl).trials(tr));
             tr = tr+1;
         end
         % Screen('FillRect', Scr.w, [0 0 0], [0 0 300 300]);
