@@ -1,4 +1,4 @@
-function [Scr] = InitializeWindow(inf)
+function [Scr] = InitializeWindow(inf,screenNumber,debug_mode_flag)
 %set isFullScreen to 0 for the partial window for debugging
 %1 for a full-screen experiment
 
@@ -27,13 +27,21 @@ GetSecs;
 % Get screenNumber of stimulation Scr. We choose the Scr with
 % the maximum index, which is usually the right one, e.g., the external
 % Scr on a Laptop:
+
 screens      = Screen('Screens');
-screenNumber = max(screens);
+
+if nargin < 2 || ~exist('var','screenNumber') 
+    screenNumber = max(screens);
+end
 
 %Problems with synchronization. If we uncomment, this lines script doesn't start.
 Screen('Preference', 'ConserveVRAM', 4096); %%%% See help win Beampositionqueries
 [Scr.oldDebugLevel] = Screen('Preference', 'VisualDebugLevel', 1);
 Screen('Preference', 'SkipSyncTests', 0);  % 0 for tests, 1 for skip
+
+if nargin < 3 || ~exist('debug_mode_flag','var') || isempty(debug_mode_flag) || debug_mode_flag == 1
+    PsychDebugWindowConfiguration(0,0.5);
+end
 
 % Returns as default the mean gray value of screen:
 
