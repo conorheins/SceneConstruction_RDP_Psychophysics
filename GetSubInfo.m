@@ -5,7 +5,7 @@ if inf.isTestMode % No name provided yet
     inf.dummy               = menu('Dummy mode? (without EyeTraking)', {'Yes','No'});
     inf.dumEEG              = menu('Dummy mode? (without EEG)',{'Yes','No'});
     inf.isFullScreen        = menu('Display full screen?', {'Yes','No'});
-    inf.expMode             = menu('What kind of sequence? Ask experimenter.', {'1','2','3','4'});
+%     inf.expMode             = menu('What kind of sequence? Ask experimenter.', {'1','2','3','4'});
     inf.language            = menu('What language?', {'English','German'});
     
 else % check for the participance name
@@ -15,7 +15,7 @@ else % check for the participance name
     %inf.isFullScreen        = menu('Display full screen?', {'Yes','No'});
     %inf.dummy               = menu('Dummy mode? (without EyeTraking)', {'Yes','No'});
     %inf.dumEEG              = menu('Dummy mode? (without EEG)',{'Yes','No'});    
-    inf.expMode             = menu('What kind of sequence? Ask experimenter.', {'1','2','3','4'});
+%     inf.expMode             = menu('What kind of sequence? Ask experimenter.', {'1','2','3','4'});
     inf.language            = menu('What language?', {'English','German'});
     
     % 2FC questions
