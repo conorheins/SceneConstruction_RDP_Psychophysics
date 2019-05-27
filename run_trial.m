@@ -1,4 +1,4 @@
-function trial_data = run_trial(Scr,dotParams,scene_id)
+function trial_data = run_trial(Scr,dotParams,scene_id,save_flag)
 % WIP -- a basic trial script that runs through a 'gaze-contingent'
 % unveiling of particular quadrants ('gaze' is really just cursor position)
 
@@ -82,6 +82,10 @@ Screen('DrawLines',Scr.w,all_fix_coords,lineWidthPix,Scr.white,fixationCoord,0);
 Screen('FillRect',Scr.w,quadColors,allQuads);
 vbl = Screen('Flip', Scr.w); %%synch%%
 
+if save_flag
+    trial_video = [];
+end
+
 
 if trialIsOK
     
@@ -94,13 +98,21 @@ if trialIsOK
     vbl = Screen('Flip', Scr.w);    % SCREEN SYNCH.
     fixationOnset = vbl;             %%%%TIME%%%%%%%
     
+    grab_flag = true;
+    
     for fixationFlips = 1:fixationDur-1
         %%%%%%%%%%%%%%I.Present the Fixation point
         Screen('DrawLines',Scr.w,all_fix_coords,lineWidthPix,Scr.white,fixationCoord,0);
         Screen('FillRect',Scr.w,quadColors,allQuads);
         DrawFormattedText(Scr.w,'Please Bring the Cursor to the Center of the Fixation Cross!','center',Scr.wRect(4)*0.95,[255 255 255]);
         vbl = Screen('Flip', Scr.w, vbl + (Scr.waitframes - 0.5) * Scr.ifi);
-        
+        if grab_flag && save_flag
+            tmp_img = Screen('GetImage',Scr.w);
+            tmp_img = tmp_img(1:2:end,1:2:end,:); % downsample by a factor of 2 to save space
+            trial_video = cat(4,trial_video,tmp_img);
+        end
+        grab_flag = ~grab_flag;
+
         [mouse_x,mouse_y] = GetMouse(Scr.w);
         
         if sqrt(sum(([mouse_x,mouse_y] - fixationCoord).^2)) <= fixationWindow
@@ -117,6 +129,8 @@ if trialIsOK
         
         KeyIsDown = KbCheck();
         exploreFlips = 1;
+        
+        grab_flag = true;
         
         while and(((KeyIsDown~=1) && noResponse),exploreFlips < exploreDur)
             
@@ -149,6 +163,13 @@ if trialIsOK
             end
             
             vbl = Screen('Flip',Scr.w,vbl + (Scr.waitframes - 0.5) * Scr.ifi);
+            
+            if grab_flag && save_flag
+                tmp_img = Screen('GetImage',Scr.w);
+                tmp_img = tmp_img(1:2:end,1:2:end,:); % downsample by a factor of 2 to save space
+                trial_video = cat(4,trial_video,tmp_img);
+            end
+            grab_flag = ~grab_flag;
 
             if exploreFlips == 1
                 exploreOnset = vbl;                                                          %%%%TIME%%%%%%%
@@ -186,6 +207,8 @@ if trialIsOK
         end
         
         if trialIsOK
+            
+            grab_flag = true;
             for i = 1:feedbackDur 
                 if trialAcc == 1
                     Screen('FrameRect', Scr.w, [0 255 0], CenterRectOnPointd([0 0 50 50],fixationCoord(1),fixationCoord(2)), 5);
@@ -195,6 +218,15 @@ if trialIsOK
                     DrawFormattedText(Scr.w,'Incorrect','center',Scr.wRect(4)*0.95,[255 0 ceil(255/4)]);
                 end
                 vbl = Screen('Flip',Scr.w,vbl + (Scr.waitframes - 0.5) * Scr.ifi);
+                
+                if grab_flag && save_flag
+                    tmp_img = Screen('GetImage',Scr.w);
+                    tmp_img = tmp_img(1:2:end,1:2:end,:); % downsample by a factor of 2 to save space
+                    trial_video = cat(4,trial_video,tmp_img);
+                end
+                
+                grab_flag = ~grab_flag;
+                
                 if i == 1
                     feedbackOnset = vbl;                                              %%%%%%%TIME%%%%%%%%%
                 end
@@ -217,6 +249,10 @@ trial_data.fixationOnset = fixationOnset;
 trial_data.exploreOnset = exploreOnset;
 trial_data.feedbackOnset = feedbackOnset;
 trial_data.trialEND = trialEND;
+
+if save_flag
+    trial_data.trial_video = trial_video;
+end
 
 Screen('CloseAll')
 
