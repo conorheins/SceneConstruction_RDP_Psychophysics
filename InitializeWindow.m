@@ -1,4 +1,5 @@
 function [Scr] = InitializeWindow(inf,screenNumber,debug_mode_flag)
+
 %set isFullScreen to 0 for the partial window for debugging
 %1 for a full-screen experiment
 
@@ -30,14 +31,16 @@ GetSecs;
 
 screens      = Screen('Screens');
 
-if nargin < 2 || ~exist('var','screenNumber') 
+if nargin < 2 || ~exist('screenNumber','var') 
     screenNumber = max(screens);
 end
 
 %Problems with synchronization. If we uncomment, this lines script doesn't start.
 Screen('Preference', 'ConserveVRAM', 4096); %%%% See help win Beampositionqueries
 [Scr.oldDebugLevel] = Screen('Preference', 'VisualDebugLevel', 1);
-Screen('Preference', 'SkipSyncTests', 0);  % 0 for tests, 1 for skip
+% Screen('Preference', 'SkipSyncTests', 0);  % 0 for tests, 1 for skip
+Screen('Preference', 'SkipSyncTests', 1);  % 0 for tests, 1 for skip
+
 
 if nargin < 3 || ~exist('debug_mode_flag','var') || isempty(debug_mode_flag) || debug_mode_flag == 1
     PsychDebugWindowConfiguration(0,0.5);
@@ -62,13 +65,13 @@ try
     Scr.ifi = Screen('GetFlipInterval', Scr.w);
 catch
     if inf.isFullScreen
-        [Scr.w, Scr.wRect] = Screen('OpenWindow',screenNumber,Scr.gray,[],[],[]);
-        HideCursor();   % Hide coursor
-        ListenChar(2);  % disable input for Matlab window.
-    else % for partical window (debugging)
-        PsychDebugWindowConfiguration(0,0.5);
-        [Scr.w, Scr.wRect]=Screen('OpenWindow',screenNumber, Scr.gray, [],[],[]);  %try a partial window
-    end
+        [Scr.w, Scr.wRect] = Screen('OpenWindow',screenNumber,Scr.black,[],[],[]);
+%         HideCursor();   % Hide coursor
+%         ListenChar(2);  % disable input for Matlab window.
+%     else % for partical window (debugging)
+%         PsychDebugWindowConfiguration(0,0.5);
+%         [Scr.w, Scr.wRect]=Screen('OpenWindow',screenNumber, Scr.black, [],[],[]);  %try a partial window
+%     end
 end
 
 %%%%
@@ -98,4 +101,5 @@ Screen('TextSize',Scr.w, 32);
 % Set priority for script execution to realtime priority:
 priorityLevel=MaxPriority(Scr.w);
 Priority(priorityLevel);
+
 end

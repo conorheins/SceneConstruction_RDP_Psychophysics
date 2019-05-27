@@ -36,7 +36,10 @@ inf.resultsFile = strcat('test','.txt'); % Default name of cueing data file to w
 % Create a unique name for participant files:
 if inf.subNo == 1                                                       % in GetSubInfo we define the subject name as 1, so it is a test
     inf.afterBreak = false;
-    inf.rootTest = [Scr.rootDir  filesep() 'Data' filesep() 'test' filesep()];
+    inf.rootTest = fullfile(Scr.rootDir,'Data','test');
+    if ~exist(inf.rootTest,'dir')
+        mkdir(Scr.rootDir,fullfile('Data','test'));
+    end
     cd(inf.rootTest);                                                   % move to the test directory
     while (fopen(inf.resultsFile, 'rt')~=-1)                            % making a loop to find a free number (till it is not possible to open)
         inf.subNo= inf.subNo+1;
