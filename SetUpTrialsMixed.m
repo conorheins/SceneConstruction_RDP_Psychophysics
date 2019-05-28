@@ -1,4 +1,4 @@
-function [myVar, block] = SetUpTrialsMixed(inf, myVar)
+function [myVar, block] = SetUpTrialsMixed(Scr,inf, myVar)
 
 % set all variables for running the blocks.
 % To match the study
@@ -23,12 +23,12 @@ factor.block          = 5;     % How many blocks do we have?
 
 numQuads = size(myVar.centers,2);
 
-config_counter = 1;
+config_counter = 0;
 for quad1 = 1:numQuads
     for quad2 = 1:numQuads
         if quad1 ~= quad2
-            RDM.configs(config_counter).x = [myVar.centers(:,quad1)'; myVar.centers(:,quad2)']; % transpose to prepare it for input to createDotParams_struct
             config_counter = config_counter + 1;
+            RDM.configs(config_counter).x = [myVar.centers(:,quad1)'; myVar.centers(:,quad2)']; % transpose to prepare it for input to createDotParams_struct
         end
     end
 end
@@ -47,6 +47,8 @@ RDM.scenes(2,:)    = [90 180];
 RDM.scenes(3,:)    = [180 270];
 RDM.scenes(4,:)    = [270 0];
 
+numPatterns = size(RDM.scenes,2);
+
 %% create block struct
 block = struct;
 
@@ -59,7 +61,8 @@ for bl = 1:factor.block
                 tr = tr + 1;
                 block(bl).trials(tr).dotParams = createDotParams_struct(Scr.wRect,numPatterns,'centers',RDM.configs(config_i).x,'cohers',RDM.cohers(coh_i,:),'directions',RDM.scenes(scene_i,:),...
                     'speeds',[2 2],'apSizes',[200 200; 200 200],'nDots',[50 50]);
-                block(bl).trials(tr).scene = scene_i;
+                block(bl).trials(tr).scene  = scene_i;
+                block(bl).trials(tr).config = config_i;
 %                 conSort = conSort + 1;
 %                 block(b).trials(tr).conSort = conSort;
             end

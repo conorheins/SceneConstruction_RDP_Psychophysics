@@ -72,15 +72,15 @@ cd(Scr.rootDir); % Go back to our core directory.
 % and right arrow keys as a response keys for the task and escape key as
 % exit/reset key
 
-% myVar.escapeKey = KbName('ESCAPE');
+myVar.escapeKey = KbName('ESCAPE'); % end eye-tracking 
 % myVar.leftKey   = KbName('LeftArrow');
 % myVar.rightKey  = KbName('RightArrow');
 % myVar.upKey     = KbName('UpArrow');
 % myVar.downKey   = KbName('DownArrow');
-% myVar.pKey      = KbName('p');
-% myVar.cKey      = KbName('c');
-% myVar.tKey      = KbName('t');
-% myVar.dKey      = KbName('d');
+myVar.pKey      = KbName('p'); % Skip EyeCheck
+myVar.cKey      = KbName('c'); % initiate caibration 
+myVar.tKey      = KbName('t'); % Do Threshold calibration before the next block
+myVar.dKey      = KbName('d'); % do drift correction
 
 % keys for scene choices
 myVar.aKey      = KbName('a'); % Scene 1 - UP RIGHT
@@ -113,14 +113,15 @@ myVar.RDPHalfQuad             = floor(2*Scr.pixelsperdegree);   % Define distanc
 myVar.frameLineWidth          = floor(.15*Scr.pixelsperdegree); % Define width of frames that surround each quadrant
 
 % IMPORTANT variables!
-inf.eyeWindow                 = 2;
+inf.eyeWindow                 = 2;                              % window in visual degrees around fixation center, that subject must keep eyes within 
 Scr.cueDistance               = floor(9*Scr.pixelsperdegree);   % Distance of quadrants from the screen center
 Scr.waitframes                = 1;                              % Numer of frames to wait before re-drawing (Used in Threshold)
 
 myVar.fixationTime   = 5;    % time in seconds of fixation window (basically, participant has to hold gaze / mouse position in center for 5 seconds before proceeding)
 myVar.exploreTime    = 15;   % time in seconds to explore the scene 
 myVar.feedbackTime   = 0.5;  % the length in seconds of the feedback window
-myVar.fixationWindow = 50;   % spatial distance in pixels that mouse coordinates/eye position needs to be within, in order to be counted as fixating
+% myVar.fixationWindow = 50;   % spatial distance in pixels that mouse coordinates/eye position needs to be within, in order to be counted as fixating
+% commented this out -- already contained in eyeWindow^ see above
 myVar.gazeWindow     = 150;  % how far your cursor/eye position needs to be from the center of the frame in order to uncover it
 myVar.fixCrossDimPix = 40;   % size of the arms of fixation cross
 myVar.lineWidthPix   = 4;    % line width for our fixation cross
@@ -138,7 +139,7 @@ xPos = [myVar.centerX - pixShift myVar.centerX - pixShift myVar.centerX + pixShi
 yPos = [myVar.centerY - pixShift myVar.centerY + pixShift myVar.centerY - pixShift myVar.centerY + pixShift];
 
 % Assign positions to each of our Gabor and box
-nRDM            = numel(xPos*yPos);
+nRDM            = numel(xPos);
 myVar.RDMRects	= nan(4, nRDM);
 myVar.centers   = [xPos;yPos];
 for i = 1:nRDM
