@@ -1,4 +1,4 @@
-function trial_data = run_trial(Scr,inf,myVar,el,bl,tr,block_structure,trial_params)
+function trial_data = run_trial_old(Scr,dotParams,scene_id,save_flag)
 
 % WIP -- a basic trial script that runs through a 'gaze-contingent'
 % unveiling of particular quadrants ('gaze' is really just cursor position)
@@ -38,10 +38,10 @@ exploreDur   = round(exploreTime /Scr.ifi);                         % Duration o
 feedbackDur  = round(feedbackTime/Scr.ifi);                         % Feedback displayed for 500 ms
 
 % Adjust response keys
-up_right   = myVar.aKey;
-right_down = myVar.sKey;
-down_left  = myVar.dKey;
-left_up    = myVar.fKey;
+up_right = KbName('a');
+right_down = KbName('s');
+down_left = KbName('d');
+left_up = KbName('f');
 
 % Initialize coordinates of fixation cross
 fixCrossDimPix = 40; % size of the arms of fixation cross
@@ -50,23 +50,29 @@ fix_y = [0 0 -fixCrossDimPix fixCrossDimPix];
 all_fix_coords = [fix_x;fix_y];
 lineWidthPix = 4; % line width for our fixation cross
 
-dotParams = trial_params.dotParams; % get the RDP dot parameters for the current trial
+% Initialize coordinates of the frames / quadrants 
+baseQuad = [0 0 dotParams(1).apSizes(1) + dotParams(1).edge_spillovers(1) dotParams(1).apSizes(2) + dotParams(1).edge_spillovers(2)];
+quadsXPos = [ Scr.wRect(3)/4, Scr.wRect(3)/4, 3*Scr.wRect(3)/4, 3*Scr.wRect(3)/4];
+quadsYPos = [ Scr.wRect(4)/4, 3*Scr.wRect(4)/4, Scr.wRect(4)/4, 3*Scr.wRect(4)/4];
+numQuads = length(quadsXPos);
+allQuads = nan(4,numQuads);
+for i = 1:numQuads
+    allQuads(:,i) = CenterRectOnPointd(baseQuad,quadsXPos(i),quadsYPos(i));
+end
 
-% Retrieve coordinates of the frames / quadrants 
+quadColors = repmat(ceil([255/2 255/2 255/2])',1,numQuads); % gray frames
 
-% myVar.centers gives the centers of each quadrant (including both
-% RDP-containing and empty quadrants
-
-numQuads = size(myVar.centers,1); 
-quadColors = repmat(ceil([255/2 255/2 255/2])',1,numQuads); % gray frames to cover each quadrant when they're not being inspected
-
+% Initialize dots
 numPatterns = size(dotParams,2);
+quadrant_centers = zeros(numQuads,2);
+for i = 1:numQuads
+    quadrant_centers(i,:) = [quadsXPos(i) quadsYPos(i)];
+end
 
 filled_quad_idx = zeros(numQuads,1);
-dotData = struct;
 for patt_id = 1:numPatterns
     dotData(patt_id) = initialize_dots(dotParams,patt_id);
-    nearby_idx = sqrt(sum( (dotParams(patt_id).centers - myVar.centers).^2,2)) < 50;
+    nearby_idx = sqrt(sum( (dotParams(patt_id).centers - quadrant_centers).^2,2)) < 50;
     if any(nearby_idx)
         filled_quad_idx(nearby_idx) = patt_id;
     end
@@ -74,7 +80,7 @@ end
 
 % Prepare SCREEN
 Screen('DrawLines',Scr.w,all_fix_coords,lineWidthPix,Scr.white,fixationCoord,0);
-Screen('FillRect',Scr.w,quadColors,myVar.RDMRects);
+Screen('FillRect',Scr.w,quadColors,allQuads);
 vbl = Screen('Flip', Scr.w); %%synch%%
 
 if save_flag
@@ -89,7 +95,7 @@ if trialIsOK
     
     % Synchronize screen and send messages
     Screen('DrawLines',Scr.w,all_fix_coords,lineWidthPix,Scr.white,fixationCoord,0);
-    Screen('FillRect',Scr.w,quadColors,myVar.RDMRects);
+    Screen('FillRect',Scr.w,quadColors,allQuads);
     vbl = Screen('Flip', Scr.w);    % SCREEN SYNCH.
     fixationOnset = vbl;             %%%%TIME%%%%%%%
     
@@ -98,7 +104,7 @@ if trialIsOK
     for fixationFlips = 1:fixationDur-1
         %%%%%%%%%%%%%%I.Present the Fixation point
         Screen('DrawLines',Scr.w,all_fix_coords,lineWidthPix,Scr.white,fixationCoord,0);
-        Screen('FillRect',Scr.w,quadColors,myVar.RDMRects);
+        Screen('FillRect',Scr.w,quadColors,allQuads);
         DrawFormattedText(Scr.w,'Please Bring the Cursor to the Center of the Fixation Cross!','center',Scr.wRect(4)*0.95,[255 255 255]);
         vbl = Screen('Flip', Scr.w, vbl + (Scr.waitframes - 0.5) * Scr.ifi);
         if grab_flag && save_flag
@@ -134,7 +140,7 @@ if trialIsOK
 
             [mouse_x,mouse_y] = GetMouse(Scr.w);
             
-            quadrant_idx = sqrt(sum( ([mouse_x,mouse_y] - myVar.centers).^2,2)) <= gazeWindow;
+            quadrant_idx = sqrt(sum( ([mouse_x,mouse_y] - quadrant_centers).^2,2)) <= gazeWindow;
             %replaced with rectangular boundary conditions
             
             if any(quadrant_idx)
@@ -151,10 +157,10 @@ if trialIsOK
                 remaining_quadrants = ~ismember(1:numQuads,rev_quadrant); % this yields the logical indices for the remaining, non-revealed quadrants for the following
                 % 'FillRect' command
 
-                Screen('FillRect',Scr.w,quadColors(:,remaining_quadrants),myVar.RDMRects(:,remaining_quadrants))
+                Screen('FillRect',Scr.w,quadColors(:,remaining_quadrants),allQuads(:,remaining_quadrants))
                 
             else
-                Screen('FillRect',Scr.w,quadColors,myVar.RDMRects)
+                Screen('FillRect',Scr.w,quadColors,allQuads)
             end
             
             vbl = Screen('Flip',Scr.w,vbl + (Scr.waitframes - 0.5) * Scr.ifi);
@@ -180,13 +186,13 @@ if trialIsOK
                 else
                     if any(KeyCodeRaw([up_right,right_down,down_left,left_up]))                       
                         trialRT = endRTRaw - exploreOnset; % save RT!!!!
-                        if KeyCodeRaw(up_right) && trial_params.scene == 1
+                        if KeyCodeRaw(up_right) && scene_id == 1
                             trialAcc = 1;
-                        elseif KeyCodeRaw(right_down) && trial_params.scene == 2
+                        elseif KeyCodeRaw(right_down) && scene_id == 2
                             trialAcc = 1;
-                        elseif KeyCodeRaw(down_left) && trial_params.scene == 3
+                        elseif KeyCodeRaw(down_left) && scene_id == 3
                             trialAcc = 1;
-                        elseif KeyCodeRaw(left_up) && trial_params.scene == 4
+                        elseif KeyCodeRaw(left_up) && scene_id == 4
                             trialAcc = 1;
                         else
                             trialAcc = 0;

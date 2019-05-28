@@ -59,6 +59,7 @@ for bl = 1:factor.block
                 tr = tr + 1;
                 block(bl).trials(tr).dotParams = createDotParams_struct(Scr.wRect,numPatterns,'centers',RDM.configs(config_i).x,'cohers',RDM.cohers(coh_i,:),'directions',RDM.scenes(scene_i,:),...
                     'speeds',[2 2],'apSizes',[200 200; 200 200],'nDots',[50 50]);
+                block(bl).trials(tr).scene = scene_i;
 %                 conSort = conSort + 1;
 %                 block(b).trials(tr).conSort = conSort;
             end

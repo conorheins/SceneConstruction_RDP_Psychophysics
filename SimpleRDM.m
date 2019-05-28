@@ -61,9 +61,8 @@ try
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         tr = 1;
         while tr <= length(block(bl).trials)
-            
 %             [inf,block,el,tr] = RunSingleTrial(Scr,inf,myVar,el,bl,tr,block,block(bl).trials(tr));
-            [inf,block,el,tr] = run_trial(Scr,inf,myVar,el,bl,tr,block,block(bl).trials(tr));
+            [inf,block,el,tr] = RunTrial(Scr,inf,myVar,el,bl,tr,block,block(bl).trials(tr),false);
             tr = tr+1;
         end
         % Screen('FillRect', Scr.w, [0 0 0], [0 0 300 300]);

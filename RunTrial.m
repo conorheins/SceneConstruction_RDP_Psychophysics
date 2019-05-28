@@ -1,4 +1,4 @@
-function trial_data = run_trial(Scr,inf,myVar,el,bl,tr,block_structure,trial_params)
+function trial_data = RunTrial(Scr,inf,myVar,el,bl,tr,block_structure,trial_params,save_flag)
 
 % WIP -- a basic trial script that runs through a 'gaze-contingent'
 % unveiling of particular quadrants ('gaze' is really just cursor position)
@@ -7,14 +7,7 @@ trialSTART = GetSecs;                                                      %%%%T
 
 % variables to be built into function arguments (e.g. inf or MyVar) at some point:
 
-fixationTime = 5; % time in seconds of fixation window (basically, participant has to hold gaze / mouse position in center for 5 seconds before proceeding)
-exploreTime = 15; % time in seconds to explore the scene 
-feedbackTime = 0.5; % the length in seconds of the feedback window 
-[x,y] = RectCenter(Scr.wRect);
-fixationCoord = [x y]; clear x y; % location of center of fixation cross
-fixationWindow = 50; % spatial distance in pixels that mouse coordinates/eye position needs to be within, in order to be counted as fixating
-Scr.waitframes = 1; % wait frames time (property of screen) before updating
-gazeWindow = 150; % how far your cursor/eye position needs to be from the center of the frame in order to uncover it
+fixationCoord = [myVar.fixXLoc myVar.fixYLoc];% location of center of fixation cross
 
 % Prepare response variables
 trialRT                 = nan;
@@ -33,9 +26,9 @@ respToBeMade= true;
 noResponse  = true;
 
 % Timing in frames
-fixationDur  = round(fixationTime/Scr.ifi);                         % Duration of Fixation;
-exploreDur   = round(exploreTime /Scr.ifi);                         % Duration of Exploration time
-feedbackDur  = round(feedbackTime/Scr.ifi);                         % Feedback displayed for 500 ms
+fixationDur  = round(myVar.fixationTime/Scr.ifi);                         % Duration of Fixation;
+exploreDur   = round(myVar.exploreTime /Scr.ifi);                         % Duration of Exploration time
+feedbackDur  = round(myVar.feedbackTime/Scr.ifi);                         % Feedback displayed for 500 ms
 
 % Adjust response keys
 up_right   = myVar.aKey;
@@ -44,11 +37,9 @@ down_left  = myVar.dKey;
 left_up    = myVar.fKey;
 
 % Initialize coordinates of fixation cross
-fixCrossDimPix = 40; % size of the arms of fixation cross
-fix_x = [-fixCrossDimPix fixCrossDimPix 0 0];
-fix_y = [0 0 -fixCrossDimPix fixCrossDimPix];
+fix_x = [-myVar.fixCrossDimPix myVar.fixCrossDimPix 0 0];
+fix_y = [0 0 -myVar.fixCrossDimPix myVar.fixCrossDimPix];
 all_fix_coords = [fix_x;fix_y];
-lineWidthPix = 4; % line width for our fixation cross
 
 dotParams = trial_params.dotParams; % get the RDP dot parameters for the current trial
 
@@ -73,7 +64,7 @@ for patt_id = 1:numPatterns
 end
 
 % Prepare SCREEN
-Screen('DrawLines',Scr.w,all_fix_coords,lineWidthPix,Scr.white,fixationCoord,0);
+Screen('DrawLines',Scr.w,all_fix_coords,myVar.lineWidthPix,Scr.white,fixationCoord,0);
 Screen('FillRect',Scr.w,quadColors,myVar.RDMRects);
 vbl = Screen('Flip', Scr.w); %%synch%%
 
@@ -88,7 +79,7 @@ if trialIsOK
     %%%%%%%%%%%
     
     % Synchronize screen and send messages
-    Screen('DrawLines',Scr.w,all_fix_coords,lineWidthPix,Scr.white,fixationCoord,0);
+    Screen('DrawLines',Scr.w,all_fix_coords,myVar.lineWidthPix,Scr.white,fixationCoord,0);
     Screen('FillRect',Scr.w,quadColors,myVar.RDMRects);
     vbl = Screen('Flip', Scr.w);    % SCREEN SYNCH.
     fixationOnset = vbl;             %%%%TIME%%%%%%%
@@ -97,7 +88,7 @@ if trialIsOK
     
     for fixationFlips = 1:fixationDur-1
         %%%%%%%%%%%%%%I.Present the Fixation point
-        Screen('DrawLines',Scr.w,all_fix_coords,lineWidthPix,Scr.white,fixationCoord,0);
+        Screen('DrawLines',Scr.w,all_fix_coords,myVar.lineWidthPix,Scr.white,fixationCoord,0);
         Screen('FillRect',Scr.w,quadColors,myVar.RDMRects);
         DrawFormattedText(Scr.w,'Please Bring the Cursor to the Center of the Fixation Cross!','center',Scr.wRect(4)*0.95,[255 255 255]);
         vbl = Screen('Flip', Scr.w, vbl + (Scr.waitframes - 0.5) * Scr.ifi);
@@ -110,7 +101,7 @@ if trialIsOK
 
         [mouse_x,mouse_y] = GetMouse(Scr.w);
         
-        if sqrt(sum(([mouse_x,mouse_y] - fixationCoord).^2)) <= fixationWindow
+        if sqrt(sum(([mouse_x,mouse_y] - fixationCoord).^2)) <= myVar.fixationWindow
             trialIsOK = true;
         else
             trialIsOK = false;
@@ -129,12 +120,12 @@ if trialIsOK
         
         while and(((KeyIsDown~=1) && noResponse),exploreFlips < exploreDur)
             
-            Screen('DrawLines',Scr.w,all_fix_coords,lineWidthPix,Scr.white,fixationCoord,0);
+            Screen('DrawLines',Scr.w,all_fix_coords,myVar.lineWidthPix,Scr.white,fixationCoord,0);
             DrawFormattedText(Scr.w,'Explore the scene...','center',Scr.wRect(4)*0.95,[255 255 255]);
 
             [mouse_x,mouse_y] = GetMouse(Scr.w);
             
-            quadrant_idx = sqrt(sum( ([mouse_x,mouse_y] - myVar.centers).^2,2)) <= gazeWindow;
+            quadrant_idx = sqrt(sum( ([mouse_x,mouse_y] - myVar.centers).^2,2)) <= myVar.gazeWindow;
             %replaced with rectangular boundary conditions
             
             if any(quadrant_idx)

@@ -109,14 +109,21 @@ Scr.pixelsperdegree =pi/180 * myVar.centD /myVar.centH * Scr.wRect(4);
 
 myVar.fixXLoc                 = myVar.centerX;                  % Define Fixation point X
 myVar.fixYLoc                 = myVar.centerY;                  % Define Fixation point Y
-myVar.RDPHalfQuad              = floor(2*Scr.pixelsperdegree);  % Define distance in pixels, of one RDP-containing quadrant
+myVar.RDPHalfQuad             = floor(2*Scr.pixelsperdegree);   % Define distance in pixels, of one RDP-containing quadrant
 myVar.frameLineWidth          = floor(.15*Scr.pixelsperdegree); % Define width of frames that surround each quadrant
 
 % IMPORTANT variables!
 inf.eyeWindow                 = 2;
 Scr.cueDistance               = floor(9*Scr.pixelsperdegree);   % Distance of quadrants from the screen center
 Scr.waitframes                = 1;                              % Numer of frames to wait before re-drawing (Used in Threshold)
-myVar.maxProbeResponse        = 2;                              % Duration of Response.
+
+myVar.fixationTime   = 5;    % time in seconds of fixation window (basically, participant has to hold gaze / mouse position in center for 5 seconds before proceeding)
+myVar.exploreTime    = 15;   % time in seconds to explore the scene 
+myVar.feedbackTime   = 0.5;  % the length in seconds of the feedback window
+myVar.fixationWindow = 50;   % spatial distance in pixels that mouse coordinates/eye position needs to be within, in order to be counted as fixating
+myVar.gazeWindow     = 150;  % how far your cursor/eye position needs to be from the center of the frame in order to uncover it
+myVar.fixCrossDimPix = 40;   % size of the arms of fixation cross
+myVar.lineWidthPix   = 4;    % line width for our fixation cross
 
 
 %% Quadrant locations

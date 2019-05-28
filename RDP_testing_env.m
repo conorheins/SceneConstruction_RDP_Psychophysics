@@ -60,7 +60,7 @@ dotParams = createDotParams_struct(Scr.wRect,numPatterns,'centers',centers,'cohe
 
 scene_id = 1;
 save_flag = false;
-trial_data = run_trial(Scr,dotParams,scene_id,save_flag);
+trial_data = run_trial_old(Scr,dotParams,scene_id,save_flag);
 
 
 %% Explanation:
