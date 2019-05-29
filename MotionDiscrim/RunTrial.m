@@ -1,7 +1,7 @@
-function trial_data = RunTrial(Scr,inf,myVar,el,bl,tr,block,trialParams,save_flag)
+function [inf,trial_data,el] = RunTrial(Scr,inf,myVar,el,bl,tr,block,trialParams,save_flag)
 
-% WIP -- a basic trial script that runs through a 'gaze-contingent'
-% unveiling of particular quadrants ('gaze' is really just cursor position)
+% WIP -- a basic trial script that runs through a motion direction
+% detection paradigm
 
 trialSTART = GetSecs;                                                      %%%%TIME%%%%%%%
 
@@ -15,7 +15,7 @@ trialAcc                = nan;
 
 % Timing Points
 fixationOnset           = nan;
-exploreOnset            = nan;
+accumOnset              = nan;
 feedbackOnset           = nan;
 trialEND                = nan;
 
@@ -26,15 +26,15 @@ respToBeMade= true;
 noResponse  = true;
 
 % Timing in frames
-fixationDur  = round(myVar.fixationTime/Scr.ifi);                         % Duration of Fixation;
-exploreDur   = round(myVar.exploreTime /Scr.ifi);                         % Duration of Exploration time
-feedbackDur  = round(myVar.feedbackTime/Scr.ifi);                         % Feedback displayed for 500 ms
+fixationDur  = round(myVar.fixationTime/Scr.ifi);                        % Duration of Fixation;
+accumDur     = round(myVar.accumTime /Scr.ifi);                            % Duration of RDP duration 
+feedbackDur  = round(myVar.feedbackTime/Scr.ifi);                        % Feedback display for 250 ms
 
 % Adjust response keys
-up_right   = myVar.aKey;
-right_down = myVar.sKey;
-down_left  = myVar.dKey;
-left_up    = myVar.fKey;
+UP_choice    = myVar.upKey;
+RIGHT_choice = myVar.rightKey;
+DOWN_choice  = myVar.downKey;
+LEFT_choice  = myVar.leftKey;
 
 % Initialize coordinates of fixation cross
 fix_x = [-myVar.fixCrossDimPix myVar.fixCrossDimPix 0 0];
@@ -43,24 +43,7 @@ all_fix_coords = [fix_x;fix_y];
 
 dotParams = trialParams.dotParams; % get the RDP dot parameters for the current trial
 
-% Retrieve coordinates of the frames / quadrants 
-
-% myVar.centers gives the centers of each quadrant (including both
-% RDP-containing and empty quadrants
-
-numQuads = size(myVar.centers,1); 
-quadColors = repmat(ceil([255/2 255/2 255/2])',1,numQuads); % gray frames to cover each quadrant when they're not being inspected
-
-numPatterns = size(dotParams,2);
-
-filled_quad_idx = zeros(numQuads,1);
-for patt_id = 1:numPatterns
-    dotData(patt_id) = initialize_dots(dotParams,patt_id);
-    nearby_idx = sqrt(sum( (dotParams(patt_id).centers - myVar.centers).^2,2)) < 50;
-    if any(nearby_idx)
-        filled_quad_idx(nearby_idx) = patt_id;
-    end
-end
+dotData = initialize_dots(dotParams,1);
 
 %% Prepare EyeTracker and EEG
 if ~inf.dummy && bl ~= 1
@@ -95,7 +78,17 @@ end
 
 % Prepare SCREEN
 Screen('DrawLines',Scr.w,all_fix_coords,myVar.lineWidthPix,Scr.white,fixationCoord,0);
-Screen('FillRect',Scr.w,quadColors,myVar.RDMRects);
+
+UP_ptr = Screen('MakeTexture',Scr.w,myVar.UP); 
+RIGHT_ptr = Screen('MakeTexture',Scr.w,myVar.RIGHT); 
+DOWN_ptr = Screen('MakeTexture',Scr.w,myVar.DOWN); 
+LEFT_ptr = Screen('MakeTexture',Scr.w,myVar.LEFT); 
+
+Screen('DrawTexture', Scr.w, UP_ptr,myVar.subRect,myVar.UPrect); % draw the scene 
+Screen('DrawTexture', Scr.w, RIGHT_ptr,myVar.subRect,myVar.RIGHTrect); % draw the scene 
+Screen('DrawTexture', Scr.w, DOWN_ptr,myVar.subRect,myVar.DOWNrect); % draw the scene 
+Screen('DrawTexture', Scr.w, LEFT_ptr,myVar.subRect,myVar.LEFTrect); % draw the scene 
+
 vbl = Screen('Flip', Scr.w); %%synch%%
 
 if save_flag
@@ -193,7 +186,10 @@ if trialIsOK
     
     % Synchronize screen and send messages
     Screen('DrawLines',Scr.w,all_fix_coords,myVar.lineWidthPix,Scr.white,fixationCoord,0);
-    Screen('FillRect',Scr.w,quadColors,myVar.RDMRects);
+    Screen('DrawTexture', Scr.w, UP_ptr,myVar.subRect,myVar.UPrect); % choices
+    Screen('DrawTexture', Scr.w, RIGHT_ptr,myVar.subRect,myVar.RIGHTrect); 
+    Screen('DrawTexture', Scr.w, DOWN_ptr,myVar.subRect,myVar.DOWNrect); 
+    Screen('DrawTexture', Scr.w, LEFT_ptr,myVar.subRect,myVar.LEFTrect); 
     vbl = Screen('Flip', Scr.w);    % SCREEN SYNCH.
     fixationOnset = vbl;             %%%%TIME%%%%%%%
     
@@ -202,8 +198,15 @@ if trialIsOK
     for fixationFlips = 1:fixationDur-1
         %%%%%%%%%%%%%%I.Present the Fixation point
         Screen('DrawLines',Scr.w,all_fix_coords,myVar.lineWidthPix,Scr.white,fixationCoord,0);
-        Screen('FillRect',Scr.w,quadColors,myVar.RDMRects);
-        DrawFormattedText(Scr.w,'Please Bring the Cursor to the Center of the Fixation Cross!','center',Scr.wRect(4)*0.95,[255 255 255]);
+        Screen('DrawTexture', Scr.w, UP_ptr,myVar.subRect,myVar.UPrect); % choices
+        Screen('DrawTexture', Scr.w, RIGHT_ptr,myVar.subRect,myVar.RIGHTrect);
+        Screen('DrawTexture', Scr.w, DOWN_ptr,myVar.subRect,myVar.DOWNrect);
+        Screen('DrawTexture', Scr.w, LEFT_ptr,myVar.subRect,myVar.LEFTrect);
+        
+        if tr == 1
+            DrawFormattedText(Scr.w,'Please Bring the Cursor to the Center of the Fixation Cross!','center',Scr.wRect(4)*0.95,[255 255 255]);
+        end
+        
         vbl = Screen('Flip', Scr.w, vbl + (Scr.waitframes - 0.5) * Scr.ifi);
         if grab_flag && save_flag
             tmp_img = Screen('GetImage',Scr.w);
@@ -214,7 +217,7 @@ if trialIsOK
 
         [mouse_x,mouse_y] = GetMouse(Scr.w);
         
-        if sqrt(sum(([mouse_x,mouse_y] - fixationCoord).^2)) <= inf.eyeWindow
+        if sqrt(sum(([mouse_x,mouse_y] - fixationCoord).^2)) <= inf.eyeWindow * Scr.pixelsperdegree
             trialIsOK = true;
         else
             trialIsOK = false;
@@ -226,40 +229,50 @@ if trialIsOK
     %%%%%%%%%%
     if trialIsOK
         
+        HideCursor();
+        
         KeyIsDown = KbCheck();
-        exploreFlips = 1;
+        accumFlips = 1;
         
         grab_flag = true;
         
-        while and(((KeyIsDown~=1) && noResponse),exploreFlips < exploreDur)
+        while and(((KeyIsDown~=1) && noResponse),accumFlips < accumDur)
             
-            Screen('DrawLines',Scr.w,all_fix_coords,myVar.lineWidthPix,Scr.white,fixationCoord,0);
-            DrawFormattedText(Scr.w,'Explore the scene...','center',Scr.wRect(4)*0.95,[255 255 255]);
+%             Screen('DrawLines',Scr.w,all_fix_coords,myVar.lineWidthPix,Scr.white,fixationCoord,0);
+            Screen('DrawTexture', Scr.w, UP_ptr,myVar.subRect,myVar.UPrect); % choices
+            Screen('DrawTexture', Scr.w, RIGHT_ptr,myVar.subRect,myVar.RIGHTrect);
+            Screen('DrawTexture', Scr.w, DOWN_ptr,myVar.subRect,myVar.DOWNrect);
+            Screen('DrawTexture', Scr.w, LEFT_ptr,myVar.subRect,myVar.LEFTrect);
+%             DrawFormattedText(Scr.w,'Explore the scene...','center',Scr.wRect(4)*0.95,[255 255 255]);
 
-            [mouse_x,mouse_y] = GetMouse(Scr.w);
+%             [mouse_x,mouse_y] = GetMouse(Scr.w);
             
-            quadrant_idx = sqrt(sum( ([mouse_x,mouse_y] - myVar.centers).^2,2)) <= myVar.gazeWindow;
+%             quadrant_idx = sqrt(sum( ([mouse_x,mouse_y] - myVar.centers).^2,2)) <= myVar.gazeWindow;
             %replaced with rectangular boundary conditions
             
-            if any(quadrant_idx)
-                
-                rev_quadrant = find(quadrant_idx);
-                
-                if ismember(rev_quadrant,find(filled_quad_idx))      
-                    patt_id_temp = filled_quad_idx(rev_quadrant);
-                    dotData(patt_id_temp) = update_dots(dotData(patt_id_temp));                    
-                    % draws the current dots, using position, single size argument and dotType
-                    Screen('DrawDots', Scr.w, dotData(patt_id_temp).dotPos, dotData(patt_id_temp).size, [255 255 255], [0 0], dotData(patt_id_temp).dotType);
-                end
-                
-                remaining_quadrants = ~ismember(1:numQuads,rev_quadrant); % this yields the logical indices for the remaining, non-revealed quadrants for the following
-                % 'FillRect' command
+            dotData = update_dots(dotData);
+            Screen('DrawDots', Scr.w, dotData.dotPos, dotData.size, [255 255 255], [0 0], dotData.dotType);
 
-                Screen('FillRect',Scr.w,quadColors(:,remaining_quadrants),myVar.RDMRects(:,remaining_quadrants))
-                
-            else
-                Screen('FillRect',Scr.w,quadColors,myVar.RDMRects)
-            end
+            
+%             if any(quadrant_idx)
+%                 
+%                 rev_quadrant = find(quadrant_idx);
+%                 
+%                 if ismember(rev_quadrant,find(filled_quad_idx))      
+%                     patt_id_temp = filled_quad_idx(rev_quadrant);
+%                     dotData(patt_id_temp) = update_dots(dotData(patt_id_temp));                    
+%                     % draws the current dots, using position, single size argument and dotType
+%                     Screen('DrawDots', Scr.w, dotData(patt_id_temp).dotPos, dotData(patt_id_temp).size, [255 255 255], [0 0], dotData(patt_id_temp).dotType);
+%                 end
+%                 
+%                 remaining_quadrants = ~ismember(1:numQuads,rev_quadrant); % this yields the logical indices for the remaining, non-revealed quadrants for the following
+%                 % 'FillRect' command
+% 
+%                 Screen('FillRect',Scr.w,quadColors(:,remaining_quadrants),myVar.RDMRects(:,remaining_quadrants))
+%                 
+%             else
+%                 Screen('FillRect',Scr.w,quadColors,myVar.RDMRects)
+%             end
             
             vbl = Screen('Flip',Scr.w,vbl + (Scr.waitframes - 0.5) * Scr.ifi);
             
@@ -270,11 +283,11 @@ if trialIsOK
             end
             grab_flag = ~grab_flag;
 
-            if exploreFlips == 1
-                exploreOnset = vbl;                                                          %%%%TIME%%%%%%%
+            if accumFlips == 1
+                accumOnset = vbl;                                                          %%%%TIME%%%%%%%
             end
             
-            exploreFlips = exploreFlips + 1;
+            accumFlips = accumFlips + 1;
             
             %%%%%%%%%%%%%%II.Check Response
             [KeyIsDown,endRTRaw, KeyCodeRaw] = KbCheck();
@@ -282,18 +295,18 @@ if trialIsOK
                 if KeyCodeRaw(KbName('ESCAPE'))  % EXIT key pressed to exit experiment
                     error('EXIT button!\n');
                 else
-                    if any(KeyCodeRaw([up_right,right_down,down_left,left_up]))                       
-                        trialRT = endRTRaw - exploreOnset; % save RT!!!!
-                        if KeyCodeRaw(up_right) && trialParams.scene == 1
-                            trialAcc = 1;
-                        elseif KeyCodeRaw(right_down) && trialParams.scene == 2
-                            trialAcc = 1;
-                        elseif KeyCodeRaw(down_left) && trialParams.scene == 3
-                            trialAcc = 1;
-                        elseif KeyCodeRaw(left_up) && trialParams.scene == 4
-                            trialAcc = 1;
+                    if any(KeyCodeRaw([UP_choice,RIGHT_choice,DOWN_choice,LEFT_choice]))                       
+                        trialRT = endRTRaw - accumOnset; % save RT!!!!
+                        if KeyCodeRaw(UP_choice) && trialParams.direction == 180
+                            trialAcc = 1; noResponse = false;
+                        elseif KeyCodeRaw(RIGHT_choice) && trialParams.direction == 90
+                            trialAcc = 1; noResponse = false;
+                        elseif KeyCodeRaw(DOWN_choice) && trialParams.direction == 0
+                            trialAcc = 1; noResponse = false;
+                        elseif KeyCodeRaw(LEFT_choice) && trialParams.direction == 270
+                            trialAcc = 1; noResponse = false;
                         else
-                            trialAcc = 0;
+                            trialAcc = 0; noResponse = false;
                         end                       
                     else
                         trialError = 1; trialIsOK = false; noResponse = false;          % END THE TRIAL
@@ -309,12 +322,34 @@ if trialIsOK
             
             grab_flag = true;
             for i = 1:feedbackDur 
-                if trialAcc == 1
-                    Screen('FrameRect', Scr.w, [0 255 0], CenterRectOnPointd([0 0 50 50],fixationCoord(1),fixationCoord(2)), 5);
-                    DrawFormattedText(Scr.w,'Correct','center',Scr.wRect(4)*0.95,[0 255 ceil(255/2)]);
+                Screen('DrawTexture', Scr.w, UP_ptr,myVar.subRect,myVar.UPrect); % choices
+                Screen('DrawTexture', Scr.w, RIGHT_ptr,myVar.subRect,myVar.RIGHTrect);
+                Screen('DrawTexture', Scr.w, DOWN_ptr,myVar.subRect,myVar.DOWNrect);
+                Screen('DrawTexture', Scr.w, LEFT_ptr,myVar.subRect,myVar.LEFTrect);
+                % uncomment if you want to provide feedback on accuracy
+%                 if trialAcc == 1
+%                     Screen('FrameOval', Scr.w, [0 255 0], CenterRectOnPointd([0 0 50 50],fixationCoord(1),fixationCoord(2)));
+%                     DrawFormattedText(Scr.w,'Correct!','center',Scr.wRect(4)*0.95,[0 255 ceil(255/2)]);
+%                 else
+%                     Screen('FrameOval', Scr.w, [255 0 0], CenterRectOnPointd([0 0 50 50],fixationCoord(1),fixationCoord(2)));
+%                     DrawFormattedText(Scr.w,'Incorrect!','center',Scr.wRect(4)*0.95,[255 0 ceil(255/4)]);
+%                 end
+                if noResponse
+                    DrawFormattedText(Scr.w,'No response made!','center',Scr.wRect(4)*0.95,[255 0 ceil(255/4)]);
                 else
-                    Screen('FrameRect', Scr.w, [255 0 0], CenterRectOnPointd([0 0 50 50],fixationCoord(1),fixationCoord(2)), 5);
-                    DrawFormattedText(Scr.w,'Incorrect','center',Scr.wRect(4)*0.95,[255 0 ceil(255/4)]);
+                    if KeyCodeRaw(UP_choice)
+                        DrawFormattedText(Scr.w,'Chose UP','center',Scr.wRect(4)*0.95,[0 255 ceil(255/2)]);
+                        Screen('FrameRect', Scr.w, [0 255 0], myVar.UPrect, 5);
+                    elseif KeyCodeRaw(RIGHT_choice)
+                        DrawFormattedText(Scr.w,'Chose RIGHT','center',Scr.wRect(4)*0.95,[0 255 ceil(255/2)]);
+                        Screen('FrameRect', Scr.w, [0 255 0], myVar.RIGHTrect, 5);
+                    elseif KeyCodeRaw(DOWN_choice)
+                        DrawFormattedText(Scr.w,'Chose DOWN','center',Scr.wRect(4)*0.95,[0 255 ceil(255/2)]);
+                        Screen('FrameRect', Scr.w, [0 255 0], myVar.DOWNrect, 5);
+                    elseif KeyCodeRaw(LEFT_choice)
+                        DrawFormattedText(Scr.w,'Chose LEFT','center',Scr.wRect(4)*0.95,[0 255 ceil(255/2)]);
+                        Screen('FrameRect', Scr.w, [0 255 0], myVar.LEFTrect, 5);
+                    end 
                 end
                 vbl = Screen('Flip',Scr.w,vbl + (Scr.waitframes - 0.5) * Scr.ifi);
                 
@@ -345,7 +380,7 @@ trial_data.trialError = trialError;
 
 trial_data.trialSTART = trialSTART;
 trial_data.fixationOnset = fixationOnset;
-trial_data.exploreOnset = exploreOnset;
+trial_data.accumOnset = accumOnset;
 trial_data.feedbackOnset = feedbackOnset;
 trial_data.trialEND = trialEND;
 
@@ -353,7 +388,11 @@ if save_flag
     trial_data.trial_video = trial_video;
 end
 
-Screen('CloseAll')
+% Clear screen
+Screen('DrawLines',Scr.w,all_fix_coords,myVar.lineWidthPix,Scr.white,fixationCoord,0);
+Screen('Flip', Scr.w);
+
+% Screen('CloseAll')
 
 
         

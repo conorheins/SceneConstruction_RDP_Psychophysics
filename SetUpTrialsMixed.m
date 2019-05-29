@@ -42,10 +42,10 @@ RDM.cohers(3,:)    = [50 50];
 RDM.cohers(4,:)    = [75 75];
 
 RDM.scenes = zeros(numScenes,factor.scenes); 
-RDM.scenes(1,:)    = [0 90];
-RDM.scenes(2,:)    = [90 180];
-RDM.scenes(3,:)    = [180 270];
-RDM.scenes(4,:)    = [270 0];
+RDM.scenes(1,:)    = [180 90]; % UP RIGHT
+RDM.scenes(2,:)    = [90 0];   % RIGHT DOWN
+RDM.scenes(3,:)    = [0 270];  % DOWN LEFT
+RDM.scenes(4,:)    = [270 180];% LEFT UP
 
 numPatterns = size(RDM.scenes,2);
 

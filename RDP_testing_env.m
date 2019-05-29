@@ -74,20 +74,21 @@ trial_data = run_trial_old(Scr,dotParams,scene_id,save_flag);
 %             3*Scr.wRect(3)/4, Scr.wRect(4)/4;
 %             3*Scr.wRect(3)/4, 3*Scr.wRect(4)/4];
 %         
-% dotParams = createDotParams_struct(Scr.wRect,numPatterns,'centers',centers,'cohers',[5 15 25 75],'directions',[0 90 180 270],...
-%             'speeds',[0.75 0.75 0.75 0.75],'apSizes',[200 200; 200 200; 200 200; 200 200],'nDots',[50 50 50 50]);
+% dotParams = createDotParams_struct(Scr.wRect,numPatterns,'centers',centers,'cohers',[0 15 25 100],'directions',[0 90 180 270],...
+%             'speeds',[0.75 0.75 0.75 0.75],'apSizes',[200 200; 200 200; 200 200; 200 200],'nDots',[50 50 50 50],'lifetimes',...
+%             [500 500 500 500]);
 %         
 % 
 % for patt_id = 1:numPatterns
 %     dotData(patt_id) = initialize_dots(dotParams,patt_id);
 % end
-% % 
-% % % 1, 2 and 3 draw round dots (circles) with
-% % % anti-aliasing: 1 favors performance, 2 tries to use high-quality anti-aliasing,
-% % % if supported by your hardware. 3 Uses a builtin shader-based implementation.
-% % % dot_type 1 and 2 may not be supported by all graphics cards and drivers.
-% % 
-% numFlips = 1000;
+% 
+% % 1, 2 and 3 draw round dots (circles) with
+% % anti-aliasing: 1 favors performance, 2 tries to use high-quality anti-aliasing,
+% % if supported by your hardware. 3 Uses a builtin shader-based implementation.
+% % dot_type 1 and 2 may not be supported by all graphics cards and drivers.
+% 
+% numFlips = 2000;
 % % 
 % priorityLevel = MaxPriority(Scr.wRect,'KbCheck');
 % Priority(priorityLevel);

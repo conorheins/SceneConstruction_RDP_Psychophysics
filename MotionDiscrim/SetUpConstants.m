@@ -71,21 +71,14 @@ cd(Scr.rootDir); % Go back to our core directory.
 % exit/reset key
 
 myVar.escapeKey = KbName('ESCAPE'); % end eye-tracking 
-% myVar.leftKey   = KbName('LeftArrow');
-% myVar.rightKey  = KbName('RightArrow');
-% myVar.upKey     = KbName('UpArrow');
-% myVar.downKey   = KbName('DownArrow');
+myVar.leftKey   = KbName('LeftArrow');
+myVar.rightKey  = KbName('RightArrow');
+myVar.upKey     = KbName('UpArrow');
+myVar.downKey   = KbName('DownArrow');
 myVar.pKey      = KbName('p'); % Skip EyeCheck
 myVar.cKey      = KbName('c'); % initiate caibration 
 myVar.tKey      = KbName('t'); % Do Threshold calibration before the next block
 myVar.dKey      = KbName('d'); % do drift correction
-
-% keys for scene choices
-myVar.aKey      = KbName('a'); % Scene 1 - UP RIGHT
-myVar.sKey      = KbName('s'); % Scene 2 - RIGHT DOWN
-myVar.dKey      = KbName('d'); % Scene 3 - DOWN LEFT
-myVar.fKey      = KbName('f'); % Scene 4 - LEFT UP
-
 
 % In this section we will define screen and distances
 
@@ -96,9 +89,9 @@ myVar.fKey      = KbName('f'); % Scene 4 - LEFT UP
 % PixelPerDegree (PPD).
 myVar.centerX           = Scr.width/2;
 myVar.centerY           = Scr.height/2;
-myVar.centW             = 52.2;       % ViewPixx EEG (cm.)
-myVar.centD             = 91.0;       % Distance to the screen (cm.)
-myVar.centH             = 29.1;       % ViewPixx EEG (cm.)
+myVar.centW             = 33.24;      % MacBook Pro monitor width (cm.)
+myVar.centD             = 50;         % Distance to the screen (cm.)
+myVar.centH             = 20.77;      % MacBook Pro monitor height (cm.)
 
 % PPD based on Visual Psyhcophysics book, Lu and Dosher
 Scr.pixelsperdegree =pi/180 * myVar.centD /myVar.centH * Scr.wRect(4);
@@ -111,37 +104,27 @@ myVar.RDPHalfQuad             = floor(2*Scr.pixelsperdegree);   % Define distanc
 myVar.frameLineWidth          = floor(.15*Scr.pixelsperdegree); % Define width of frames that surround each quadrant
 
 % IMPORTANT variables!
-inf.eyeWindow                 = 2;                              % window in visual degrees around fixation center, that subject must keep eyes within 
+inf.eyeWindow                 = 2;                              % window in pixels around fixation center, that subject must keep eyes within 
 Scr.cueDistance               = floor(9*Scr.pixelsperdegree);   % Distance of quadrants from the screen center
 Scr.waitframes                = 1;                              % Numer of frames to wait before re-drawing (Used in Threshold)
 
-myVar.fixationTime   = 5;    % time in seconds of fixation window (basically, participant has to hold gaze / mouse position in center for 5 seconds before proceeding)
-myVar.exploreTime    = 15;   % time in seconds to explore the scene 
-myVar.feedbackTime   = 0.5;  % the length in seconds of the feedback window
-% myVar.fixationWindow = 50;   % spatial distance in pixels that mouse coordinates/eye position needs to be within, in order to be counted as fixating
-% commented this out -- already contained in eyeWindow^ see above
-myVar.gazeWindow     = 150;  % how far your cursor/eye position needs to be from the center of the frame in order to uncover it
+myVar.fixationTime   = 2;    % time in seconds of fixation window (basically, participant has to hold gaze / mouse position in center for 5 seconds before proceeding)
+myVar.accumTime      = 1;    % time in seconds to make decision
+myVar.feedbackTime   = 0.5; % the length in seconds of the feedback window
 myVar.fixCrossDimPix = 40;   % size of the arms of fixation cross
 myVar.lineWidthPix   = 4;    % line width for our fixation cross
 
+myVar.UP    = imread('UP.png');  
+myVar.RIGHT = imread('RIGHT.png');
+myVar.DOWN  = imread('DOWN.png');
+myVar.LEFT  = imread('LEFT.png');
 
-%% Quadrant locations
+myVar.subRect = [300 100 650 400];
+myVar.UPrect = [Scr.wRect(3)/4 - 200 3*Scr.wRect(4)/4 Scr.wRect(3)/4 - 100 3*Scr.wRect(4)/4 + 85];
+myVar.RIGHTrect = [2*Scr.wRect(3)/4 - 200 3*Scr.wRect(4)/4 2*Scr.wRect(3)/4 - 100 3*Scr.wRect(4)/4 + 85];
+myVar.DOWNrect = [3*Scr.wRect(3)/4 - 200 3*Scr.wRect(4)/4 3*Scr.wRect(3)/4 - 100  3*Scr.wRect(4)/4 + 85];
+myVar.LEFTrect  = [Scr.wRect(3) - 200 3*Scr.wRect(4)/4 Scr.wRect(3) - 100  3*Scr.wRect(4)/4 + 85];
 
-% Define RECTS of the four different quadrants  
-RDPDimPix = myVar.RDPHalfQuad*2;       % full extent of a RDP-containing quadrant, in pixels
-RDPRect   = [0 0 RDPDimPix RDPDimPix]; % Define size of RDM
 
-% Positioning
-pixShift = Scr.cueDistance;
-xPos = [myVar.centerX - pixShift myVar.centerX - pixShift myVar.centerX + pixShift myVar.centerX + pixShift];
-yPos = [myVar.centerY - pixShift myVar.centerY + pixShift myVar.centerY - pixShift myVar.centerY + pixShift];
-
-% Assign positions to each of our Gabor and box
-nRDM            = numel(xPos);
-myVar.RDMRects	= nan(4, nRDM);
-myVar.centers   = [xPos;yPos];
-for i = 1:nRDM
-    myVar.RDMRects(:, i) = CenterRectOnPointd(RDPRect,  xPos(i), yPos(i));
-end
 
 end
