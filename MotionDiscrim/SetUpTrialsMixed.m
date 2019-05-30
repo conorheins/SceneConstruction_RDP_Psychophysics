@@ -1,7 +1,7 @@
 function [myVar, block] = SetUpTrialsMixed(Scr,inf, myVar)
 
 % Levels for defining trials
-% COHERENCE                   : 0%, 6.5%, 13%, 26%, 52% 
+% COHERENCE                   : 0%, 3.2%, 6.4%, 12.8%, 25.6%, 51.2% 
 % RDP DIRECTION COMBINATIONS  : 0 degrees (DOWN), 90 degrees (RIGHT), 180 degrees (UP), 270 degrees (LEFT)
                                
 %% Levels of variables
@@ -9,7 +9,7 @@ function [myVar, block] = SetUpTrialsMixed(Scr,inf, myVar)
 %Number of iterations and blocks
 numBlocks          = 2;     % How many blocks do we have?
 
-coherz = [0 6.5 13 26 52]';
+coherz = [0 3.2 6.4 12.8 25.6 51.2]';
 dirz = [0 90 180 270]';
 
 %% create block struct

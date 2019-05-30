@@ -61,16 +61,16 @@ try
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         tr = 1;
         while tr <= length(block(bl).trials)
-%             [inf,block,el,tr] = RunSingleTrial(Scr,inf,myVar,el,bl,tr,block,block(bl).trials(tr));
-%             [inf,block,el,tr] = RunTrial(Scr,inf,myVar,el,bl,tr,block,block(bl).trials(tr),false);
-            [inf,trialData,el] = RunTrial(Scr,inf,myVar,el,bl,tr,block,block(bl).trials(tr),false);
-            % Important data
             
+            [inf,trialData,el] = RunTrial(Scr,inf,myVar,el,bl,tr,block,block(bl).trials(tr),false);
+            
+            % accumulate data into matrix
             dataArray = [dataArray;...
-                [bl, tr, block(bl).trials(tr).direction, block(bl).trials(tr).coherence, trialData.trialRT, trialData.trialAcc]];
+                [bl, tr, block(bl).trials(tr).direction, block(bl).trials(tr).coherence, trialData.trialRT, trialData.trialAcc, trialData.dirResponse]];
             
             block(bl).trials(tr).trialRT = trialData.trialRT;
             block(bl).trials(tr).trialAcc= trialData.trialAcc;
+            block(bl).trials(tr).dirResponse = trialData.dirResponse;
             block(bl).trials(tr).trialError = trialData.trialError;
             
             block(bl).trials(tr).trialSTART = trialData.trialSTART;

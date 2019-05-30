@@ -297,23 +297,47 @@ if trialIsOK
                 else
                     if any(KeyCodeRaw([UP_choice,RIGHT_choice,DOWN_choice,LEFT_choice]))                       
                         trialRT = endRTRaw - accumOnset; % save RT!!!!
-                        if KeyCodeRaw(UP_choice) && trialParams.direction == 180
-                            trialAcc = 1; noResponse = false;
-                        elseif KeyCodeRaw(RIGHT_choice) && trialParams.direction == 90
-                            trialAcc = 1; noResponse = false;
-                        elseif KeyCodeRaw(DOWN_choice) && trialParams.direction == 0
-                            trialAcc = 1; noResponse = false;
-                        elseif KeyCodeRaw(LEFT_choice) && trialParams.direction == 270
-                            trialAcc = 1; noResponse = false;
+                        if KeyCodeRaw(UP_choice)
+                            dirResponse = 180;
+                            noResponse = false;
+                            if trialParams.direction == 180
+                                trialAcc = 1; 
+                            else
+                                trialAcc = 0;
+                            end
+                        elseif KeyCodeRaw(RIGHT_choice)
+                            dirResponse = 90;
+                            noResponse = false;
+                            if trialParams.direction == 90
+                                trialAcc = 1;
+                            else
+                                trialAcc = 0;
+                            end
+                        elseif KeyCodeRaw(DOWN_choice)
+                            dirResponse = 0;
+                            noResponse = false;
+                            if trialParams.direction == 0
+                                trialAcc = 1; 
+                            else
+                                trialAcc = 0;
+                            end
+                        elseif KeyCodeRaw(LEFT_choice)
+                            dirResponse = 270;
+                            noResponse = false;
+                            if trialParams.direction == 270
+                                trialAcc = 1; 
+                            else
+                                trialAcc = 0;
+                            end
                         else
-                            trialAcc = 0; noResponse = false;
+                            trialAcc = 0; noResponse = false; dirResponse = NaN;
                         end                       
                     else
-                        trialError = 1; trialIsOK = false; noResponse = false;          % END THE TRIAL
+                        trialError = 1; trialIsOK = false; noResponse = false; dirResponse = NaN;          % END THE TRIAL
                     end
                 end
             else
-                noResponse = true;
+                noResponse = true; dirResponse = NaN;
             end
              
         end
@@ -376,6 +400,7 @@ end
 
 trial_data.trialRT = trialRT;
 trial_data.trialAcc = trialAcc;
+trial_data.dirResponse = dirResponse;
 trial_data.trialError = trialError;
 
 trial_data.trialSTART = trialSTART;

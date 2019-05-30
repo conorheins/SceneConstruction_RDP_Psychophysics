@@ -108,9 +108,9 @@ inf.eyeWindow                 = 2;                              % window in pixe
 Scr.cueDistance               = floor(9*Scr.pixelsperdegree);   % Distance of quadrants from the screen center
 Scr.waitframes                = 1;                              % Numer of frames to wait before re-drawing (Used in Threshold)
 
-myVar.fixationTime   = 2;    % time in seconds of fixation window (basically, participant has to hold gaze / mouse position in center for 5 seconds before proceeding)
-myVar.accumTime      = 1;    % time in seconds to make decision
-myVar.feedbackTime   = 0.5; % the length in seconds of the feedback window
+myVar.fixationTime   = 1;    % time in seconds of fixation window (basically, participant has to hold gaze / mouse position in center for 5 seconds before proceeding)
+myVar.accumTime      = 1.25; % time in seconds to make decision
+myVar.feedbackTime   = 0.25;  % the length in seconds of the feedback window
 myVar.fixCrossDimPix = 40;   % size of the arms of fixation cross
 myVar.lineWidthPix   = 4;    % line width for our fixation cross
 
