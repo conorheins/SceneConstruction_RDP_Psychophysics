@@ -27,7 +27,7 @@ end
 
 figure(1)
 subplot(121)
-semilogx(coherence_levels,Accur_stats(:,1),'b.','MarkerSize',50)  
+semilogx(coherence_levels + 1e-5,Accur_stats(:,1),'b.','MarkerSize',25)  
 subplot(122)
-semilogx(coherence_levels,RT_stats(:,1),'b.','MarkerSize',50)
+semilogx(coherence_levels + 1e-5,RT_stats(:,1),'b.','MarkerSize',25)
 
