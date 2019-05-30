@@ -57,11 +57,24 @@ for subj_i = 1:length(subj_folders)
     
     all_results{subj_i} = psignifit(acc_Table,options);
     
-    plotPsych(all_results{subj_i});
-    title(sprintf('Psychometric function for Subject %d',str2double(subj_folders{subj_i})));
-    
-    pause;
+%     plotPsych(all_results{subj_i});
+%     title(sprintf('Psychometric function for Subject %d',str2double(subj_folders{subj_i})));
+%     
+%     pause;
     
     
 end
+    
+
+coh_axis = 0.1:0.1:100;
+
+labels = {'Conor','Masha','Roman','Jessica'};
+
+for subj_i = 1:length(all_results)
+    
+    plot(coh_axis,all_results{subj_i}.psiHandle(coh_axis),'DisplayName',labels{subj_i});
+    hold on;
+    
+end
+legend('show')
     
