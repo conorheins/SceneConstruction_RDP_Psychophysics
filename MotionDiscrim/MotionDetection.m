@@ -28,7 +28,7 @@ try
     debug_mode_flag = false;
     [Scr]               = InitializeWindow(inf,scrNum,debug_mode_flag);        % Turn on Screen
     
-%     [inst]              = InstructionsPIC(inf,Scr);     % Load pictures with instructions
+    [inst]              = InstructionsPIC(inf,Scr);     % Load pictures with instructions
     
     [Scr,inf,myVar]     = SetUpConstants(Scr,inf);        % setUp VARIABLES
     
@@ -38,9 +38,9 @@ try
         
         [myVar, block]  = SetUpTrialsMixed(Scr,inf, myVar); % setUp CONDITIONS
         
-        % Show general instructions
-%         Screen('DrawTexture', Scr.w, inst.intro); % intro instruction
-%         Screen('Flip',Scr.w); KbStrokeWait; bl = 1;
+%         Show general instructions
+        Screen('DrawTexture', Scr.w, inst.intro); % intro instruction
+        Screen('Flip',Scr.w); KbStrokeWait; bl = 1;
         
     else % IF AFTER BREAK
         
