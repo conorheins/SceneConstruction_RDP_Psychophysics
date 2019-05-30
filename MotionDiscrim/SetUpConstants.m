@@ -78,9 +78,14 @@ myVar.dKey      = KbName('d'); % do drift correction
 % PixelPerDegree (PPD).
 myVar.centerX           = Scr.width/2;
 myVar.centerY           = Scr.height/2;
-myVar.centW             = 33.24;      % MacBook Pro monitor width (cm.)
-myVar.centD             = 50;         % Distance to the screen (cm.)
-myVar.centH             = 20.77;      % MacBook Pro monitor height (cm.)
+
+% myVar.centW             = 33.24;      % MacBook Pro monitor width (cm.)
+% myVar.centD             = 50;         % Distance to the screen (cm.)
+% myVar.centH             = 20.77;      % MacBook Pro monitor height (cm.)
+
+myVar.centW             = 52.2;       % ViewPixx EEG (cm.)
+myVar.centD             = 91.0;       % Distance to the screen (cm.)
+myVar.centH             = 29.1;       % ViewPixx EEG (cm.)
 
 % PPD based on Visual Psyhcophysics book, Lu and Dosher
 Scr.pixelsperdegree = pi/180 * myVar.centD /myVar.centH * Scr.wRect(4);
@@ -93,22 +98,25 @@ myVar.RDPHalfQuad             = floor(2*Scr.pixelsperdegree);   % Define distanc
 myVar.frameLineWidth          = floor(.15*Scr.pixelsperdegree); % Define width of frames that surround each quadrant
 
 % IMPORTANT variables!
-inf.eyeWindow                 = 2;                              % window in pixels around fixation center, that subject must keep eyes within 
+inf.eyeWindow                 = 2;                              % window in visual degrees around fixation center, that subject must keep eyes within 
 Scr.cueDistance               = floor(9*Scr.pixelsperdegree);   % Distance of quadrants from the screen center
 Scr.waitframes                = 1;                              % Numer of frames to wait before re-drawing (Used in Threshold)
 
-myVar.fixationTime   = 2;    % time in seconds of fixation window for first trial of each block (this is longer to give participant time to move cursor/eyes to the center)
-myVar.intertrialTime = 0.25;  % time in seconds of fixation window for all other trials 
-myVar.accumTime      = 1.25; % time in seconds to make decision
-myVar.feedbackTime   = 0.2;  % the length in seconds of the feedback window
-myVar.fixCrossDimPix = 40;   % size of the arms of fixation cross
-myVar.lineWidthPix   = 4;    % line width for our fixation cross
+myVar.fixationTime   = 2;       % time in seconds of fixation window for first trial of each block (this is longer to give participant time to move cursor/eyes to the center)
+myVar.intertrialTime = 0.25;    % time in seconds of fixation window for all other trials 
+myVar.accumTime      = 1.25;    % time in seconds to make decision
+myVar.feedbackTime   = 0.2;     % the length in seconds of the feedback window
+myVar.fixCrossDimPix = 40;      % size of the arms of fixation cross
+myVar.lineWidthPix   = 4;       % line width for our fixation cross
 
 % fixed parameters related to RDP displays
-myVar.speed    = 0.75; % speed of dots in squared-pixels / flip
+% myVar.speed    = 0.75; % speed of dots in squared-pixels / flip -- use this value for Macbook pro
+myVar.speed    = 0.375; % speed of dots in squared-pixels / flip -- use this value for psychophysics monitor
 myVar.apSize   = floor([5.3 * Scr.pixelsperdegree, 5.3 * Scr.pixelsperdegree]); % width/height of aperture in which dots are displayed, in pixels
 myVar.nDots    = 50;  % number of dots per pattern
-myVar.lifetime = 10;  % lifetime of dots in flips
+% myVar.lifetime = 10;  % lifetime of dots in flips  -- use this value for Macbook pro
+myVar.lifetime = 20;  % lifetime of dots in flips -- use this value for psychophysics monitor
+myVar.dotSize = floor( 0.14 * Scr.pixelsperdegree);  % size of dots in pixels
 
 myVar.UP    = imread('UP.png');  
 myVar.RIGHT = imread('RIGHT.png');

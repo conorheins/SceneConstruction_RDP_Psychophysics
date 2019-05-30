@@ -25,6 +25,9 @@ for coh_i = 1:length(coherence_levels)
     
 end
 
+figure(1)
+subplot(121)
+semilogx(coherence_levels,Accur_stats(:,1),'b.','MarkerSize',50)  
+subplot(122)
+semilogx(coherence_levels,RT_stats(:,1),'b.','MarkerSize',50)
 
-    
-    
