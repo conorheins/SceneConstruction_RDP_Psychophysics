@@ -98,16 +98,16 @@ myVar.RDPHalfQuad             = floor(2*Scr.pixelsperdegree);   % Define distanc
 myVar.frameLineWidth          = floor(.15*Scr.pixelsperdegree); % Define width of frames that surround each quadrant
 
 % IMPORTANT variables!
-inf.eyeWindow                 = 2;                              % window in pixels around fixation center, that subject must keep eyes within 
+inf.eyeWindow                 = 2;                              % window in visual degrees around fixation center, that subject must keep eyes within 
 Scr.cueDistance               = floor(9*Scr.pixelsperdegree);   % Distance of quadrants from the screen center
 Scr.waitframes                = 1;                              % Numer of frames to wait before re-drawing (Used in Threshold)
 
-myVar.fixationTime   = 2;    % time in seconds of fixation window for first trial of each block (this is longer to give participant time to move cursor/eyes to the center)
-myVar.intertrialTime = 0.25;  % time in seconds of fixation window for all other trials 
-myVar.accumTime      = 1.25; % time in seconds to make decision
-myVar.feedbackTime   = 0.2;  % the length in seconds of the feedback window
-myVar.fixCrossDimPix = 40;   % size of the arms of fixation cross
-myVar.lineWidthPix   = 4;    % line width for our fixation cross
+myVar.fixationTime   = 2;       % time in seconds of fixation window for first trial of each block (this is longer to give participant time to move cursor/eyes to the center)
+myVar.intertrialTime = 0.25;    % time in seconds of fixation window for all other trials 
+myVar.accumTime      = 1.25;    % time in seconds to make decision
+myVar.feedbackTime   = 0.2;     % the length in seconds of the feedback window
+myVar.fixCrossDimPix = 40;      % size of the arms of fixation cross
+myVar.lineWidthPix   = 4;       % line width for our fixation cross
 
 % fixed parameters related to RDP displays
 % myVar.speed    = 0.75; % speed of dots in squared-pixels / flip -- use this value for Macbook pro
