@@ -62,7 +62,7 @@ for patt_id = 1:numPatterns
     end
 end
 
-%% Prepare EyeTracker and EEG
+%% Prepare EyeTracker
 if ~inf.dummy && bl ~= 1
     
     % START RECORDING to EDF file.
@@ -156,7 +156,6 @@ if ~inf.dummy && bl ~= 1
                     % Screen('FillOval', Scr.w, [0 0 0], myVar.gaborRects(:,1)); %%%for test
                     vbl = Screen('Flip', Scr.w, vbl + (Scr.waitframes - 0.5) * Scr.ifi);
                     eyeCheckDur = round(.2/Scr.ifi);    % Restore eyeCheckDur
-                    if eegEyeError==1 && ~inf.dumEEG,io64(inf.ioObject,inf.LPT1address,3+eegPlus);WaitSecs(0.001); eegEyeError =0; end %%%%%%%%%%    EEG 3 EYECHECK ERROR    !!!!!!!
                 else % OR LOOKING
                     Eyelink('command','draw_filled_box %d %d %d %d %d', 0, round(Scr.height-Scr.height/16), Scr.width, Scr.height,frameCol);
                     Eyelink('command', 'draw_text %d %d 0 Eye is OK',round(Scr.width/2),round(Scr.height-Scr.height/32));

@@ -35,6 +35,7 @@ try
     [el,inf]            = EyeLinkON(Scr,inf);           % Turn on EyeLink
     
     if ~inf.afterBreak
+        
         [myVar, block]  = SetUpTrialsMixed(Scr,inf, myVar); % setUp CONDITIONS
         
         % Show general instructions
@@ -42,9 +43,10 @@ try
 %         Screen('Flip',Scr.w); KbStrokeWait; bl = 1;
         
     else % IF AFTER BREAK
-        fName = strcat(inf.subNo, '__allData.mat');
-        fileLoc = [Scr.rootDir  filesep() 'Data' filesep() 'SubjectsData' filesep() inf.subNo filesep() fName];
-        load(fileLoc); bl = bl+1; inf.threshold = false; %fprintf(inf.resultsFile,'After_Break\n'); 
+        
+        fName = sprintf('Subject%d__allData.mat',inf.subNo);
+        fileLoc = fullfile(Scr.rootDir,'Data','SubjectsData',num2str(inf.subNo), fName);
+        load(fileLoc); bl = bl+1; inf.threshold = false;
     end
     
     dataArray = [];
@@ -92,11 +94,11 @@ try
         inf.experimentEnd = clock;  % record when the experiment ended
         if ~inf.isTestMode
             cd(inf.rootSub);
-            fName = strcat(inf.subNo,'__allData.mat');
+            fName = sprintf('Subject%d__allData.mat',inf.subNo);
             save(fName);
         else
             cd(inf.rootTest);
-            fName = strcat('test',num2str(inf.subNo),'__allData.mat');
+            fName = sprintf('test%d__allData.mat',inf.subNo);
             save(fName);
         end
         cd(Scr.rootDir);
@@ -107,25 +109,6 @@ try
     %%%%%%%%%%%%%%%%%%%%
     
     %% Saying goodbye
-%     [inf] = DataPreProcessing(inf,myVar,block);
-%     
-%     message = sprintf('You won %g euros!\n Your accuracy was %d percent\nPress SPACE', inf.Reward,(round(inf.accuracy*100)));
-%     DrawFormattedText(Scr.w, message, 'center', 'center', Scr.black, 40,[],[],1.5); delete col.mat
-%     Screen('Flip', Scr.w);      % Update the SCR to show the instruction text:
-%     KbStrokeWait;               % Wait for mouse click:
-%     
-%     message = 'Thank you for participation!\nWait for further instructions.';
-%     DrawFormattedText(Scr.w, message, 'center', 'center', Scr.black, 40,[],[],1.5);
-%     Screen('Flip', Scr.w);
-%     GetClicks;
-%     KbStrokeWait;
-%     
-    % Necessary procedure for committee
-%     CalDoc_Reward(Scr,inf);
-    
-    %% PLOT THE DATA
-%     array2table(inf.NumTrBl,'VariableNames',{'V1' 'V2' 'S1' 'S2' 'N' 'Bl' 'Acc' 'dP'})
-%     DataReadyToPlot(inf);
     
     % End of the experiment:
     CleanUpExpt(inf);

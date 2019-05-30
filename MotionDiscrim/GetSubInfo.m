@@ -3,22 +3,23 @@ function [inf] = GetSubInfo(inf)
 if inf.isTestMode % No name provided yet
     inf.subNo               = 1; % call this participant test1, latter we will assign proper number
     inf.dummy               = menu('Dummy mode? (without EyeTraking)', {'Yes','No'});
-    inf.dumEEG              = menu('Dummy mode? (without EEG)',{'Yes','No'});
     inf.isFullScreen        = menu('Display full screen?', {'Yes','No'});
-%     inf.expMode             = menu('What kind of sequence? Ask experimenter.', {'1','2','3','4'});
     inf.language            = menu('What language?', {'English','German'});
     
-else % check for the participance name
-    inf.dummy               = 2;
-    inf.isFullScreen        = 1;
-    inf.dumEEG              = 2; % 2 - with EEG
-    %inf.isFullScreen        = menu('Display full screen?', {'Yes','No'});
-    %inf.dummy               = menu('Dummy mode? (without EyeTraking)', {'Yes','No'});
-    %inf.dumEEG              = menu('Dummy mode? (without EEG)',{'Yes','No'});    
-%     inf.expMode             = menu('What kind of sequence? Ask experimenter.', {'1','2','3','4'});
+    % Text questions
+    prompt                  ={'How many blocks would you like to run?'};
+    title                   ='Number of blocks to complete';  % The main title of input dialog interface.
+    answer                  =inputdlg(prompt,title);
+    
+    % Gather answers into variables
+    inf.numBlocks                 = str2double(answer{1});
+    
+else 
+    inf.dummy               = menu('Dummy mode? (without EyeTraking)', {'Yes','No'});
+    inf.isFullScreen        = menu('Display full screen?', {'Yes','No'});
     inf.language            = menu('What language?', {'English','German'});
     
-    % 2FC questions
+    % demographics 
     inf.gender              = menu('What is your gender.', {'Male','Female'});
     inf.primaryHand         = menu('What is your primary hand?', {'Left','Right'});
     inf.vision              = menu('Do you wear glasses?', {'Yes','No'});
@@ -31,9 +32,17 @@ else % check for the participance name
     % Gather answers into variables
     inf.age                 = str2double(answer{1});
     
+    % Text questions
+    prompt                  ={'How many blocks would you like to run?'};
+    title                   ='Number of blocks to complete';  % The main title of input dialog interface.
+    answer                  =inputdlg(prompt,title);
+    
+    % Gather answers into variables
+    inf.numBlocks                 = str2double(answer{1});
+    
 end
+
 inf.dummy = abs(inf.dummy - 2);
-inf.dumEEG= abs(inf.dumEEG- 2); % Transform to 1/0
 inf.isFullScreen = abs(inf.isFullScreen-2); % to make it 0 or 1. 1 if it is true
 
 end

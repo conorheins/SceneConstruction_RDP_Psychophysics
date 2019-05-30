@@ -29,7 +29,6 @@ Scr.rootDir = pwd;
 
 % Define filenames of input files and result file:
 cd(Scr.rootDir);
-inf.resultsFile = strcat('test','.txt'); % Default name of cueing data file to write to (for the while loop)
 
 % Create a unique name for participant files:
 if inf.subNo == 1                                                       % in GetSubInfo we define the subject name as 1, so it is a test
@@ -39,28 +38,18 @@ if inf.subNo == 1                                                       % in Get
         mkdir(Scr.rootDir,fullfile('Data','test'));
     end
     cd(inf.rootTest);                                                   % move to the test directory
-    while (fopen(inf.resultsFile, 'rt')~=-1)                            % making a loop to find a free number (till it is not possible to open)
+    while exist(fullfile(inf.rootTest,sprintf('test%d__allData.mat',inf.subNo)),'file')
         inf.subNo= inf.subNo+1;
-        inf.resultsFile = strcat('test',num2str(inf.subNo),'.txt');     % name of the data file to write to.
     end
-    inf.resultsFile = fopen(inf.resultsFile,'wt');                      % open ASCII file for writing
-    strcat('Result data file already exists! Choosing: ', num2str(inf.subNo));
-else                                                                    % in the main script we define inf.subNo as narin which is ...
+else                                                                    % in the main script we define inf.subNo as first argument
     %...the subject code.
-    inf.rootSub = [Scr.rootDir  filesep() 'Data' filesep() 'SubjectsData' filesep() inf.subNo filesep()];
-    if exist([inf.rootSub filesep() inf.subNo '__allData.mat'],'file') == 2 % Does the folder exists?
+    inf.rootSub = fullfile(Scr.rootDir,'Data','SubjectsData',num2str(inf.subNo));
+    if exist(fullfile(inf.rootSub,sprintf('Subject%d__allData.mat',inf.subNo)),'file') % Does the matlab file exists?
         inf.afterBreak = true;                                          % Then use this folder!
-        cd(inf.rootSub);
-        inf.resultsFile = strcat(inf.subNo,'.txt');
-        inf.resultsFile = fopen(inf.resultsFile,'at+');
     else %if not
         inf.afterBreak = false;
         mkdir(inf.rootSub);
-        mkdir([inf.rootSub 'EEG' filesep 'RawData']); mkdir([inf.rootSub 'EEG' filesep 'ERPs']);
-        cd(inf.rootSub);
-        inf.resultsFile = strcat(inf.subNo,'.txt');                     % name of the data file to write to
-        inf.resultsFile = fopen(inf.resultsFile,'wt');
-    end  % open ASCII file for writing
+    end  
 end
 cd(Scr.rootDir); % Go back to our core directory.
 
@@ -94,7 +83,7 @@ myVar.centD             = 50;         % Distance to the screen (cm.)
 myVar.centH             = 20.77;      % MacBook Pro monitor height (cm.)
 
 % PPD based on Visual Psyhcophysics book, Lu and Dosher
-Scr.pixelsperdegree =pi/180 * myVar.centD /myVar.centH * Scr.wRect(4);
+Scr.pixelsperdegree = pi/180 * myVar.centD /myVar.centH * Scr.wRect(4);
 
 %% SCREEN: Size and Distances
 
@@ -108,11 +97,18 @@ inf.eyeWindow                 = 2;                              % window in pixe
 Scr.cueDistance               = floor(9*Scr.pixelsperdegree);   % Distance of quadrants from the screen center
 Scr.waitframes                = 1;                              % Numer of frames to wait before re-drawing (Used in Threshold)
 
-myVar.fixationTime   = 1;    % time in seconds of fixation window (basically, participant has to hold gaze / mouse position in center for 5 seconds before proceeding)
+myVar.fixationTime   = 2;    % time in seconds of fixation window for first trial of each block (this is longer to give participant time to move cursor/eyes to the center)
+myVar.intertrialTime = 0.25;  % time in seconds of fixation window for all other trials 
 myVar.accumTime      = 1.25; % time in seconds to make decision
-myVar.feedbackTime   = 0.25;  % the length in seconds of the feedback window
+myVar.feedbackTime   = 0.2;  % the length in seconds of the feedback window
 myVar.fixCrossDimPix = 40;   % size of the arms of fixation cross
 myVar.lineWidthPix   = 4;    % line width for our fixation cross
+
+% fixed parameters related to RDP displays
+myVar.speed    = 0.75; % speed of dots in squared-pixels / flip
+myVar.apSize   = floor([5.3 * Scr.pixelsperdegree, 5.3 * Scr.pixelsperdegree]); % width/height of aperture in which dots are displayed, in pixels
+myVar.nDots    = 50;  % number of dots per pattern
+myVar.lifetime = 10;  % lifetime of dots in flips
 
 myVar.UP    = imread('UP.png');  
 myVar.RIGHT = imread('RIGHT.png');
@@ -124,7 +120,6 @@ myVar.UPrect = [Scr.wRect(3)/4 - 200 3*Scr.wRect(4)/4 Scr.wRect(3)/4 - 100 3*Scr
 myVar.RIGHTrect = [2*Scr.wRect(3)/4 - 200 3*Scr.wRect(4)/4 2*Scr.wRect(3)/4 - 100 3*Scr.wRect(4)/4 + 85];
 myVar.DOWNrect = [3*Scr.wRect(3)/4 - 200 3*Scr.wRect(4)/4 3*Scr.wRect(3)/4 - 100  3*Scr.wRect(4)/4 + 85];
 myVar.LEFTrect  = [Scr.wRect(3) - 200 3*Scr.wRect(4)/4 Scr.wRect(3) - 100  3*Scr.wRect(4)/4 + 85];
-
 
 
 end

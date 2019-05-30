@@ -52,7 +52,6 @@ end
 Scr.white               = WhiteIndex(screenNumber);
 Scr.black               = BlackIndex(screenNumber);
 Scr.gray                = (Scr.white+Scr.black)/2;
-% Scr.gray = GrayIndex(screenNumber); % Alternative version
 
 % Open a buffered fullscreen window on the stimulation screen
 % 'screenNumber' and choose/draw a gray background. 'Scr.w' is the handle
@@ -66,11 +65,6 @@ try
 catch
     if inf.isFullScreen
         [Scr.w, Scr.wRect] = Screen('OpenWindow',screenNumber,Scr.black,[],[],[]);
-%         HideCursor();   % Hide coursor
-%         ListenChar(2);  % disable input for Matlab window.
-%     else % for partical window (debugging)
-%         PsychDebugWindowConfiguration(0,0.5);
-%         [Scr.w, Scr.wRect]=Screen('OpenWindow',screenNumber, Scr.black, [],[],[]);  %try a partial window
     end
 end
 

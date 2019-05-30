@@ -124,7 +124,6 @@ myVar.gazeWindow     = 150;  % how far your cursor/eye position needs to be from
 myVar.fixCrossDimPix = 40;   % size of the arms of fixation cross
 myVar.lineWidthPix   = 4;    % line width for our fixation cross
 
-
 %% Quadrant locations
 
 % Define RECTS of the four different quadrants  
