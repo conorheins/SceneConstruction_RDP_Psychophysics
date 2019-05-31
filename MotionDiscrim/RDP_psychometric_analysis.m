@@ -1,5 +1,8 @@
 % fit psychometric functions to accuracy data in motion discrimination task
 
+
+addpath(genpath('psignifit-master'));
+
 data_dir = fullfile('Data','SubjectsData');
 
 subj_folders = dir(data_dir);
@@ -21,6 +24,7 @@ acc_idx = 6;
 dir_choice_idx = 7;
 
 all_results = cell(1,length(subj_folders));
+all_raw = cell(1,length(subj_folders));
 
 for subj_i = 1:length(subj_folders)
     
@@ -44,7 +48,10 @@ for subj_i = 1:length(subj_folders)
         acc_Table(coh_level_i,2) = nansum(all_accz);
         acc_Table(coh_level_i,3) = length(all_accz);
         
+        
     end
+    
+    all_raw{subj_i} = acc_Table;
     
     options             = struct;   % initialize as an empty struct
     
@@ -65,16 +72,34 @@ for subj_i = 1:length(subj_folders)
     
 end
     
-
+%%
 coh_axis = 0.1:0.1:100;
 
-labels = {'Conor','Masha','Roman','Jessica'};
+labels = {'RCH','MZ','RV','EA'};
 
+colors = cool(ceil(1.5*length(labels)));
+colors = colors(1:length(labels),:);
+
+lines_array = {};
+lines_counter = 1;
 for subj_i = 1:length(all_results)
     
-    plot(coh_axis,all_results{subj_i}.psiHandle(coh_axis),'DisplayName',labels{subj_i});
+    lines_array{lines_counter} = plot(coh_axis,all_results{subj_i}.psiHandle(coh_axis),'LineWidth',1,'DisplayName',labels{subj_i},'Color',colors(subj_i,:));
     hold on;
-    
+    lines_counter = lines_counter + 1;
+    lines_array{lines_counter} = plot(all_raw{subj_i}(:,1),all_raw{subj_i}(:,2)./all_raw{subj_i}(:,3),'.','Color',colors(subj_i,:),'MarkerSize',50);
+    lines_counter = lines_counter + 1;
+
 end
-legend('show')
+
+ax = gca;
+ax.FontSize = 16;
+
+legend([lines_array{1:2:end}],labels)
     
+xlabel('Coherence (%)','FontSize',18);
+ylabel('Accuracy (% Correct)','FontSize',18)
+
+
+title('Psychometric curves with averages overlaid from 4 subjects','FontSize',20)
+grid on;
