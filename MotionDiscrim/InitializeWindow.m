@@ -38,8 +38,8 @@ end
 %Problems with synchronization. If we uncomment, this lines script doesn't start.
 Screen('Preference', 'ConserveVRAM', 4096); %%%% See help win Beampositionqueries
 [Scr.oldDebugLevel] = Screen('Preference', 'VisualDebugLevel', 1);
-% Screen('Preference', 'SkipSyncTests', 0);  % 0 for tests, 1 for skip
-Screen('Preference', 'SkipSyncTests', 1);  % 0 for tests, 1 for skip
+Screen('Preference', 'SkipSyncTests', 0);  % 0 for tests, 1 for skip
+% Screen('Preference', 'SkipSyncTests', 1);  % 0 for tests, 1 for skip
 
 
 if nargin < 3 || ~exist('debug_mode_flag','var') || isempty(debug_mode_flag) || debug_mode_flag == 1
@@ -84,6 +84,10 @@ Scr.ifi=Screen('GetFlipInterval', Scr.w);
 % gammaCLUT=repmat(linspace(0,1,256)'.^(1/gammaVal),1,3);
 % Screen('LoadNormalizedGammaTable', 0, gammaCLUT ,0);
 % Screen('ColorRange', Scr.w, 255);
+
+% Enable alpha blending with proper blend-function. We need it for drawing
+% of smoothed points.
+Screen('BlendFunction', Scr.w, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 % Set text size (Most Screen functions must be called after
 % opening an onscreen window, as they only take window handles 'Scr.w' as

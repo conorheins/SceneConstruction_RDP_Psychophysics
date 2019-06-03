@@ -48,7 +48,9 @@ default_directions = 0;
 default_cohers = 100;
 default_lifetimes = 20;
 default_dotSizes = 5;
-default_dotTypes = 1;
+% default_dotTypes = 1;
+default_dotTypes = 2;
+
 
 p = inputParser;
 addRequired(p,'screenRect',@(x) isnumeric(x) && numel(x) == 4)

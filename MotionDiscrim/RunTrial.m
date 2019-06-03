@@ -50,7 +50,7 @@ all_fix_coords = [fix_x;fix_y];
 
 dotParams = trialParams.dotParams; % get the RDP dot parameters for the current trial
 
-dotData = initialize_dots(dotParams,1);
+dotData = initialize_dots(dotParams,1,Scr.ifi,Scr.pixelsperdegree);
 
 %% Prepare EyeTracker
 if ~inf.dummy && bl ~= 1

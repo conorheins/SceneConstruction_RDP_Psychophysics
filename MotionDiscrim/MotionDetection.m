@@ -27,7 +27,7 @@ try
     scrNum = 0;  % specific to Conor's set-up -- use 0 to make the display screen the personal laptop (external monitor is for MATLAB)
     debug_mode_flag = false;
     [Scr]               = InitializeWindow(inf,scrNum,debug_mode_flag);        % Turn on Screen
-    
+        
     [inst]              = InstructionsPIC(inf,Scr);     % Load pictures with instructions
     
     [Scr,inf,myVar]     = SetUpConstants(Scr,inf);        % setUp VARIABLES
