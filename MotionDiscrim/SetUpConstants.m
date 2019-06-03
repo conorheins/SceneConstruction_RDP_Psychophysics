@@ -79,13 +79,13 @@ myVar.dKey      = KbName('d'); % do drift correction
 myVar.centerX           = Scr.width/2;
 myVar.centerY           = Scr.height/2;
 
-% myVar.centW             = 33.24;      % MacBook Pro monitor width (cm.)
-% myVar.centD             = 50;         % Distance to the screen (cm.)
-% myVar.centH             = 20.77;      % MacBook Pro monitor height (cm.)
-
-myVar.centW             = 52.2;       % ViewPixx EEG (cm.)
-myVar.centD             = 91.0;       % Distance to the screen (cm.)
-myVar.centH             = 29.1;       % ViewPixx EEG (cm.)
+myVar.centW             = 33.24;      % MacBook Pro monitor width (cm.)
+myVar.centD             = 50;         % Distance to the screen (cm.)
+myVar.centH             = 20.77;      % MacBook Pro monitor height (cm.)
+% 
+% myVar.centW             = 52.2;       % ViewPixx EEG (cm.)
+% myVar.centD             = 91.0;       % Distance to the screen (cm.)
+% myVar.centH             = 29.1;       % ViewPixx EEG (cm.)
 
 % PPD based on Visual Psyhcophysics book, Lu and Dosher
 Scr.pixelsperdegree = pi/180 * myVar.centD /myVar.centH * Scr.wRect(4);
@@ -111,12 +111,15 @@ myVar.lineWidthPix   = 4;       % line width for our fixation cross
 
 % fixed parameters related to RDP displays
 % myVar.speed    = 0.75; % speed of dots in squared-pixels / flip -- use this value for Macbook pro
-myVar.speed    = 0.375; % speed of dots in squared-pixels / flip -- use this value for psychophysics monitor
+% myVar.speed    = 0.375; % speed of dots in squared-pixels / flip -- use this value for psychophysics monitor
+myVar.speed    = 5 * Scr.pixelsperdegree;     % speed of dots in pixels / second 
 myVar.apSize   = floor([5.3 * Scr.pixelsperdegree, 5.3 * Scr.pixelsperdegree]); % width/height of aperture in which dots are displayed, in pixels
 myVar.nDots    = 50;  % number of dots per pattern
 % myVar.lifetime = 10;  % lifetime of dots in flips  -- use this value for Macbook pro
-myVar.lifetime = 20;  % lifetime of dots in flips -- use this value for psychophysics monitor
-myVar.dotSize = floor( 0.14 * Scr.pixelsperdegree);  % size of dots in pixels
+myVar.lifetime = 50;  % lifetime of dots in flips -- use this value for psychophysics monitor
+% myVar.dotSize = floor( 0.14 * Scr.pixelsperdegree);  % size of dots in pixels
+myVar.dotSize = floor( 0.1 * Scr.pixelsperdegree);  % size of dots in pixels, following Palmer Huk & Shadlen 2005
+
 
 myVar.UP    = imread('UP.png');  
 myVar.RIGHT = imread('RIGHT.png');

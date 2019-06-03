@@ -15,11 +15,12 @@ coh_idx = rand(1,dotParams(patt_id).nDots) < dotParams(patt_id).cohers/100;
 % initialize motion vectors of all dots to four orthogonal random directions 
 rand_directions = 90.*randi(4,1,dotParams(patt_id).nDots) .* pi/180;
 
-dx = dotParams(patt_id).speeds*sin(rand_directions);
-dy = dotParams(patt_id).speeds*cos(rand_directions);
+speed_dxy = sqrt( (dotParams(patt_id).speeds.^2)./2 ); % have to convert speed parameter into orthogonal updates in x and y directions
+dx = speed_dxy*sin(rand_directions);
+dy = speed_dxy*cos(rand_directions);
 
-dx(coh_idx) = dotParams(patt_id).speeds*sin(dotParams(patt_id).directions * pi/180);
-dy(coh_idx) = dotParams(patt_id).speeds*cos(dotParams(patt_id).directions * pi/180);
+dx(coh_idx) = speed_dxy*sin(dotParams(patt_id).directions * pi/180);
+dy(coh_idx) = speed_dxy*cos(dotParams(patt_id).directions * pi/180);
 
 dotData.dxdy = [dx;dy];
 
