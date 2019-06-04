@@ -75,8 +75,9 @@ end
 %%
 coh_axis = 0.1:0.1:100;
 
-labels = {'RCH','MZ','RV','EA'};
+% labels = {'RCH','MZ','RV','EA'};
 % labels = {'RCH2','RCH1'};
+labels = {'Masha','Dima'};
 
 colors = cool(ceil(1.5*length(labels)));
 colors = colors(1:length(labels),:);
