@@ -73,14 +73,23 @@ for subj_i = 1:length(subj_folders)
 end
     
 %%
+
 coh_axis = 0.1:0.1:100;
 
 % labels = {'RCH','MZ','RV','EA'};
 % labels = {'RCH2','RCH1'};
-labels = {'Masha','Dima'};
+% labels = {'Masha','Dima'};
+labels = {'New1','New2','New3','Old1','Old2','Old3','Old4'};
 
-colors = cool(ceil(1.5*length(labels)));
-colors = colors(1:length(labels),:);
+% colors = cool(ceil(1.5*length(labels)));
+% colors = colors(1:length(labels),:);
+
+colors_new = repmat([0 0.25 1],3,1);
+colors_old = repmat([1 0.25 0],4,1);
+
+colors = [colors_new;colors_old];
+
+
 
 lines_array = {};
 lines_counter = 1;
@@ -103,5 +112,5 @@ xlabel('Coherence (%)','FontSize',18);
 ylabel('Accuracy (% Correct)','FontSize',18)
 
 
-title('Psychometric curves with averages overlaid from 4 subjects','FontSize',20)
+title(sprintf('Psychometric curves with averages overlaid from %d runs',length(all_results)),'FontSize',20)
 grid on;

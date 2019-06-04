@@ -38,8 +38,8 @@ end
 %Problems with synchronization. If we uncomment, this lines script doesn't start.
 Screen('Preference', 'ConserveVRAM', 4096); %%%% See help win Beampositionqueries
 [Scr.oldDebugLevel] = Screen('Preference', 'VisualDebugLevel', 1);
-Screen('Preference', 'SkipSyncTests', 0);  % 0 for tests, 1 for skip
-% Screen('Preference', 'SkipSyncTests', 1);  % 0 for tests, 1 for skip
+% Screen('Preference', 'SkipSyncTests', 0);  % 0 for tests, 1 for skip
+Screen('Preference', 'SkipSyncTests', 1);  % 0 for tests, 1 for skip
 
 
 if nargin < 3 || ~exist('debug_mode_flag','var') || isempty(debug_mode_flag) || debug_mode_flag == 1
