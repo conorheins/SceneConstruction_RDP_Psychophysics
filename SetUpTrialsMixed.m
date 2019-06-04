@@ -1,18 +1,16 @@
 function [myVar, block] = SetUpTrialsMixed(Scr,inf, myVar)
 
-% set all variables for running the blocks.
-% To match the study
-%
+% Levels for defining trials
 % RDP LOCATION                : Upper left (Loc 1), Lower left (Loc 2), Upper right (Loc 3), Lower Right (Loc 4) 
-% COHERENCE                   : 5% (Low), 25% (Low-Medium), 50% (Medium-High), 75% (High) 
-% RDP DIRECTION COMBINATIONS  : 0 degrees & 90 degrees ('UP RIGHT'); 90 degrees
-%                               & 180 degrees ('RIGHT DOWN'); 180 degrees & 270 degrees
-%                               ('DOWN LEFT'); 270 degrees & 0 degreess ('LEFT UP')
+% COHERENCE                   : 6 levels: 0%, 12.8%, 25.6%, 36%, 51.2%, 100% 
+% RDP DIRECTION COMBINATIONS  : 180 degrees & 90 degrees ('UP RIGHT'); 90 degrees
+%                               & 0 degrees ('RIGHT DOWN'); 0 degrees & 270 degrees
+%                               ('DOWN LEFT'); 270 degrees & 90 degreess ('LEFT UP')
                                
 %% Levels of variables
 %number of trials will be factor1*factor2*... * iterations
 
-numCoherLevels = 4;
+numCoherLevels = 6;
 numScenes      = 4;
 
 factor.RDMcohers      = 2; % the number of values that a given RDP can take, per level/factor
