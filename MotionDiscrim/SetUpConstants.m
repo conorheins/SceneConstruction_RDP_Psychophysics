@@ -103,8 +103,11 @@ Scr.cueDistance               = floor(9*Scr.pixelsperdegree);   % Distance of qu
 Scr.waitframes                = 1;                              % Numer of frames to wait before re-drawing (Used in Threshold)
 
 myVar.fixationTime   = 2;       % time in seconds of fixation window for first trial of each block (this is longer to give participant time to move cursor/eyes to the center)
-myVar.intertrialTime = 0.25;    % time in seconds of fixation window for all other trials 
-myVar.accumTime      = 1.25;    % time in seconds to make decision
+% myVar.intertrialTime = 0.25;    % time in seconds of fixation window for all other trials 
+myVar.intertrialTime = 0.75;    % time in seconds of fixation window for all other trials 
+myVar.ITI_sd         = 0.15;    % standard deviation in seconds of fixation window for all other trials
+% myVar.accumTime      = 1.25;    % time in seconds to make decision
+myVar.accumTime      = 2;       % time in seconds to make decision
 myVar.feedbackTime   = 0.2;     % the length in seconds of the feedback window
 myVar.fixCrossDimPix = 40;      % size of the arms of fixation cross
 myVar.lineWidthPix   = 4;       % line width for our fixation cross

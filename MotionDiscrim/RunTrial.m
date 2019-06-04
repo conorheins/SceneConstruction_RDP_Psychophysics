@@ -31,7 +31,7 @@ if tr == 1
     ShowCursor(1)
     fixationDur  = round(myVar.fixationTime/Scr.ifi);                        % Duration of Fixation is longer if it's the first trial (gives subject time to move cursor/eyes to center)
 else
-    fixationDur = round(myVar.intertrialTime/Scr.ifi);
+    fixationDur = round(  (myVar.ITI_sd*randn(1) + myVar.intertrialTime) /Scr.ifi );
 end
 
 accumDur     = round(myVar.accumTime /Scr.ifi);                            % Duration of RDP duration 
