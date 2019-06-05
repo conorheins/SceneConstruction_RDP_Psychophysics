@@ -28,30 +28,39 @@ try
     debug_mode_flag = false;
     [Scr]               = InitializeWindow(inf,scrNum,debug_mode_flag);        % Turn on Screen
     
-%     [inst]              = InstructionsPIC(inf,Scr);     % Load pictures with instructions
+    [inst]              = Instructions_RDP(inf,Scr);     % Load pictures with instructions
     
     [Scr,inf,myVar]     = SetUpConstants(Scr,inf);        % setUp VARIABLES
     
     [el,inf]            = EyeLinkON(Scr,inf);           % Turn on EyeLink
     
     if ~inf.afterBreak
+        
         [myVar, block]  = SetUpTrialsMixed(Scr,inf, myVar); % setUp CONDITIONS
         
-        % Show general instructions
-%         Screen('DrawTexture', Scr.w, inst.intro); % intro instruction
-%         Screen('Flip',Scr.w); KbStrokeWait; bl = 1;
+%         Show general instructions
+        Screen('DrawTexture', Scr.w, inst.intro); % intro instruction
+        Screen('Flip',Scr.w); KbStrokeWait; bl = 1;
         
+%     else % IF AFTER BREAK
+%         fName = strcat(inf.subNo, '__allData.mat');
+%         fileLoc = [Scr.rootDir  filesep() 'Data' filesep() 'SubjectsData' filesep() inf.subNo filesep() fName];
+%         load(fileLoc); bl = bl+1; inf.threshold = false; %fprintf(inf.resultsFile,'After_Break\n'); 
+
     else % IF AFTER BREAK
-        fName = strcat(inf.subNo, '__allData.mat');
-        fileLoc = [Scr.rootDir  filesep() 'Data' filesep() 'SubjectsData' filesep() inf.subNo filesep() fName];
-        load(fileLoc); bl = bl+1; inf.threshold = false; %fprintf(inf.resultsFile,'After_Break\n'); 
+        
+        fName = sprintf('Subject%d__allData.mat',inf.subNo);
+        fileLoc = fullfile(Scr.rootDir,'Data','SubjectsData',num2str(inf.subNo), fName);
+        load(fileLoc); bl = bl+1; inf.threshold = false;
+        
     end
     
+    dataArray = [];
+
     %% BLOCK LOOP---------%
-    %bl =7;inf.PSE = 10;
     %%%%%%%%%%%%%
     for bl = 1:length(block)
-        if ismember(bl,[3 20]), CountDown(Scr,myVar,300);end % break for 300 sec.
+%         if ismember(bl,[3 20]), CountDown(Scr,myVar,300);end % break for 300 sec.
         
         %% INSTRUCTIONS
         FileName        = ['block_' num2str(bl)];

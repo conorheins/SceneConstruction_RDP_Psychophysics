@@ -8,18 +8,16 @@ function [myVar, block] = SetUpTrialsMixed(Scr,inf, myVar)
 %                               ('DOWN LEFT'); 270 degrees & 90 degreess ('LEFT UP')
                                
 %% Levels of variables
-%number of trials will be factor1*factor2*... * iterations
 
-numCoherLevels = 6;
-numScenes      = 4;
+%Number of iterations and blocks
+numBlocks          = inf.numBlocks;     % How many blocks do we have?
+
+coherz = [0 12.8 25.6 36 51.2 100]';
 
 factor.RDMcohers      = 2; % the number of values that a given RDP can take, per level/factor
 factor.scenes         = 2; % the number of values that a given RDP can take, per level/factor
 
-%Number of iterations and blocks
-factor.block          = 5;     % How many blocks do we have?
-
-numQuads = size(myVar.centers,2);
+numQuads = size(myVar.RDMrects,2);
 
 config_counter = 0;
 for quad1 = 1:numQuads
@@ -34,35 +32,34 @@ end
 factor.RDMconfigs = config_counter;
 
 RDM.cohers = zeros(numCoherLevels,factor.RDMcohers); 
-RDM.cohers(1,:)    = [5 5];
-RDM.cohers(2,:)    = [25 25];
-RDM.cohers(3,:)    = [50 50];
-RDM.cohers(4,:)    = [75 75];
-
-RDM.scenes = zeros(numScenes,factor.scenes); 
+for coh_i = 1:length(coherz)
+    RDM.cohers(coh_i,:) = [coherz(coh_i) coherz(coh_i)];
+end
+    
+RDM.scenes = zeros(4,factor.scenes); 
 RDM.scenes(1,:)    = [180 90]; % UP RIGHT
 RDM.scenes(2,:)    = [90 0];   % RIGHT DOWN
 RDM.scenes(3,:)    = [0 270];  % DOWN LEFT
 RDM.scenes(4,:)    = [270 180];% LEFT UP
 
-numPatterns = size(RDM.scenes,2);
-
 %% create block struct
 block = struct;
 
-for bl = 1:factor.block
+numPatterns = size(RDM.scenes,2);
+
+for bl = 1:numBlocks
     tr = 0;
     for config_i = 1:factor.RDMconfigs
-%         conSort = 1;
-        for coh_i = 1:factor.RDMcohers
-            for scene_i = 1:factor.scenes
+        for coh_i = 1:length(coherz)
+            for scene_i = 1:size(RDM.scenes,1)
                 tr = tr + 1;
                 block(bl).trials(tr).dotParams = createDotParams_struct(Scr.wRect,numPatterns,'centers',RDM.configs(config_i).x,'cohers',RDM.cohers(coh_i,:),'directions',RDM.scenes(scene_i,:),...
-                    'speeds',[0.75 0.75],'apSizes',[200 200; 200 200],'nDots',[50 50],'lifetimes',[10 10]);
-                block(bl).trials(tr).scene  = scene_i;
+                    'speeds',repmat(myVar.speed,1,numPatterns),'apSizes',repmat(myVar.apSize,numPatterns,1),'nDots',repmat(myVar.nDots,1,numPatterns),...
+                    'lifetimes',repmat(myVar.lifetime,1,numPatterns),'dotSizes',repmat(myVar.dotSize,1,numPatterns));
+                block(bl).trials(tr).scene_dirs= RDM.scenes(scene_i);
+                block(bl).trials(tr).scene_ID  = scene_i;
                 block(bl).trials(tr).config = config_i;
-%                 conSort = conSort + 1;
-%                 block(b).trials(tr).conSort = conSort;
+                block(bl).trials(tr).coher = coherz(coh_i);
             end
         end
     end
@@ -79,18 +76,13 @@ for b = 1:factor.block
     [block(b).trials.error]             = deal(0);
     %Stim&Struct
     [block(b).trials.trialNum]          = deal(nan);
-%     [block(b).trials.BlNumber]          = deal(nan);
     [block(b).trials.Pp]                = deal(inf.subNo);
-%     [block(b).trials.expMode]           = deal(inf.expMode);
-%     [block(b).trials.Reward]            = deal(nan);
-%     [block(b).trials.BlType]            = deal(nan);
-%     [block(b).trials.PSE]               = deal(nan);
+    [block(b).trials.Reward]            = deal(nan);
+    [block(b).trials.BlType]            = deal(nan);
     %Timing
     [block(b).trials.trialSTART]        = deal(nan);
     [block(b).trials.eyeCheckOnset]     = deal(nan);
     [block(b).trials.fixationOnset]     = deal(nan);
-%     [block(b).trials.soundOnset]        = deal(nan);
-%     [block(b).trials.targetOnset]       = deal(nan);
     [block(b).trials.endRT]             = deal(nan);
     [block(b).trials.RespOnsetFlip]     = deal(nan);
     [block(b).trials.feedbackOnset]     = deal(nan);

@@ -66,30 +66,29 @@ try
 catch
     if inf.isFullScreen
         [Scr.w, Scr.wRect] = Screen('OpenWindow',screenNumber,Scr.black,[],[],[]);
-%         HideCursor();   % Hide coursor
-%         ListenChar(2);  % disable input for Matlab window.
-%     else % for partical window (debugging)
-%         PsychDebugWindowConfiguration(0,0.5);
-%         [Scr.w, Scr.wRect]=Screen('OpenWindow',screenNumber, Scr.black, [],[],[]);  %try a partial window
-%     end
+    end
 end
 
 %%%%
 Scr.ifi=Screen('GetFlipInterval', Scr.w);
 
 
-try %% check whether the window is already open
-    gammaVal=1.75; %  see ('intensity10_54.51(Before_experiment5)%_28_02','intensity10')
-catch
-    gammaVal=1;
-end
+% try %% check whether the window is already open
+%     gammaVal=1.75; %  see ('intensity10_54.51(Before_experiment5)%_28_02','intensity10')
+% catch
+%     gammaVal=1;
+% end
+% 
+% % Gamma calibration
+% linCLUT=repmat(linspace(0,1,256)',1,3);
+% Screen('LoadNormalizedGammaTable', 0, linCLUT ,0);
+% gammaCLUT=repmat(linspace(0,1,256)'.^(1/gammaVal),1,3);
+% Screen('LoadNormalizedGammaTable', 0, gammaCLUT ,0);
+% Screen('ColorRange', Scr.w, 255);
 
-% Gamma calibration
-linCLUT=repmat(linspace(0,1,256)',1,3);
-Screen('LoadNormalizedGammaTable', 0, linCLUT ,0);
-gammaCLUT=repmat(linspace(0,1,256)'.^(1/gammaVal),1,3);
-Screen('LoadNormalizedGammaTable', 0, gammaCLUT ,0);
-Screen('ColorRange', Scr.w, 255);
+% Enable alpha blending with proper blend-function. We need it for drawing
+% of smoothed points.
+Screen('BlendFunction', Scr.w, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 % Set text size (Most Screen functions must be called after
 % opening an onscreen window, as they only take window handles 'Scr.w' as

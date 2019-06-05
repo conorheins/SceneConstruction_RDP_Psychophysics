@@ -9,7 +9,6 @@ function [myVar, block] = SetUpTrialsMixed(Scr,inf, myVar)
 %Number of iterations and blocks
 numBlocks          = inf.numBlocks;     % How many blocks do we have?
 
-% coherz = [0 3.2 6.4 12.8 25.6 51.2]';
 coherz = [0 12.8 25.6 36 51.2 100]';
 dirz = [0 90 180 270]';
 

@@ -52,6 +52,7 @@ end
 Scr.white               = WhiteIndex(screenNumber);
 Scr.black               = BlackIndex(screenNumber);
 Scr.gray                = (Scr.white+Scr.black)/2;
+% Scr.gray = GrayIndex(screenNumber); % Alternative version
 
 % Open a buffered fullscreen window on the stimulation screen
 % 'screenNumber' and choose/draw a gray background. 'Scr.w' is the handle

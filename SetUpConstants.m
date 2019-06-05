@@ -29,7 +29,6 @@ Scr.rootDir = pwd;
 
 % Define filenames of input files and result file:
 cd(Scr.rootDir);
-inf.resultsFile = strcat('test','.txt'); % Default name of cueing data file to write to (for the while loop)
 
 % Create a unique name for participant files:
 if inf.subNo == 1                                                       % in GetSubInfo we define the subject name as 1, so it is a test
@@ -39,28 +38,18 @@ if inf.subNo == 1                                                       % in Get
         mkdir(Scr.rootDir,fullfile('Data','test'));
     end
     cd(inf.rootTest);                                                   % move to the test directory
-    while (fopen(inf.resultsFile, 'rt')~=-1)                            % making a loop to find a free number (till it is not possible to open)
+    while exist(fullfile(inf.rootTest,sprintf('test%d__allData.mat',inf.subNo)),'file')
         inf.subNo= inf.subNo+1;
-        inf.resultsFile = strcat('test',num2str(inf.subNo),'.txt');     % name of the data file to write to.
     end
-    inf.resultsFile = fopen(inf.resultsFile,'wt');                      % open ASCII file for writing
-    strcat('Result data file already exists! Choosing: ', num2str(inf.subNo));
-else                                                                    % in the main script we define inf.subNo as narin which is ...
+else                                                                    % in the main script we define inf.subNo as first argument
     %...the subject code.
-    inf.rootSub = [Scr.rootDir  filesep() 'Data' filesep() 'SubjectsData' filesep() inf.subNo filesep()];
-    if exist([inf.rootSub filesep() inf.subNo '__allData.mat'],'file') == 2 % Does the folder exists?
+    inf.rootSub = fullfile(Scr.rootDir,'Data','SubjectsData',num2str(inf.subNo));
+    if exist(fullfile(inf.rootSub,sprintf('Subject%d__allData.mat',inf.subNo)),'file') % Does the matlab file exists?
         inf.afterBreak = true;                                          % Then use this folder!
-        cd(inf.rootSub);
-        inf.resultsFile = strcat(inf.subNo,'.txt');
-        inf.resultsFile = fopen(inf.resultsFile,'at+');
     else %if not
         inf.afterBreak = false;
         mkdir(inf.rootSub);
-        mkdir([inf.rootSub 'EEG' filesep 'RawData']); mkdir([inf.rootSub 'EEG' filesep 'ERPs']);
-        cd(inf.rootSub);
-        inf.resultsFile = strcat(inf.subNo,'.txt');                     % name of the data file to write to
-        inf.resultsFile = fopen(inf.resultsFile,'wt');
-    end  % open ASCII file for writing
+    end  
 end
 cd(Scr.rootDir); % Go back to our core directory.
 
@@ -71,10 +60,10 @@ cd(Scr.rootDir); % Go back to our core directory.
 % exit/reset key
 
 myVar.escapeKey = KbName('ESCAPE'); % end eye-tracking 
-% myVar.leftKey   = KbName('LeftArrow');
-% myVar.rightKey  = KbName('RightArrow');
-% myVar.upKey     = KbName('UpArrow');
-% myVar.downKey   = KbName('DownArrow');
+myVar.leftKey   = KbName('LeftArrow');
+myVar.rightKey  = KbName('RightArrow');
+myVar.upKey     = KbName('UpArrow');
+myVar.downKey   = KbName('DownArrow');
 myVar.pKey      = KbName('p'); % Skip EyeCheck
 myVar.cKey      = KbName('c'); % initiate caibration 
 myVar.tKey      = KbName('t'); % Do Threshold calibration before the next block
@@ -96,18 +85,23 @@ myVar.fKey      = KbName('f'); % Scene 4 - LEFT UP
 % PixelPerDegree (PPD).
 myVar.centerX           = Scr.width/2;
 myVar.centerY           = Scr.height/2;
+
+% myVar.centW             = 33.24;      % MacBook Pro monitor width (cm.)
+% myVar.centD             = 50;         % Distance to the screen (cm.)
+% myVar.centH             = 20.77;      % MacBook Pro monitor height (cm.)
+
 myVar.centW             = 52.2;       % ViewPixx EEG (cm.)
 myVar.centD             = 91.0;       % Distance to the screen (cm.)
 myVar.centH             = 29.1;       % ViewPixx EEG (cm.)
 
 % PPD based on Visual Psyhcophysics book, Lu and Dosher
-Scr.pixelsperdegree =pi/180 * myVar.centD /myVar.centH * Scr.wRect(4);
+Scr.pixelsperdegree = pi/180 * myVar.centD /myVar.centH * Scr.wRect(4);
 
 %% SCREEN: Size and Distances
 
 myVar.fixXLoc                 = myVar.centerX;                  % Define Fixation point X
 myVar.fixYLoc                 = myVar.centerY;                  % Define Fixation point Y
-myVar.RDPHalfQuad             = floor(2*Scr.pixelsperdegree);   % Define distance in pixels, of one RDP-containing quadrant
+myVar.RDPHalfQuad             = floor(2*Scr.pixelsperdegree);   % Define half-width in pixels, of one RDP-containing quadrant
 myVar.frameLineWidth          = floor(.15*Scr.pixelsperdegree); % Define width of frames that surround each quadrant
 
 % IMPORTANT variables!
@@ -115,14 +109,34 @@ inf.eyeWindow                 = 2;                              % window in visu
 Scr.cueDistance               = floor(9*Scr.pixelsperdegree);   % Distance of quadrants from the screen center
 Scr.waitframes                = 1;                              % Numer of frames to wait before re-drawing (Used in Threshold)
 
-myVar.fixationTime   = 5;    % time in seconds of fixation window (basically, participant has to hold gaze / mouse position in center for 5 seconds before proceeding)
-myVar.exploreTime    = 15;   % time in seconds to explore the scene 
-myVar.feedbackTime   = 0.5;  % the length in seconds of the feedback window
-% myVar.fixationWindow = 50;   % spatial distance in pixels that mouse coordinates/eye position needs to be within, in order to be counted as fixating
-% commented this out -- already contained in eyeWindow^ see above
-myVar.gazeWindow     = 150;  % how far your cursor/eye position needs to be from the center of the frame in order to uncover it
-myVar.fixCrossDimPix = 40;   % size of the arms of fixation cross
-myVar.lineWidthPix   = 4;    % line width for our fixation cross
+myVar.fixationTime      = 5;    % time in seconds of fixation window (basically, participant has to hold gaze / mouse position in center for 5 seconds before proceeding)
+myVar.exploreTime       = 15;   % time in seconds to explore the scene 
+myVar.train_exploreTime = 100;  % time in seconds to explore the scene in practice blocks
+myVar.feedbackTime      = 1;    % the length in seconds of the feedback window
+myVar.intertrialTime    = 2;    % time in seconds of fixation window for all other trials 
+myVar.ITI_sd            = 0.5;  % standard deviation in seconds of fixation window for all other trials
+
+myVar.gazeWindow        = floor(2*Scr.pixelsperdegree);  % how far your cursor/eye position needs to be from the center of a quadrant in order to uncover it
+myVar.fixCrossDimPix    = 40;   % size of the arms of fixation cross
+myVar.lineWidthPix      = 4;    % line width for our fixation cross
+
+myVar.speed    = 5;     % speed of dots in visual degrees / second 
+myVar.apSize   = floor([5 * Scr.pixelsperdegree, 5 * Scr.pixelsperdegree]); % width/height of aperture in which dots are displayed, in pixels
+myVar.lifetime_ms = 0.1; % lifetime of dots in milliseconds
+myVar.nDots    = ceil(20/(Scr.pixelsperdegree.^2) .* prod(myVar.apSize) ./ (1/myVar.lifetime_ms) ) ;
+myVar.lifetime = floor( 1/Scr.ifi * myVar.lifetime_ms);  % lifetime of dots in flips -- use this value for psychophysics monitor
+myVar.dotSize = 0.1 * Scr.pixelsperdegree;  % size of dots in pixels, following Palmer Huk & Shadlen 2005
+
+myVar.UR_symbol    = imread('images/UR.png');  
+myVar.RD_symbol = imread('images/RD.png');
+myVar.DL_symbol  = imread('images/DL.png');
+myVar.LU_symbol  = imread('images/LU.png');
+
+myVar.subRect = [300 100 650 400];
+myVar.UR_rect = [Scr.wRect(3)/4 - 200 3*Scr.wRect(4)/4 Scr.wRect(3)/4 - 100 3*Scr.wRect(4)/4 + 85];
+myVar.RD_rect = [2*Scr.wRect(3)/4 - 200 3*Scr.wRect(4)/4 2*Scr.wRect(3)/4 - 100 3*Scr.wRect(4)/4 + 85];
+myVar.DL_rect = [3*Scr.wRect(3)/4 - 200 3*Scr.wRect(4)/4 3*Scr.wRect(3)/4 - 100  3*Scr.wRect(4)/4 + 85];
+myVar.LU_rect  = [Scr.wRect(3) - 200 3*Scr.wRect(4)/4 Scr.wRect(3) - 100  3*Scr.wRect(4)/4 + 85];
 
 %% Quadrant locations
 

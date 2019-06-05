@@ -28,7 +28,7 @@ try
     debug_mode_flag = false;
     [Scr]               = InitializeWindow(inf,scrNum,debug_mode_flag);        % Turn on Screen
         
-    [inst]              = InstructionsPIC(inf,Scr);     % Load pictures with instructions
+    [inst]              = Instructions_RDP(inf,Scr);     % Load pictures with instructions
     
     [Scr,inf,myVar]     = SetUpConstants(Scr,inf);        % setUp VARIABLES
     
