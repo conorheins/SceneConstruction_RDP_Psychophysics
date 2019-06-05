@@ -1,6 +1,5 @@
 % fit psychometric functions to accuracy data in motion discrimination task
 
-
 addpath(genpath('psignifit-master'));
 addpath(genpath('mseb'));
 
@@ -74,10 +73,10 @@ for subj_i = 1:length(subj_folders)
     
     all_results{subj_i} = psignifit(acc_Table,options);
     
-%     plotPsych(all_results{subj_i});
-%     title(sprintf('Psychometric function for Subject %d',str2double(subj_folders{subj_i})));
-%     
-%     pause;
+    plotPsych(all_results{subj_i});
+    title(sprintf('Psychometric function for Subject %d',str2double(subj_folders{subj_i})));
+    
+    pause;
     
     
 end
@@ -90,7 +89,7 @@ coh_axis = 0.1:0.1:100;
 % labels = {'RCH2','RCH1'};
 % labels = {'Masha','Dima'};
 % labels = {'New1','New2','New3','New4','New5','Old1','Old2','Old3','Old4'};
-labels = {'MZ','DN','RCH','AZ','SD'};
+labels = {'MZ','DN','RCH','AZ','SD','RCH2'};
 
 colors = cool(ceil(1.5*length(labels)));
 colors = colors(1:length(labels),:);
@@ -125,27 +124,27 @@ grid on;
 
 %%  test plotting one individual's psychometric function with the upper/lower confidence intervals (95%)
 
-temp = all_results{1};
+temp = all_results{6};
 
 % coh_axis         = exp(linspace(log(0.1),log(100),1000));
 coh_axis         = exp(linspace(log(min(temp.data(:,1))),log(max(temp.data(:,1))),1000));
 
 psiHandle_MAP = @(x)temp.Fit(4) + (1-temp.Fit(3) - temp.Fit(4)) * temp.options.sigmoidHandle(x,temp.Fit(1),temp.Fit(2));
 
-params_lowerB = temp.conf_Intervals(:,1,1);
-params_upperB = temp.conf_Intervals(:,2,1);
+params_lowerB = temp.conf_Intervals(:,1,3);
+params_upperB = temp.conf_Intervals(:,2,3);
 
 psiHandle_lower = @(x)params_lowerB(4) + (1-params_lowerB(3) - params_lowerB(4)) * temp.options.sigmoidHandle(x,params_lowerB(1),params_lowerB(2));
 psiHandle_upper = @(x)params_upperB(4) + (1-params_upperB(3) - params_upperB(4)) * temp.options.sigmoidHandle(x,params_upperB(1),params_upperB(2));
 % 
-plot(coh_axis,psiHandle_MAP(coh_axis),'k-');
-hold on;
-plot(coh_axis,psiHandle_lower(coh_axis),'r-');
-plot(coh_axis,psiHandle_upper(coh_axis),'b-');
+% plot(coh_axis,psiHandle_MAP(coh_axis),'k-');
+% hold on;
+% plot(coh_axis,psiHandle_lower(coh_axis),'r-');
+% plot(coh_axis,psiHandle_upper(coh_axis),'b-');
 
-% y = psiHandle_MAP(coh_axis);
-% y_lower = psiHandle_lower(coh_axis);
-% y_upper = psiHandle_upper(coh_axis);
-% mseb(coh_axis,y,cat(3,y_lower-y,y-y_upper));
+y = psiHandle_MAP(coh_axis);
+y_lower = psiHandle_lower(coh_axis);
+y_upper = psiHandle_upper(coh_axis);
+mseb(coh_axis,y,cat(3,y_lower-y,y-y_upper));
 % mseb(coh_axis,y,cat(3,y-y_upper,y_lower-y));
 

@@ -35,10 +35,9 @@ else
 end
 
 if bl < 6
-    accumDur = round(myVar.train_accumTime /Scr.ifi);                            % For early/practice blocks, make RDP time basically infinite
+    accumDur = round(myVar.accumTime /Scr.ifi);                            % For early/practice blocks, make RDP time basically infinite
 else
-    accumDur     = round(myVar.accumTime /Scr.ifi);                             % Duration of RDP duration 
-end
+    accumDur     = round(myVar.accumTime /Scr.ifi);             % Duration of RDP duration 
 feedbackDur  = round(myVar.feedbackTime/Scr.ifi);                        % Feedback display for 250 ms
 
 % Adjust response keys
@@ -112,11 +111,10 @@ end
 eyeCheckOnset = vbl;                                                                           %%%%TIME%%%%%%%
 if ~inf.dummy && bl ~= 1
     Eyelink('message', 'EYE_CHECK');
-    while eyeCheck 
+    while eyeCheck
         
-        [~,~, KeyCode] = KbCheck();     % In case if eye tracker lost eye
+        [KeyIsDown,~, KeyCode] = KbCheck();     % In case if eye tracker lost eye
         if KeyCode(myVar.escapeKey)             % EXIT key pressed to exit experiment
-            Screen('CloseAll')
             error('EXIT button!\n');
         elseif KeyCode(myVar.cKey)      % Do whole CALIBRATION
             Eyelink('stoprecording');
@@ -208,13 +206,6 @@ if trialIsOK
     
     for fixationFlips = 1:fixationDur-1
         %%%%%%%%%%%%%%I.Present the Fixation point
-        
-        [~,~, KeyCode] = KbCheck();     % In case if eye tracker lost eye
-        if KeyCode(myVar.escapeKey)             % EXIT key pressed to exit experiment
-            Screen('CloseAll')
-            error('EXIT button!\n');
-        end
-        
         Screen('DrawLines',Scr.w,all_fix_coords,myVar.lineWidthPix,Scr.white,fixationCoord,0);
         Screen('DrawTexture', Scr.w, UP_ptr,myVar.subRect,myVar.UPrect); % choices
         Screen('DrawTexture', Scr.w, RIGHT_ptr,myVar.subRect,myVar.RIGHTrect);
@@ -255,12 +246,6 @@ if trialIsOK
         grab_flag = true;
         
         while and(((KeyIsDown~=1) && noResponse),accumFlips < accumDur)
-            
-            [~,~, KeyCode] = KbCheck();     % In case if eye tracker lost eye
-            if KeyCode(myVar.escapeKey)             % EXIT key pressed to exit experiment
-                Screen('CloseAll')
-                error('EXIT button!\n');   
-            end
             
 %             Screen('DrawLines',Scr.w,all_fix_coords,myVar.lineWidthPix,Scr.white,fixationCoord,0);
             Screen('DrawTexture', Scr.w, UP_ptr,myVar.subRect,myVar.UPrect); % choices
@@ -316,8 +301,7 @@ if trialIsOK
             %%%%%%%%%%%%%%II.Check Response
             [KeyIsDown,endRTRaw, KeyCodeRaw] = KbCheck();
             if (KeyIsDown==1) && respToBeMade
-                if KeyCodeRaw(myVar.escapeKey)  % EXIT key pressed to exit experiment
-                    Screen('CloseAll')
+                if KeyCodeRaw(KbName('ESCAPE'))  % EXIT key pressed to exit experiment
                     error('EXIT button!\n');
                 else
                     if any(KeyCodeRaw([UP_choice,RIGHT_choice,DOWN_choice,LEFT_choice]))                       
@@ -371,13 +355,6 @@ if trialIsOK
             
             grab_flag = true;
             for i = 1:feedbackDur 
-                
-                [~,~, KeyCode] = KbCheck();     % In case if eye tracker lost eye
-                if KeyCode(myVar.escapeKey)             % EXIT key pressed to exit experiment
-                    Screen('CloseAll')
-                    error('EXIT button!\n');
-                end
-                
                 Screen('DrawTexture', Scr.w, UP_ptr,myVar.subRect,myVar.UPrect); % choices
                 Screen('DrawTexture', Scr.w, RIGHT_ptr,myVar.subRect,myVar.RIGHTrect);
                 Screen('DrawTexture', Scr.w, DOWN_ptr,myVar.subRect,myVar.DOWNrect);

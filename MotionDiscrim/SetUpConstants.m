@@ -102,12 +102,15 @@ inf.eyeWindow                 = 2;                              % window in visu
 Scr.cueDistance               = floor(9*Scr.pixelsperdegree);   % Distance of quadrants from the screen center
 Scr.waitframes                = 1;                              % Numer of frames to wait before re-drawing (Used in Threshold)
 
-myVar.fixationTime   = 2;       % time in seconds of fixation window for first trial of each block (this is longer to give participant time to move cursor/eyes to the center)
+myVar.fixationTime     = 2;       % time in seconds of fixation window for first trial of each block (this is longer to give participant time to move cursor/eyes to the center)
 % myVar.intertrialTime = 0.25;    % time in seconds of fixation window for all other trials 
-myVar.intertrialTime = 0.75;    % time in seconds of fixation window for all other trials 
-myVar.ITI_sd         = 0.15;    % standard deviation in seconds of fixation window for all other trials
+myVar.intertrialTime   = 0.75;    % time in seconds of fixation window for all other trials 
+myVar.ITI_sd           = 0.15;    % standard deviation in seconds of fixation window for all other trials
 % myVar.accumTime      = 1.25;    % time in seconds to make decision
-myVar.accumTime      = 2;       % time in seconds to make decision
+% myVar.accumTime      = 2;       % time in seconds to make decision
+myVar.accumTime        = 5;       % time in seconds to make decision
+myVar.train_accumTime  = 1000;    % time in seconds to make decision for early/practice blocks
+
 myVar.feedbackTime   = 0.2;     % the length in seconds of the feedback window
 myVar.fixCrossDimPix = 40;      % size of the arms of fixation cross
 myVar.lineWidthPix   = 4;       % line width for our fixation cross
@@ -128,7 +131,6 @@ myVar.lifetime = floor( 1/Scr.ifi * myVar.lifetime_ms);  % lifetime of dots in f
 % myVar.dotSize = floor( 0.14 * Scr.pixelsperdegree);  % size of dots in pixels
 % myVar.dotSize = floor( 0.1 * Scr.pixelsperdegree);  % size of dots in pixels, following Palmer Huk & Shadlen 2005
 myVar.dotSize = 0.1 * Scr.pixelsperdegree;  % size of dots in pixels, following Palmer Huk & Shadlen 2005
-
 
 myVar.UP    = imread('UP.png');  
 myVar.RIGHT = imread('RIGHT.png');
