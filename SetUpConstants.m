@@ -133,14 +133,13 @@ myVar.RD_symbol = imread('images/RD.png');
 myVar.DL_symbol  = imread('images/DL.png');
 myVar.LU_symbol  = imread('images/LU.png');
 
-myVar.subRect = [300 100 650 400];
-myVar.UR_rect = [Scr.wRect(3)/4 - 200 3*Scr.wRect(4)/4 Scr.wRect(3)/4 - 100 3*Scr.wRect(4)/4 + 85];
-myVar.RD_rect = [2*Scr.wRect(3)/4 - 200 3*Scr.wRect(4)/4 2*Scr.wRect(3)/4 - 100 3*Scr.wRect(4)/4 + 85];
-myVar.DL_rect = [3*Scr.wRect(3)/4 - 200 3*Scr.wRect(4)/4 3*Scr.wRect(3)/4 - 100  3*Scr.wRect(4)/4 + 85];
-myVar.LU_rect  = [Scr.wRect(3) - 200 3*Scr.wRect(4)/4 Scr.wRect(3) - 100  3*Scr.wRect(4)/4 + 85];
+myVar.subRect = [200 80 700 440];
+myVar.UR_rect = [Scr.wRect(3)/4 - 100 Scr.wRect(4)/2-50 Scr.wRect(3)/4 Scr.wRect(4)/2 + 50];
+myVar.RD_rect = [2*Scr.wRect(3)/4 - 250 Scr.wRect(4)/2-50 2*Scr.wRect(3)/4 - 150 Scr.wRect(4)/2 + 50];
+myVar.DL_rect = [3*Scr.wRect(3)/4 - 150 Scr.wRect(4)/2-50 3*Scr.wRect(3)/4 - 50  Scr.wRect(4)/2 + 50];
+myVar.LU_rect  = [Scr.wRect(3) - 300 Scr.wRect(4)/2-50 Scr.wRect(3) - 200  Scr.wRect(4)/2 + 50];
 
 myVar.choiceRects = [myVar.UR_rect;myVar.RD_rect;myVar.DL_rect;myVar.LU_rect]'; 
-
 
 %% Quadrant locations
 
