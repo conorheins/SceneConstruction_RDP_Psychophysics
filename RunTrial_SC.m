@@ -1,4 +1,4 @@
-function trial_data = RunTrial_SC(Scr,inf,myVar,el,bl,tr,block,trialParams,save_flag)
+function [inf,trial_data,el] = RunTrial_SC(Scr,inf,myVar,el,bl,tr,block,trialParams,save_flag)
 
 % Script for a single trial of the scene construction paradigm
 
@@ -23,13 +23,12 @@ function trial_data = RunTrial_SC(Scr,inf,myVar,el,bl,tr,block,trialParams,save_
 
 trialSTART = GetSecs;                                                      %%%%TIME%%%%%%%
 
-% variables to be built into function arguments (e.g. inf or MyVar) at some point:
-
 fixationCoord = [myVar.fixXLoc myVar.fixYLoc];% location of center of fixation cross
 
 % Prepare response variables
 trialRT                 = nan;
 trialAcc                = nan;
+sceneChoice             = nan;
 
 % Timing Points
 fixationOnset           = nan;
@@ -44,9 +43,19 @@ respToBeMade= true;
 noResponse  = true;
 
 % Timing in frames
-fixationDur  = round(myVar.fixationTime/Scr.ifi);                         % Duration of Fixation;
-exploreDur   = round(myVar.exploreTime /Scr.ifi);                         % Duration of Exploration time
-feedbackDur  = round(myVar.feedbackTime/Scr.ifi);                         % Feedback displayed for 500 ms
+if tr == 1
+    ShowCursor(1)
+    fixationDur  = round(myVar.fixationTime/Scr.ifi);                        % Duration of Fixation is longer if it's the first trial (gives subject time to move cursor/eyes to center)
+else
+    fixationDur = round(  (myVar.ITI_sd*randn(1) + myVar.intertrialTime) /Scr.ifi );
+end
+
+if bl < 6
+    exploreDur     = round(myVar.train_exploreTime /Scr.ifi);                 % For early/practice blocks, make scene exploration time basically infinite
+else
+    exploreDur     = round(myVar.exploreTime /Scr.ifi);                       % Duration of explore phase
+end
+feedbackDur  = round(myVar.feedbackTime/Scr.ifi);                        % Feedback display for 250 ms
 
 % Adjust response keys
 up_right   = myVar.aKey;
@@ -67,7 +76,8 @@ dotParams = trialParams.dotParams; % get the RDP dot parameters for the current 
 % RDP-containing and empty quadrants
 
 numQuads = size(myVar.centers,1); 
-quadColors = repmat(ceil([255/2 255/2 255/2])',1,numQuads); % gray frames to cover each quadrant when they're not being inspected
+quadColors = repmat(ceil([255/2 255/2 255/2])',1,numQuads);      % gray rects to cover each quadrant when they're not being inspected
+quadFrameColors = repmat(ceil((5/8).*[255 255 255])',1,numQuads); % slightly-lighter gray frames around the covering quadrants
 
 numPatterns = size(dotParams,2);
 
@@ -113,7 +123,20 @@ end
 
 % Prepare SCREEN
 Screen('DrawLines',Scr.w,all_fix_coords,myVar.lineWidthPix,Scr.white,fixationCoord,0);
+Screen('FrameRect',Scr.w,quadFrameColors,myVar.RDMRects,myVar.frameLineWidth);
 Screen('FillRect',Scr.w,quadColors,myVar.RDMRects);
+
+UR_ptr = Screen('MakeTexture',Scr.w,myVar.UR_symbol); 
+RD_ptr = Screen('MakeTexture',Scr.w,myVar.RD_symbol); 
+DL_ptr = Screen('MakeTexture',Scr.w,myVar.DL_symbol); 
+LU_ptr = Screen('MakeTexture',Scr.w,myVar.LU_symbol); 
+
+% draw the scene symbols at the bottom of the screen
+Screen('DrawTexture', Scr.w, UR_ptr,myVar.subRect,myVar.UR_rect); 
+Screen('DrawTexture', Scr.w, RD_ptr,myVar.subRect,myVar.RD_rect); 
+Screen('DrawTexture', Scr.w, DL_ptr,myVar.subRect,myVar.DL_rect); 
+Screen('DrawTexture', Scr.w, LU_ptr,myVar.subRect,myVar.LU_rect); 
+
 vbl = Screen('Flip', Scr.w); %%synch%%
 
 if save_flag
@@ -128,8 +151,9 @@ if ~inf.dummy && bl ~= 1
     Eyelink('message', 'EYE_CHECK');
     while eyeCheck
         
-        [KeyIsDown,~, KeyCode] = KbCheck();     % In case if eye tracker lost eye
+        [~,~, KeyCode] = KbCheck();     % In case if eye tracker lost eye
         if KeyCode(myVar.escapeKey)             % EXIT key pressed to exit experiment
+            Screen('CloseAll')
             error('EXIT button!\n');
         elseif KeyCode(myVar.cKey)      % Do whole CALIBRATION
             Eyelink('stoprecording');
@@ -210,7 +234,14 @@ if trialIsOK
     
     % Synchronize screen and send messages
     Screen('DrawLines',Scr.w,all_fix_coords,myVar.lineWidthPix,Scr.white,fixationCoord,0);
+    Screen('FrameRect',Scr.w,quadFrameColors,myVar.RDMRects,myVar.frameLineWidth);
     Screen('FillRect',Scr.w,quadColors,myVar.RDMRects);
+    % draw the scene symbols at the bottom of the screen
+    Screen('DrawTexture', Scr.w, UR_ptr,myVar.subRect,myVar.UR_rect);
+    Screen('DrawTexture', Scr.w, RD_ptr,myVar.subRect,myVar.RD_rect);
+    Screen('DrawTexture', Scr.w, DL_ptr,myVar.subRect,myVar.DL_rect);
+    Screen('DrawTexture', Scr.w, LU_ptr,myVar.subRect,myVar.LU_rect);
+
     vbl = Screen('Flip', Scr.w);    % SCREEN SYNCH.
     fixationOnset = vbl;             %%%%TIME%%%%%%%
     
@@ -218,20 +249,45 @@ if trialIsOK
     
     for fixationFlips = 1:fixationDur-1
         %%%%%%%%%%%%%%I.Present the Fixation point
+        
+        [~,~, KeyCode] = KbCheck();     % In case if eye tracker lost eye
+        if KeyCode(myVar.escapeKey)             % EXIT key pressed to exit experiment
+            Screen('CloseAll')
+            error('EXIT button!\n');
+        end
+        
         Screen('DrawLines',Scr.w,all_fix_coords,myVar.lineWidthPix,Scr.white,fixationCoord,0);
+        Screen('FrameRect',Scr.w,quadFrameColors,myVar.RDMRects,myVar.frameLineWidth);
         Screen('FillRect',Scr.w,quadColors,myVar.RDMRects);
+        % draw the scene symbols at the bottom of the screen
+        Screen('DrawTexture', Scr.w, UR_ptr,myVar.subRect,myVar.UR_rect);
+        Screen('DrawTexture', Scr.w, RD_ptr,myVar.subRect,myVar.RD_rect);
+        Screen('DrawTexture', Scr.w, DL_ptr,myVar.subRect,myVar.DL_rect);
+        Screen('DrawTexture', Scr.w, LU_ptr,myVar.subRect,myVar.LU_rect);
+        
         DrawFormattedText(Scr.w,'Please Bring the Cursor to the Center of the Fixation Cross!','center',Scr.wRect(4)*0.95,[255 255 255]);
+        
         vbl = Screen('Flip', Scr.w, vbl + (Scr.waitframes - 0.5) * Scr.ifi);
+        
         if grab_flag && save_flag
             tmp_img = Screen('GetImage',Scr.w);
             tmp_img = tmp_img(1:2:end,1:2:end,:); % downsample by a factor of 2 to save space
             trial_video = cat(4,trial_video,tmp_img);
         end
         grab_flag = ~grab_flag;
-
-        [mouse_x,mouse_y] = GetMouse(Scr.w);
         
-        if sqrt(sum(([mouse_x,mouse_y] - fixationCoord).^2)) <= inf.eyeWindow
+        if inf.dummy
+            [pos_x,pos_y] = GetMouse(Scr.w);
+            %             else
+            % check for position of eyes
+            %                 evt = Eyelink('NewestFloatSample'); % take EyePosition
+            %                 pos_x = evt.gx(inf.eye +1);
+            %                 pos_y = evt.gy(inf.eye +1);
+        end
+                
+            
+        
+        if sqrt(sum(([pos_x,pos_y] - fixationCoord).^2)) <= inf.eyeWindow * Scr.pixelsperdegree
             trialIsOK = true;
         else
             trialIsOK = false;
@@ -250,13 +306,35 @@ if trialIsOK
         
         while and(((KeyIsDown~=1) && noResponse),exploreFlips < exploreDur)
             
-            Screen('DrawLines',Scr.w,all_fix_coords,myVar.lineWidthPix,Scr.white,fixationCoord,0);
-            DrawFormattedText(Scr.w,'Explore the scene...','center',Scr.wRect(4)*0.95,[255 255 255]);
-
-            [mouse_x,mouse_y] = GetMouse(Scr.w);
+            [~,~, KeyCode] = KbCheck();     % In case if eye tracker lost eye
+            if KeyCode(myVar.escapeKey)             % EXIT key pressed to exit experiment
+                Screen('CloseAll')
+                error('EXIT button!\n');   
+            end
             
-            quadrant_idx = sqrt(sum( ([mouse_x,mouse_y] - myVar.centers).^2,2)) <= myVar.gazeWindow;
-            %replaced with rectangular boundary conditions
+            Screen('DrawLines',Scr.w,all_fix_coords,myVar.lineWidthPix,Scr.white,fixationCoord,0);
+            Screen('FrameRect',Scr.w,quadFrameColors,myVar.RDMRects,myVar.frameLineWidth);
+            Screen('FillRect',Scr.w,quadColors,myVar.RDMRects);
+            % draw the scene symbols at the bottom of the screen
+            Screen('DrawTexture', Scr.w, UR_ptr,myVar.subRect,myVar.UR_rect);
+            Screen('DrawTexture', Scr.w, RD_ptr,myVar.subRect,myVar.RD_rect);
+            Screen('DrawTexture', Scr.w, DL_ptr,myVar.subRect,myVar.DL_rect);
+            Screen('DrawTexture', Scr.w, LU_ptr,myVar.subRect,myVar.LU_rect);
+            
+            DrawFormattedText(Scr.w,'Explore the scene...','center',Scr.wRect(4)*0.95,[255 255 255]);
+            
+            if inf.dummy
+                [pos_x,pos_y] = GetMouse(Scr.w);
+%             else
+                % check for position of eyes
+%                 evt = Eyelink('NewestFloatSample'); % take EyePosition
+%                 pos_x = evt.gx(inf.eye +1);
+%                 pos_y = evt.gy(inf.eye +1);
+            end
+                
+            
+            quadrant_idx = sqrt(sum( ([pos_x,pos_y] - myVar.centers).^2,2)) <= myVar.gazeWindow;
+            %replace with rectangular boundary conditions
             
             if any(quadrant_idx)
                 
@@ -269,13 +347,16 @@ if trialIsOK
                     Screen('DrawDots', Scr.w, dotData(patt_id_temp).dotPos, dotData(patt_id_temp).size, [255 255 255], [0 0], dotData(patt_id_temp).dotType);
                 end
                 
-                remaining_quadrants = ~ismember(1:numQuads,rev_quadrant); % this yields the logical indices for the remaining, non-revealed quadrants for the following
-                % 'FillRect' command
+                remaining_quadrants = ~ismember(1:numQuads,rev_quadrant); % this yields the logical indices for the remaining, non-revealed quadrants 
+                % for the following 'FillRect' command
 
                 Screen('FillRect',Scr.w,quadColors(:,remaining_quadrants),myVar.RDMRects(:,remaining_quadrants))
-                
+                Screen('FrameRect',Scr.w,quadFrameColors(:,remaining_quadrants),myVar.RDMRects(:,remaining_quadrants),myVar.frameLineWidth);
+
             else
                 Screen('FillRect',Scr.w,quadColors,myVar.RDMRects)
+                Screen('FrameRect',Scr.w,quadFrameColors,myVar.RDMRects,myVar.frameLineWidth);
+
             end
             
             vbl = Screen('Flip',Scr.w,vbl + (Scr.waitframes - 0.5) * Scr.ifi);
@@ -297,27 +378,49 @@ if trialIsOK
             [KeyIsDown,endRTRaw, KeyCodeRaw] = KbCheck();
             if (KeyIsDown==1) && respToBeMade
                 if KeyCodeRaw(KbName('ESCAPE'))  % EXIT key pressed to exit experiment
+                    Screen('CloseAll')
                     error('EXIT button!\n');
                 else
                     if any(KeyCodeRaw([up_right,right_down,down_left,left_up]))                       
                         trialRT = endRTRaw - exploreOnset; % save RT!!!!
-                        if KeyCodeRaw(up_right) && trialParams.scene == 1
-                            trialAcc = 1;
-                        elseif KeyCodeRaw(right_down) && trialParams.scene == 2
-                            trialAcc = 1;
-                        elseif KeyCodeRaw(down_left) && trialParams.scene == 3
-                            trialAcc = 1;
-                        elseif KeyCodeRaw(left_up) && trialParams.scene == 4
-                            trialAcc = 1;
+                        noResponse = false;
+                        if keyCodeRaw(up_right)
+                            sceneChoice = 1;
+                            if trialParams.scene == 1
+                                trialAcc = 1;
+                            else
+                                trialAcc = 0;
+                            end
+                        elseif KeyCodeRaw(right_down)
+                            sceneChoice = 2;
+                            if trialParams.scene == 2
+                                trialAcc = 1;
+                            else
+                                trialAcc = 0;
+                            end
+                        elseif KeyCodeRaw(down_left) 
+                            sceneChoice = 3;
+                            if trialParams.scene == 3
+                                trialAcc = 1;
+                            else
+                                trialAcc = 0;
+                            end
+                        elseif KeyCodeRaw(left_up)
+                            sceneChoice = 4;
+                            if trialParams.scene == 4
+                                trialAcc = 1;
+                            else
+                                trialAcc = 0;
+                            end
                         else
-                            trialAcc = 0;
+                            trialAcc = 0; sceneChoice = NaN;
                         end                       
                     else
-                        trialError = 1; trialIsOK = false; noResponse = false;          % END THE TRIAL
+                        trialError = 1; trialIsOK = false; noResponse = false; sceneChoice = NaN;          % END THE TRIAL
                     end
                 end
             else
-                noResponse = true;
+                noResponse = true; sceneChoice = NaN;
             end
              
         end
@@ -326,12 +429,36 @@ if trialIsOK
             
             grab_flag = true;
             for i = 1:feedbackDur 
+                
+                [~,~, KeyCode] = KbCheck();     % In case if eye tracker lost eye
+                if KeyCode(myVar.escapeKey)             % EXIT key pressed to exit experiment
+                    Screen('CloseAll')
+                    error('EXIT button!\n');
+                end
+                
+                Screen('DrawLines',Scr.w,all_fix_coords,myVar.lineWidthPix,Scr.white,fixationCoord,0);
+                Screen('FrameRect',Scr.w,quadFrameColors,myVar.RDMRects,myVar.frameLineWidth);
+                Screen('FillRect',Scr.w,quadColors,myVar.RDMRects);
+                
+                % draw the scene symbols at the bottom of the screen
+                Screen('DrawTexture', Scr.w, UR_ptr,myVar.subRect,myVar.UR_rect);
+                Screen('DrawTexture', Scr.w, RD_ptr,myVar.subRect,myVar.RD_rect);
+                Screen('DrawTexture', Scr.w, DL_ptr,myVar.subRect,myVar.DL_rect);
+                Screen('DrawTexture', Scr.w, LU_ptr,myVar.subRect,myVar.LU_rect);
+                
                 if trialAcc == 1
-                    Screen('FrameRect', Scr.w, [0 255 0], CenterRectOnPointd([0 0 50 50],fixationCoord(1),fixationCoord(2)), 5);
-                    DrawFormattedText(Scr.w,'Correct','center',Scr.wRect(4)*0.95,[0 255 ceil(255/2)]);
-                else
-                    Screen('FrameRect', Scr.w, [255 0 0], CenterRectOnPointd([0 0 50 50],fixationCoord(1),fixationCoord(2)), 5);
+                    Screen('FrameRect',Scr.w,[0 200 50],myVar.choiceRects(:,sceneChoice),myVar.frameLineWidth);
+                    DrawFormattedText(Scr.w,'Correct','center',Scr.wRect(4)*0.95,[0 200 50]);
+                elseif and(trialAcc == 0,~isnan(sceneChoice))
+                    Screen('FrameRect', Scr.w, [255 0 ceil(255/4)], myVar.choiceRects(:,sceneChoice),myVar.frameLineWidth);
                     DrawFormattedText(Scr.w,'Incorrect','center',Scr.wRect(4)*0.95,[255 0 ceil(255/4)]);
+                elseif noResponse
+                    DrawFormattedText(Scr.w,'Ran out of time!','center',Scr.wRect(4)*0.95,[255 0 ceil(255/4)]);
+                else
+                    DrawFormattedText(Scr.w,'Invalid choice','center',Scr.wRect(4)*0.95,[255 0 ceil(255/4)]);
+                    % this condition should never be met, because in this
+                    % case 'trialisOK' would be false and the whole
+                    % feedback section wouldn't even be engaged
                 end
                 vbl = Screen('Flip',Scr.w,vbl + (Scr.waitframes - 0.5) * Scr.ifi);
                 
@@ -358,6 +485,7 @@ end
 
 trial_data.trialRT = trialRT;
 trial_data.trialAcc = trialAcc;
+trial_data.sceneChoice = sceneChoice;
 trial_data.trialError = trialError;
 
 trial_data.trialSTART = trialSTART;
@@ -370,7 +498,9 @@ if save_flag
     trial_data.trial_video = trial_video;
 end
 
-Screen('CloseAll')
+% Clear screen
+Screen('DrawLines',Scr.w,all_fix_coords,myVar.lineWidthPix,Scr.white,fixationCoord,0);
+Screen('Flip', Scr.w);
 
 
         

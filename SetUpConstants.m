@@ -86,13 +86,13 @@ myVar.fKey      = KbName('f'); % Scene 4 - LEFT UP
 myVar.centerX           = Scr.width/2;
 myVar.centerY           = Scr.height/2;
 
-% myVar.centW             = 33.24;      % MacBook Pro monitor width (cm.)
-% myVar.centD             = 50;         % Distance to the screen (cm.)
-% myVar.centH             = 20.77;      % MacBook Pro monitor height (cm.)
+myVar.centW             = 33.24;      % MacBook Pro monitor width (cm.)
+myVar.centD             = 50;         % Distance to the screen (cm.)
+myVar.centH             = 20.77;      % MacBook Pro monitor height (cm.)
 
-myVar.centW             = 52.2;       % ViewPixx EEG (cm.)
-myVar.centD             = 91.0;       % Distance to the screen (cm.)
-myVar.centH             = 29.1;       % ViewPixx EEG (cm.)
+% myVar.centW             = 52.2;       % ViewPixx EEG (cm.)
+% myVar.centD             = 91.0;       % Distance to the screen (cm.)
+% myVar.centH             = 29.1;       % ViewPixx EEG (cm.)
 
 % PPD based on Visual Psyhcophysics book, Lu and Dosher
 Scr.pixelsperdegree = pi/180 * myVar.centD /myVar.centH * Scr.wRect(4);
@@ -102,7 +102,7 @@ Scr.pixelsperdegree = pi/180 * myVar.centD /myVar.centH * Scr.wRect(4);
 myVar.fixXLoc                 = myVar.centerX;                  % Define Fixation point X
 myVar.fixYLoc                 = myVar.centerY;                  % Define Fixation point Y
 myVar.RDPHalfQuad             = floor(2*Scr.pixelsperdegree);   % Define half-width in pixels, of one RDP-containing quadrant
-myVar.frameLineWidth          = floor(.15*Scr.pixelsperdegree); % Define width of frames that surround each quadrant
+myVar.frameLineWidth          = floor(.2*Scr.pixelsperdegree); % Define width of frames that surround each quadrant
 
 % IMPORTANT variables!
 inf.eyeWindow                 = 2;                              % window in visual degrees around fixation center, that subject must keep eyes within 
@@ -137,6 +137,9 @@ myVar.UR_rect = [Scr.wRect(3)/4 - 200 3*Scr.wRect(4)/4 Scr.wRect(3)/4 - 100 3*Sc
 myVar.RD_rect = [2*Scr.wRect(3)/4 - 200 3*Scr.wRect(4)/4 2*Scr.wRect(3)/4 - 100 3*Scr.wRect(4)/4 + 85];
 myVar.DL_rect = [3*Scr.wRect(3)/4 - 200 3*Scr.wRect(4)/4 3*Scr.wRect(3)/4 - 100  3*Scr.wRect(4)/4 + 85];
 myVar.LU_rect  = [Scr.wRect(3) - 200 3*Scr.wRect(4)/4 Scr.wRect(3) - 100  3*Scr.wRect(4)/4 + 85];
+
+myVar.choiceRects = [myVar.UR_rect;myVar.RD_rect;myVar.DL_rect;myVar.LU_rect]'; 
+
 
 %% Quadrant locations
 

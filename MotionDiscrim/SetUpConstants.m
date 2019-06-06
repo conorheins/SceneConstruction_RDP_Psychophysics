@@ -95,7 +95,7 @@ Scr.pixelsperdegree = pi/180 * myVar.centD /myVar.centH * Scr.wRect(4);
 myVar.fixXLoc                 = myVar.centerX;                  % Define Fixation point X
 myVar.fixYLoc                 = myVar.centerY;                  % Define Fixation point Y
 myVar.RDPHalfQuad             = floor(2*Scr.pixelsperdegree);   % Define distance in pixels, of one RDP-containing quadrant
-myVar.frameLineWidth          = floor(.15*Scr.pixelsperdegree); % Define width of frames that surround each quadrant
+myVar.frameLineWidth          = floor(.2*Scr.pixelsperdegree); % Define width of frames that surround each quadrant
 
 % IMPORTANT variables!
 inf.eyeWindow                 = 2;                              % window in visual degrees around fixation center, that subject must keep eyes within 

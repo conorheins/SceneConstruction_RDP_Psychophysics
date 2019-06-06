@@ -1,4 +1,4 @@
-function [ dotData ] = initialize_dots(dotParams,patt_id)
+function [ dotData ] = initialize_dots(dotParams,patt_id,ifi,ppd)
 % function dotData = initialize_dots(dotParams)
 %INITIALIZE_DOTS Initializes data (positions, directions, coherent indices,
 %etc.) for a single RDP with pattern index patt_id, and returns this data in a dotData structure
@@ -15,11 +15,15 @@ coh_idx = rand(1,dotParams(patt_id).nDots) < dotParams(patt_id).cohers/100;
 % initialize motion vectors of all dots to four orthogonal random directions 
 rand_directions = 90.*randi(4,1,dotParams(patt_id).nDots) .* pi/180;
 
-dx = dotParams(patt_id).speeds*sin(rand_directions);
-dy = dotParams(patt_id).speeds*cos(rand_directions);
+% have to convert speed parameter into orthogonal updates in x and y directions
+% and also have to convert from visual degrees to pixels  
+% and have to multiply by interframe interval to get it into flip-wise update
+speed_dxy = ifi * ppd * sqrt( (dotParams(patt_id).speeds.^2)./2 ); 
+dx = speed_dxy*sin(rand_directions);
+dy = speed_dxy*cos(rand_directions);
 
-dx(coh_idx) = dotParams(patt_id).speeds*sin(dotParams(patt_id).directions * pi/180);
-dy(coh_idx) = dotParams(patt_id).speeds*cos(dotParams(patt_id).directions * pi/180);
+dx(coh_idx) = speed_dxy*sin(dotParams(patt_id).directions * pi/180);
+dy(coh_idx) = speed_dxy*cos(dotParams(patt_id).directions * pi/180);
 
 dotData.dxdy = [dx;dy];
 

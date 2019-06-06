@@ -28,7 +28,7 @@ try
     debug_mode_flag = false;
     [Scr]               = InitializeWindow(inf,scrNum,debug_mode_flag);        % Turn on Screen
     
-    [inst]              = Instructions_RDP(inf,Scr);     % Load pictures with instructions
+    [inst]              = Instructions_SC(inf,Scr);     % Load pictures with instructions
     
     [Scr,inf,myVar]     = SetUpConstants(Scr,inf);        % setUp VARIABLES
     
@@ -70,9 +70,24 @@ try
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         tr = 1;
         while tr <= length(block(bl).trials)
-%             [inf,block,el,tr] = RunSingleTrial(Scr,inf,myVar,el,bl,tr,block,block(bl).trials(tr));
-%             [inf,block,el,tr] = RunTrial(Scr,inf,myVar,el,bl,tr,block,block(bl).trials(tr),false);
-            [trial_data] = RunTrial_SC(Scr,inf,myVar,el,bl,tr,block,block(bl).trials(tr),false);
+            
+            [inf,trialData,el] = RunTrial_SC(Scr,inf,myVar,el,bl,tr,block,block(bl).trials(tr),false);
+            
+             % accumulate data into matrix
+            dataArray = [dataArray;...
+                [bl, tr, block(bl).trials(tr).scene_ID, block(bl).trials(tr).config, block(bl).trials(tr).coher, trialData.trialRT, trialData.trialAcc, trialData.sceneChoice]];
+            
+            block(bl).trials(tr).trialRT = trialData.trialRT;
+            block(bl).trials(tr).trialAcc= trialData.trialAcc;
+            block(bl).trials(tr).sceneChoice = trialData.sceneChoice;
+            block(bl).trials(tr).trialError = trialData.trialError;
+            
+            block(bl).trials(tr).trialSTART = trialData.trialSTART;
+            block(bl).trials(tr).fixationOnset = trialData.fixationOnset;
+            block(bl).trials(tr).exploreOnset = trialData.exploreOnset;
+            block(bl).trials(tr).feedbackOnset = trialData.feedbackOnset;
+            block(bl).trials(tr).trialEND = trialData.trialEND;
+
 
             tr = tr+1;
         end
@@ -87,11 +102,11 @@ try
         inf.experimentEnd = clock;  % record when the experiment ended
         if ~inf.isTestMode
             cd(inf.rootSub);
-            fName = strcat(inf.subNo,'__allData.mat');
+            fName = sprintf('Subject%d__allData.mat',inf.subNo);
             save(fName);
         else
             cd(inf.rootTest);
-            fName = strcat('test',num2str(inf.subNo),'__allData.mat');
+            fName = sprintf('test%d__allData.mat',inf.subNo);
             save(fName);
         end
         cd(Scr.rootDir);
@@ -102,25 +117,25 @@ try
     %%%%%%%%%%%%%%%%%%%%
     
     %% Saying goodbye
-    [inf] = DataPreProcessing(inf,myVar,block);
-    
-    message = sprintf('You won %g euros!\n Your accuracy was %d percent\nPress SPACE', inf.Reward,(round(inf.accuracy*100)));
-    DrawFormattedText(Scr.w, message, 'center', 'center', Scr.black, 40,[],[],1.5); delete col.mat
-    Screen('Flip', Scr.w);      % Update the SCR to show the instruction text:
-    KbStrokeWait;               % Wait for mouse click:
-    
-    message = 'Thank you for participation!\nWait for further instructions.';
-    DrawFormattedText(Scr.w, message, 'center', 'center', Scr.black, 40,[],[],1.5);
-    Screen('Flip', Scr.w);
-    GetClicks;
-    KbStrokeWait;
-    
-    % Necessary procedure for committee
-    CalDoc_Reward(Scr,inf);
-    
-    %% PLOT THE DATA
-    array2table(inf.NumTrBl,'VariableNames',{'V1' 'V2' 'S1' 'S2' 'N' 'Bl' 'Acc' 'dP'})
-    DataReadyToPlot(inf);
+%     [inf] = DataPreProcessing(inf,myVar,block);
+%     
+%     message = sprintf('You won %g euros!\n Your accuracy was %d percent\nPress SPACE', inf.Reward,(round(inf.accuracy*100)));
+%     DrawFormattedText(Scr.w, message, 'center', 'center', Scr.black, 40,[],[],1.5); delete col.mat
+%     Screen('Flip', Scr.w);      % Update the SCR to show the instruction text:
+%     KbStrokeWait;               % Wait for mouse click:
+%     
+%     message = 'Thank you for participation!\nWait for further instructions.';
+%     DrawFormattedText(Scr.w, message, 'center', 'center', Scr.black, 40,[],[],1.5);
+%     Screen('Flip', Scr.w);
+%     GetClicks;
+%     KbStrokeWait;
+%     
+%     % Necessary procedure for committee
+%     CalDoc_Reward(Scr,inf);
+%     
+%     %% PLOT THE DATA
+%     array2table(inf.NumTrBl,'VariableNames',{'V1' 'V2' 'S1' 'S2' 'N' 'Bl' 'Acc' 'dP'})
+%     DataReadyToPlot(inf);
     
     % End of the experiment:
     CleanUpExpt(inf);

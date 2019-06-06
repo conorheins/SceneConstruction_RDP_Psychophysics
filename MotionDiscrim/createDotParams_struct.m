@@ -51,7 +51,6 @@ default_dotSizes = 5;
 % default_dotTypes = 1;
 default_dotTypes = 2;
 
-
 p = inputParser;
 addRequired(p,'screenRect',@(x) isnumeric(x) && numel(x) == 4)
 numPatterns_condition = @(x) isnumeric(x) && (x >= 1) && (x <= 4); 

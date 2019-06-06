@@ -111,10 +111,11 @@ RIGHT_ptr = Screen('MakeTexture',Scr.w,myVar.RIGHT);
 DOWN_ptr = Screen('MakeTexture',Scr.w,myVar.DOWN); 
 LEFT_ptr = Screen('MakeTexture',Scr.w,myVar.LEFT); 
 
-Screen('DrawTexture', Scr.w, UP_ptr,myVar.subRect,myVar.UPrect); % draw the scene 
-Screen('DrawTexture', Scr.w, RIGHT_ptr,myVar.subRect,myVar.RIGHTrect); % draw the scene 
-Screen('DrawTexture', Scr.w, DOWN_ptr,myVar.subRect,myVar.DOWNrect); % draw the scene 
-Screen('DrawTexture', Scr.w, LEFT_ptr,myVar.subRect,myVar.LEFTrect); % draw the scene 
+% draw the direction choice symbols at the bottom of the screen
+Screen('DrawTexture', Scr.w, UP_ptr,myVar.subRect,myVar.UPrect); 
+Screen('DrawTexture', Scr.w, RIGHT_ptr,myVar.subRect,myVar.RIGHTrect); 
+Screen('DrawTexture', Scr.w, DOWN_ptr,myVar.subRect,myVar.DOWNrect); 
+Screen('DrawTexture', Scr.w, LEFT_ptr,myVar.subRect,myVar.LEFTrect); 
 
 vbl = Screen('Flip', Scr.w); %%synch%%
 
@@ -213,10 +214,12 @@ if trialIsOK
     
     % Synchronize screen and send messages
     Screen('DrawLines',Scr.w,all_fix_coords,myVar.lineWidthPix,Scr.white,fixationCoord,0);
-    Screen('DrawTexture', Scr.w, UP_ptr,myVar.subRect,myVar.UPrect); % choices
+    % draw the direction choice symbols at the bottom of the screen
+    Screen('DrawTexture', Scr.w, UP_ptr,myVar.subRect,myVar.UPrect);
     Screen('DrawTexture', Scr.w, RIGHT_ptr,myVar.subRect,myVar.RIGHTrect); 
     Screen('DrawTexture', Scr.w, DOWN_ptr,myVar.subRect,myVar.DOWNrect); 
     Screen('DrawTexture', Scr.w, LEFT_ptr,myVar.subRect,myVar.LEFTrect); 
+    
     vbl = Screen('Flip', Scr.w);    % SCREEN SYNCH.
     fixationOnset = vbl;             %%%%TIME%%%%%%%
     
@@ -232,7 +235,8 @@ if trialIsOK
         end
         
         Screen('DrawLines',Scr.w,all_fix_coords,myVar.lineWidthPix,Scr.white,fixationCoord,0);
-        Screen('DrawTexture', Scr.w, UP_ptr,myVar.subRect,myVar.UPrect); % choices
+        % draw the direction choice symbols at the bottom of the screen
+        Screen('DrawTexture', Scr.w, UP_ptr,myVar.subRect,myVar.UPrect);
         Screen('DrawTexture', Scr.w, RIGHT_ptr,myVar.subRect,myVar.RIGHTrect);
         Screen('DrawTexture', Scr.w, DOWN_ptr,myVar.subRect,myVar.DOWNrect);
         Screen('DrawTexture', Scr.w, LEFT_ptr,myVar.subRect,myVar.LEFTrect);
@@ -242,6 +246,7 @@ if trialIsOK
         end
         
         vbl = Screen('Flip', Scr.w, vbl + (Scr.waitframes - 0.5) * Scr.ifi);
+        
         if grab_flag && save_flag
             tmp_img = Screen('GetImage',Scr.w);
             tmp_img = tmp_img(1:2:end,1:2:end,:); % downsample by a factor of 2 to save space
@@ -259,7 +264,7 @@ if trialIsOK
     
     end
     
-    %% EXPLORATION ONSET
+    %% DOTS DISPLAY ONSET
     %%%%%%%%%%
     if trialIsOK
         
@@ -278,42 +283,15 @@ if trialIsOK
                 error('EXIT button!\n');   
             end
             
-%             Screen('DrawLines',Scr.w,all_fix_coords,myVar.lineWidthPix,Scr.white,fixationCoord,0);
-            Screen('DrawTexture', Scr.w, UP_ptr,myVar.subRect,myVar.UPrect); % choices
+            % draw the direction choice symbols at the bottom of the screen
+            Screen('DrawTexture', Scr.w, UP_ptr,myVar.subRect,myVar.UPrect); 
             Screen('DrawTexture', Scr.w, RIGHT_ptr,myVar.subRect,myVar.RIGHTrect);
             Screen('DrawTexture', Scr.w, DOWN_ptr,myVar.subRect,myVar.DOWNrect);
             Screen('DrawTexture', Scr.w, LEFT_ptr,myVar.subRect,myVar.LEFTrect);
-%             DrawFormattedText(Scr.w,'Explore the scene...','center',Scr.wRect(4)*0.95,[255 255 255]);
-
-%             [mouse_x,mouse_y] = GetMouse(Scr.w);
-            
-%             quadrant_idx = sqrt(sum( ([mouse_x,mouse_y] - myVar.centers).^2,2)) <= myVar.gazeWindow;
-            %replaced with rectangular boundary conditions
             
             dotData = update_dots(dotData);
             Screen('DrawDots', Scr.w, dotData.dotPos, dotData.size, [255 255 255], [0 0], dotData.dotType);
-
-            
-%             if any(quadrant_idx)
-%                 
-%                 rev_quadrant = find(quadrant_idx);
-%                 
-%                 if ismember(rev_quadrant,find(filled_quad_idx))      
-%                     patt_id_temp = filled_quad_idx(rev_quadrant);
-%                     dotData(patt_id_temp) = update_dots(dotData(patt_id_temp));                    
-%                     % draws the current dots, using position, single size argument and dotType
-%                     Screen('DrawDots', Scr.w, dotData(patt_id_temp).dotPos, dotData(patt_id_temp).size, [255 255 255], [0 0], dotData(patt_id_temp).dotType);
-%                 end
-%                 
-%                 remaining_quadrants = ~ismember(1:numQuads,rev_quadrant); % this yields the logical indices for the remaining, non-revealed quadrants for the following
-%                 % 'FillRect' command
-% 
-%                 Screen('FillRect',Scr.w,quadColors(:,remaining_quadrants),myVar.RDMRects(:,remaining_quadrants))
-%                 
-%             else
-%                 Screen('FillRect',Scr.w,quadColors,myVar.RDMRects)
-%             end
-            
+        
             vbl = Screen('Flip',Scr.w,vbl + (Scr.waitframes - 0.5) * Scr.ifi);
             
             if grab_flag && save_flag
@@ -338,9 +316,9 @@ if trialIsOK
                 else
                     if any(KeyCodeRaw([UP_choice,RIGHT_choice,DOWN_choice,LEFT_choice]))                       
                         trialRT = endRTRaw - accumOnset; % save RT!!!!
+                        noResponse = false;
                         if KeyCodeRaw(UP_choice)
                             dirResponse = 180;
-                            noResponse = false;
                             if trialParams.direction == 180
                                 trialAcc = 1; 
                             else
@@ -348,7 +326,6 @@ if trialIsOK
                             end
                         elseif KeyCodeRaw(RIGHT_choice)
                             dirResponse = 90;
-                            noResponse = false;
                             if trialParams.direction == 90
                                 trialAcc = 1;
                             else
@@ -356,7 +333,6 @@ if trialIsOK
                             end
                         elseif KeyCodeRaw(DOWN_choice)
                             dirResponse = 0;
-                            noResponse = false;
                             if trialParams.direction == 0
                                 trialAcc = 1; 
                             else
@@ -364,14 +340,13 @@ if trialIsOK
                             end
                         elseif KeyCodeRaw(LEFT_choice)
                             dirResponse = 270;
-                            noResponse = false;
                             if trialParams.direction == 270
                                 trialAcc = 1; 
                             else
                                 trialAcc = 0;
                             end
                         else
-                            trialAcc = 0; noResponse = false; dirResponse = NaN;
+                            trialAcc = 0; dirResponse = NaN;
                         end                       
                     else
                         trialError = 1; trialIsOK = false; noResponse = false; dirResponse = NaN;          % END THE TRIAL
@@ -394,7 +369,8 @@ if trialIsOK
                     error('EXIT button!\n');
                 end
                 
-                Screen('DrawTexture', Scr.w, UP_ptr,myVar.subRect,myVar.UPrect); % choices
+                % draw the direction choice symbols at the bottom of the screen
+                Screen('DrawTexture', Scr.w, UP_ptr,myVar.subRect,myVar.UPrect); 
                 Screen('DrawTexture', Scr.w, RIGHT_ptr,myVar.subRect,myVar.RIGHTrect);
                 Screen('DrawTexture', Scr.w, DOWN_ptr,myVar.subRect,myVar.DOWNrect);
                 Screen('DrawTexture', Scr.w, LEFT_ptr,myVar.subRect,myVar.LEFTrect);
