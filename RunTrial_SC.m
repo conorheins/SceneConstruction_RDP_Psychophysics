@@ -84,7 +84,7 @@ numPatterns = size(dotParams,2);
 filled_quad_idx = zeros(numQuads,1);
 for patt_id = 1:numPatterns
     dotData(patt_id) = initialize_dots(dotParams,patt_id,Scr.ifi,Scr.pixelsperdegree);
-    nearby_idx = sqrt(sum( (dotParams(patt_id).centers - myVar.centers').^2,2)) < 50;
+    nearby_idx = sqrt(sum( ( repmat(dotParams(patt_id).centers,numQuads,1) - myVar.centers').^2,2)) < 50;
     if any(nearby_idx)
         filled_quad_idx(nearby_idx) = patt_id;
     end
@@ -329,7 +329,7 @@ if trialIsOK
             end
                 
             
-            quadrant_idx = sqrt(sum( ([pos_x,pos_y] - myVar.centers').^2,2)) <= myVar.gazeWindow;
+            quadrant_idx = sqrt(sum( ( repmat([pos_x,pos_y],numQuads,1) - myVar.centers').^2,2)) <= myVar.gazeWindow;
             %replace with rectangular boundary conditions
             
             if any(quadrant_idx)

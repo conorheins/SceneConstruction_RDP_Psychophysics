@@ -86,13 +86,13 @@ myVar.fKey      = KbName('f'); % Scene 4 - LEFT UP
 myVar.centerX           = Scr.width/2;
 myVar.centerY           = Scr.height/2;
 
-myVar.centW             = 33.24;      % MacBook Pro monitor width (cm.)
-myVar.centD             = 50;         % Distance to the screen (cm.)
-myVar.centH             = 20.77;      % MacBook Pro monitor height (cm.)
+% myVar.centW             = 33.24;      % MacBook Pro monitor width (cm.)
+% myVar.centD             = 50;         % Distance to the screen (cm.)
+% myVar.centH             = 20.77;      % MacBook Pro monitor height (cm.)
 
-% myVar.centW             = 52.2;       % ViewPixx EEG (cm.)
-% myVar.centD             = 91.0;       % Distance to the screen (cm.)
-% myVar.centH             = 29.1;       % ViewPixx EEG (cm.)
+myVar.centW             = 52.2;       % ViewPixx EEG (cm.)
+myVar.centD             = 91.0;       % Distance to the screen (cm.)
+myVar.centH             = 29.1;       % ViewPixx EEG (cm.)
 
 % PPD based on Visual Psyhcophysics book, Lu and Dosher
 Scr.pixelsperdegree = pi/180 * myVar.centD /myVar.centH * Scr.wRect(4);
@@ -106,8 +106,12 @@ myVar.frameLineWidth          = floor(.2*Scr.pixelsperdegree); % Define width of
 
 % IMPORTANT variables!
 inf.eyeWindow                 = 2;                              % window in visual degrees around fixation center, that subject must keep eyes within 
-Scr.cueDistance               = floor(9*Scr.pixelsperdegree);   % Distance of quadrants from the screen center
-Scr.waitframes                = 1;                              % Numer of frames to wait before re-drawing (Used in Threshold)
+Scr.cueDistance               = floor(6*Scr.pixelsperdegree);   % Distance of quadrants from the screen center
+Scr.waitframes                = 1;                              % Number of frames to wait before re-drawing (Used in Threshold)
+Scr.choice_distance           = floor(Scr.pixelsperdegree.*[ [-10, -6, 4, 8]; [-8, -4, 6, 10] ]);  % distance of choice symbols from fixation center (in horizontal plane)
+                                                                                                    % first row is leftmost displacements, second row is rightmost displacements
+Scr.vertdisplace              = floor(2*Scr.pixelsperdegree);   % vertical displacements, second row is rightmost displacements                                                              
+
 
 myVar.fixationTime      = 5;    % time in seconds of fixation window (basically, participant has to hold gaze / mouse position in center for 5 seconds before proceeding)
 myVar.exploreTime       = 15;   % time in seconds to explore the scene 
@@ -134,10 +138,10 @@ myVar.DL_symbol  = imread('images/DL.png');
 myVar.LU_symbol  = imread('images/LU.png');
 
 myVar.subRect = [200 80 700 440];
-myVar.UR_rect = [Scr.wRect(3)/4 - 100 Scr.wRect(4)/2-50 Scr.wRect(3)/4 Scr.wRect(4)/2 + 50];
-myVar.RD_rect = [2*Scr.wRect(3)/4 - 250 Scr.wRect(4)/2-50 2*Scr.wRect(3)/4 - 150 Scr.wRect(4)/2 + 50];
-myVar.DL_rect = [3*Scr.wRect(3)/4 - 150 Scr.wRect(4)/2-50 3*Scr.wRect(3)/4 - 50  Scr.wRect(4)/2 + 50];
-myVar.LU_rect  = [Scr.wRect(3) - 300 Scr.wRect(4)/2-50 Scr.wRect(3) - 200  Scr.wRect(4)/2 + 50];
+myVar.UR_rect = [myVar.centerX + Scr.choice_distance(1,1) myVar.centerY - Scr.vertdisplace/2 myVar.centerX + Scr.choice_distance(2,1) myVar.centerY + Scr.vertdisplace/2];
+myVar.RD_rect = [myVar.centerX + Scr.choice_distance(1,2) myVar.centerY - Scr.vertdisplace/2 myVar.centerX + Scr.choice_distance(2,2) myVar.centerY + Scr.vertdisplace/2];
+myVar.DL_rect = [myVar.centerX + Scr.choice_distance(1,3) myVar.centerY - Scr.vertdisplace/2 myVar.centerX + Scr.choice_distance(2,3) myVar.centerY + Scr.vertdisplace/2];
+myVar.LU_rect = [myVar.centerX + Scr.choice_distance(1,4) myVar.centerY - Scr.vertdisplace/2 myVar.centerX + Scr.choice_distance(2,4) myVar.centerY + Scr.vertdisplace/2];
 
 myVar.choiceRects = [myVar.UR_rect;myVar.RD_rect;myVar.DL_rect;myVar.LU_rect]'; 
 
