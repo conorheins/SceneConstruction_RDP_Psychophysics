@@ -111,7 +111,8 @@ Scr.waitframes                = 1;                              % Numer of frame
 
 myVar.fixationTime      = 5;    % time in seconds of fixation window (basically, participant has to hold gaze / mouse position in center for 5 seconds before proceeding)
 myVar.exploreTime       = 15;   % time in seconds to explore the scene 
-myVar.train_exploreTime = 100;  % time in seconds to explore the scene in practice blocks
+% myVar.train_exploreTime = 100;  % time in seconds to explore the scene in practice blocks
+myVar.train_exploreTime = 15;  % time in seconds to explore the scene in practice blocks -- for debugging purposes
 myVar.feedbackTime      = 1;    % the length in seconds of the feedback window
 myVar.intertrialTime    = 2;    % time in seconds of fixation window for all other trials 
 myVar.ITI_sd            = 0.5;  % standard deviation in seconds of fixation window for all other trials

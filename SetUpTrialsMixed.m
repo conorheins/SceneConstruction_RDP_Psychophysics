@@ -17,7 +17,7 @@ coherz = [0 12.8 25.6 36 51.2 100]';
 factor.RDMcohers      = 2; % the number of values that a given RDP can take, per level/factor
 factor.scenes         = 2; % the number of values that a given RDP can take, per level/factor
 
-numQuads = size(myVar.RDMrects,2);
+numQuads = size(myVar.RDMRects,2);
 
 config_counter = 0;
 for quad1 = 1:numQuads
@@ -31,7 +31,7 @@ end
 
 factor.RDMconfigs = config_counter;
 
-RDM.cohers = zeros(numCoherLevels,factor.RDMcohers); 
+RDM.cohers = zeros(length(coherz),factor.RDMcohers); 
 for coh_i = 1:length(coherz)
     RDM.cohers(coh_i,:) = [coherz(coh_i) coherz(coh_i)];
 end
@@ -66,7 +66,7 @@ for bl = 1:numBlocks
 end
 
 %% STIMULI GENERATOR
-for b = 1:factor.block
+for b = 1:numBlocks
 
     %-------------PreDefineVarisbles-------------%
     %Resp
@@ -89,7 +89,9 @@ for b = 1:factor.block
     [block(b).trials.trialEND]          = deal(nan);
     
     randomOrder = randperm(size(block(b).trials,2)); % create random order from that.
-    block(b).trials = block(b).trials(randomOrder);
+%     block(b).trials = block(b).trials(randomOrder);
+
+    block(b).trials = block(b).trials(1:10); % for testing purposes
     
     % [~,randomOrder] = CheckShuffle([block(b).trials.conSort],2); %Advanced check by Adam
     % block(b).trials = block(b).trials(randomOrder);

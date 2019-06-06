@@ -39,7 +39,7 @@ trialEND                = nan;
 % Prepare variables for stimulation.
 trialError  = 0;
 trialIsOK   = true;             % Check eye position during trial
-respToBeMade= true;
+respToBeMade= true;aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 noResponse  = true;
 
 % Timing in frames
@@ -285,6 +285,8 @@ if trialIsOK
             %                 pos_y = evt.gy(inf.eye +1);
         end
                 
+            
+        
         if sqrt(sum(([pos_x,pos_y] - fixationCoord).^2)) <= inf.eyeWindow * Scr.pixelsperdegree
             trialIsOK = true;
         else
@@ -306,7 +308,7 @@ if trialIsOK
             
             [~,~, KeyCode] = KbCheck();     % In case if eye tracker lost eye
             if KeyCode(myVar.escapeKey)             % EXIT key pressed to exit experiment
-                Screen('CloseAll');
+                Screen('CloseAll')
                 error('EXIT button!\n');   
             end
             
@@ -412,12 +414,11 @@ if trialIsOK
                             trialAcc = 0; sceneChoice = NaN;
                         end                       
                     else
-%                         trialError = 1; trialIsOK = false; noResponse = false; sceneChoice = NaN;          % END THE TRIAL
-                        trialError = 1; noResponse = false; sceneChoice = NaN;          % END THE TRIAL
+                        trialError = 1; trialIsOK = false; noResponse = false; sceneChoice = NaN;          % END THE TRIAL
                     end
                 end
             else
-                noResponse = true; sceneChoice = NaN; % ran out of time
+                noResponse = true; sceneChoice = NaN;
             end
              
         end
@@ -452,7 +453,10 @@ if trialIsOK
                 elseif noResponse
                     DrawFormattedText(Scr.w,'Ran out of time!','center',Scr.wRect(4)*0.95,[255 0 ceil(255/4)]);
                 else
-                    DrawFormattedText(Scr.w,'Invalid response!','center',Scr.wRect(4)*0.95,[255 0 ceil(255/4)]);
+                    DrawFormattedText(Scr.w,'Invalid choice','center',Scr.wRect(4)*0.95,[255 0 ceil(255/4)]);
+                    % this condition should never be met, because in this
+                    % case 'trialisOK' would be false and the whole
+                    % feedback section wouldn't even be engaged
                 end
                 vbl = Screen('Flip',Scr.w,vbl + (Scr.waitframes - 0.5) * Scr.ifi);
                 
@@ -494,8 +498,6 @@ end
 
 % Clear screen
 Screen('DrawLines',Scr.w,all_fix_coords,myVar.lineWidthPix,Scr.white,fixationCoord,0);
-Screen('FrameRect',Scr.w,quadFrameColors,myVar.RDMRects,myVar.frameLineWidth);
-Screen('FillRect',Scr.w,quadColors,myVar.RDMRects);
 Screen('Flip', Scr.w);
 
 
