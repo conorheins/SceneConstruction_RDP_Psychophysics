@@ -72,7 +72,7 @@ try
         while tr <= length(block(bl).trials)
 %             [inf,block,el,tr] = RunSingleTrial(Scr,inf,myVar,el,bl,tr,block,block(bl).trials(tr));
 %             [inf,block,el,tr] = RunTrial(Scr,inf,myVar,el,bl,tr,block,block(bl).trials(tr),false);
-            [trial_data] = RunTrial(Scr,inf,myVar,el,bl,tr,block,block(bl).trials(tr),false);
+            [trial_data] = RunTrial_SC(Scr,inf,myVar,el,bl,tr,block,block(bl).trials(tr),false);
 
             tr = tr+1;
         end

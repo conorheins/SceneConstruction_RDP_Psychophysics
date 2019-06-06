@@ -1,7 +1,25 @@
-function trial_data = RunTrial(Scr,inf,myVar,el,bl,tr,block,trialParams,save_flag)
+function trial_data = RunTrial_SC(Scr,inf,myVar,el,bl,tr,block,trialParams,save_flag)
 
-% WIP -- a basic trial script that runs through a 'gaze-contingent'
-% unveiling of particular quadrants ('gaze' is really just cursor position)
+% Script for a single trial of the scene construction paradigm
+
+%% INPUTS:
+% - Scr:         structure containing information about the screen (e.g. Scr.wRect
+%                contains dimensions of the screen, Scr.w contains the window pointer,
+%                etc.)
+% - inf:         structure containing general, invariant information (e.g.
+%                inf.dummy indicates whether experiment is being run with/without
+%                eyetracking
+% - myVar:       structure containing constants related to presentation of stimuli, trial-structure,
+%                timing, etc.
+% - el:          EyeLink related variable
+% - bl:          index of current block
+% - tr:          index of current trial
+% - block:       structure containing block- and trial-specific experimental (independent) and behavioral (dependent) measures, e.g
+%                parameters of stimuli to display on block(bl).trial(tr), participant's reaction time
+%                on block(bl).trial(tr).
+% - trialParams: structure containing trial-specific experimental (independent) and behavioral (dependent) measures
+% - save_flag:   Boolean true/false flag (1 / 0) indicating whether to save
+%                the frames of the trial into a video
 
 trialSTART = GetSecs;                                                      %%%%TIME%%%%%%%
 

@@ -1,11 +1,27 @@
-function [inf,trial_data,el] = RunTrial(Scr,inf,myVar,el,bl,tr,block,trialParams,save_flag)
+function [inf,trial_data,el] = RunTrial_MD(Scr,inf,myVar,el,bl,tr,block,trialParams,save_flag)
 
-% WIP -- a basic trial script that runs through a motion direction
-% detection paradigm
+% Script for a single trial of the motion-direction discrimination paradigm
+
+%% INPUTS:
+% - Scr:         structure containing information about the screen (e.g. Scr.wRect
+%                contains dimensions of the screen, Scr.w contains the window pointer,
+%                etc.)
+% - inf:         structure containing general, invariant information (e.g.
+%                inf.dummy indicates whether experiment is being run with/without
+%                eyetracking
+% - myVar:       structure containing constants related to presentation of stimuli, trial-structure,
+%                timing, etc.
+% - el:          EyeLink related variable
+% - bl:          index of current block
+% - tr:          index of current trial
+% - block:       structure containing block- and trial-specific experimental (independent) and behavioral (dependent) measures, e.g
+%                parameters of stimuli to display on block(bl).trial(tr), participant's reaction time
+%                on block(bl).trial(tr).
+% - trialParams: structure containing trial-specific experimental (independent) and behavioral (dependent) measures
+% - save_flag:   Boolean true/false flag (1 / 0) indicating whether to save
+%                the frames of the trial into a video
 
 trialSTART = GetSecs;                                                      %%%%TIME%%%%%%%
-
-% variables to be built into function arguments (e.g. inf or MyVar) at some point:
 
 fixationCoord = [myVar.fixXLoc myVar.fixYLoc];% location of center of fixation cross
 

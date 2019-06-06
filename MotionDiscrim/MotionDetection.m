@@ -64,7 +64,7 @@ try
         tr = 1;
         while tr <= length(block(bl).trials)
             
-            [inf,trialData,el] = RunTrial(Scr,inf,myVar,el,bl,tr,block,block(bl).trials(tr),false);
+            [inf,trialData,el] = RunTrial_MD(Scr,inf,myVar,el,bl,tr,block,block(bl).trials(tr),false);
             
             % accumulate data into matrix
             dataArray = [dataArray;...
