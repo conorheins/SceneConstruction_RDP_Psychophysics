@@ -317,7 +317,7 @@ if trialIsOK
             Screen('DrawTexture', Scr.w, DL_ptr,myVar.subRect,myVar.DL_rect);
             Screen('DrawTexture', Scr.w, LU_ptr,myVar.subRect,myVar.LU_rect);
             
-            DrawFormattedText(Scr.w,'Explore the scene...','center',Scr.wRect(4)*0.95,[255 255 255]);
+            DrawFormattedText(Scr.w,'Explore the scene...','center',Scr.wRect(4)-1.0*Scr.pixelsperdegree,[255 255 255]);
             
             if inf.dummy
                 [pos_x,pos_y] = GetMouse(Scr.w);
