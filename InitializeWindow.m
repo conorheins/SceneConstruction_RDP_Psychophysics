@@ -95,7 +95,7 @@ Screen('BlendFunction', Scr.w, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 % input:
 Screen('TextFont',Scr.w, 'Arial');
 Screen('TextStyle', Scr.w, 1);
-Screen('TextSize',Scr.w, 32);
+Screen('TextSize',Scr.w, 26);
 
 % Set priority for script execution to realtime priority:
 priorityLevel=MaxPriority(Scr.w);

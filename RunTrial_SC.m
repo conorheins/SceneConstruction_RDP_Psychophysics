@@ -122,10 +122,6 @@ if ~inf.dummy && bl ~= 1
 end
 
 % Prepare SCREEN
-Screen('DrawLines',Scr.w,all_fix_coords,myVar.lineWidthPix,Scr.white,fixationCoord,0);
-Screen('FrameRect',Scr.w,quadFrameColors,myVar.RDMRects,myVar.frameLineWidth);
-Screen('FillRect',Scr.w,quadColors,myVar.RDMRects);
-
 UR_ptr = Screen('MakeTexture',Scr.w,myVar.UR_symbol); 
 RD_ptr = Screen('MakeTexture',Scr.w,myVar.RD_symbol); 
 DL_ptr = Screen('MakeTexture',Scr.w,myVar.DL_symbol); 
@@ -136,6 +132,10 @@ Screen('DrawTexture', Scr.w, UR_ptr,myVar.subRect,myVar.UR_rect);
 Screen('DrawTexture', Scr.w, RD_ptr,myVar.subRect,myVar.RD_rect); 
 Screen('DrawTexture', Scr.w, DL_ptr,myVar.subRect,myVar.DL_rect); 
 Screen('DrawTexture', Scr.w, LU_ptr,myVar.subRect,myVar.LU_rect); 
+
+Screen('DrawLines',Scr.w,all_fix_coords,myVar.lineWidthPix,Scr.white,fixationCoord,0);
+Screen('FillRect',Scr.w,quadColors,myVar.RDMRects);
+Screen('FrameRect',Scr.w,quadFrameColors,myVar.RDMRects,myVar.frameLineWidth);
 
 vbl = Screen('Flip', Scr.w); %%synch%%
 
@@ -233,15 +233,17 @@ if trialIsOK
     %%%%%%%%%%%
     
     % Synchronize screen and send messages
-    Screen('DrawLines',Scr.w,all_fix_coords,myVar.lineWidthPix,Scr.white,fixationCoord,0);
-    Screen('FrameRect',Scr.w,quadFrameColors,myVar.RDMRects,myVar.frameLineWidth);
-    Screen('FillRect',Scr.w,quadColors,myVar.RDMRects);
+   
     % draw the scene symbols at the bottom of the screen
     Screen('DrawTexture', Scr.w, UR_ptr,myVar.subRect,myVar.UR_rect);
     Screen('DrawTexture', Scr.w, RD_ptr,myVar.subRect,myVar.RD_rect);
     Screen('DrawTexture', Scr.w, DL_ptr,myVar.subRect,myVar.DL_rect);
     Screen('DrawTexture', Scr.w, LU_ptr,myVar.subRect,myVar.LU_rect);
 
+    Screen('DrawLines',Scr.w,all_fix_coords,myVar.lineWidthPix,Scr.white,fixationCoord,0);
+    Screen('FrameRect',Scr.w,quadFrameColors,myVar.RDMRects,myVar.frameLineWidth);
+    Screen('FillRect',Scr.w,quadColors,myVar.RDMRects);
+    
     vbl = Screen('Flip', Scr.w);    % SCREEN SYNCH.
     fixationOnset = vbl;             %%%%TIME%%%%%%%
     
@@ -256,16 +258,18 @@ if trialIsOK
             error('EXIT button!\n');
         end
         
-        Screen('DrawLines',Scr.w,all_fix_coords,myVar.lineWidthPix,Scr.white,fixationCoord,0);
-        Screen('FrameRect',Scr.w,quadFrameColors,myVar.RDMRects,myVar.frameLineWidth);
-        Screen('FillRect',Scr.w,quadColors,myVar.RDMRects);
+       
         % draw the scene symbols at the bottom of the screen
         Screen('DrawTexture', Scr.w, UR_ptr,myVar.subRect,myVar.UR_rect);
         Screen('DrawTexture', Scr.w, RD_ptr,myVar.subRect,myVar.RD_rect);
         Screen('DrawTexture', Scr.w, DL_ptr,myVar.subRect,myVar.DL_rect);
         Screen('DrawTexture', Scr.w, LU_ptr,myVar.subRect,myVar.LU_rect);
         
-        DrawFormattedText(Scr.w,'Please Bring the Cursor to the Center of the Fixation Cross!','center',Scr.wRect(4)*0.95,[255 255 255]);
+        DrawFormattedText(Scr.w,'Please Fixate on the Cross!','center',Scr.wRect(4)-0.1*Scr.pixelsperdegree,[255 255 255]);
+        
+        Screen('DrawLines',Scr.w,all_fix_coords,myVar.lineWidthPix,Scr.white,fixationCoord,0);
+        Screen('FillRect',Scr.w,quadColors,myVar.RDMRects);
+        Screen('FrameRect',Scr.w,quadFrameColors,myVar.RDMRects,myVar.frameLineWidth);
         
         vbl = Screen('Flip', Scr.w, vbl + (Scr.waitframes - 0.5) * Scr.ifi);
         
@@ -317,7 +321,7 @@ if trialIsOK
             Screen('DrawTexture', Scr.w, DL_ptr,myVar.subRect,myVar.DL_rect);
             Screen('DrawTexture', Scr.w, LU_ptr,myVar.subRect,myVar.LU_rect);
             
-            DrawFormattedText(Scr.w,'Explore the scene...','center',Scr.wRect(4)-1.0*Scr.pixelsperdegree,[255 255 255]);
+            DrawFormattedText(Scr.w,'Explore the scene...','center',Scr.wRect(4)-0.1*Scr.pixelsperdegree,[255 255 255]);
             
             if inf.dummy
                 [pos_x,pos_y] = GetMouse(Scr.w);
@@ -432,11 +436,7 @@ if trialIsOK
                     Screen('CloseAll')
                     error('EXIT button!\n');
                 end
-                
-                Screen('DrawLines',Scr.w,all_fix_coords,myVar.lineWidthPix,Scr.white,fixationCoord,0);
-                Screen('FrameRect',Scr.w,quadFrameColors,myVar.RDMRects,myVar.frameLineWidth);
-                Screen('FillRect',Scr.w,quadColors,myVar.RDMRects);
-                
+                      
                 % draw the scene symbols at the bottom of the screen
                 Screen('DrawTexture', Scr.w, UR_ptr,myVar.subRect,myVar.UR_rect);
                 Screen('DrawTexture', Scr.w, RD_ptr,myVar.subRect,myVar.RD_rect);
@@ -444,16 +444,20 @@ if trialIsOK
                 Screen('DrawTexture', Scr.w, LU_ptr,myVar.subRect,myVar.LU_rect);
                 
                 if trialAcc == 1
-                    Screen('FrameRect',Scr.w,[0 200 50],myVar.choiceRects(:,sceneChoice),myVar.frameLineWidth);
-                    DrawFormattedText(Scr.w,'Correct','center',Scr.wRect(4)*0.95,[0 200 50]);
+                    Screen('FrameRect',Scr.w,[0 200 50],myVar.choiceRects(:,sceneChoice),myVar.feedbackFrameWidth);
+                    DrawFormattedText(Scr.w,'Correct','center',Scr.wRect(4)-0.1*Scr.pixelsperdegree,[0 200 50]);
                 elseif and(trialAcc == 0,~isnan(sceneChoice))
-                    Screen('FrameRect', Scr.w, [255 0 ceil(255/4)], myVar.choiceRects(:,sceneChoice),myVar.frameLineWidth);
-                    DrawFormattedText(Scr.w,'Incorrect','center',Scr.wRect(4)*0.95,[255 0 ceil(255/4)]);
+                    Screen('FrameRect', Scr.w, [255 0 ceil(255/4)], myVar.choiceRects(:,sceneChoice),myVar.feedbackFrameWidth);
+                    DrawFormattedText(Scr.w,'Incorrect','center',Scr.wRect(4)-1.0*Scr.pixelsperdegree,[255 0 ceil(255/4)]);
                 elseif noResponse
-                    DrawFormattedText(Scr.w,'Ran out of time!','center',Scr.wRect(4)*0.95,[255 0 ceil(255/4)]);
+                    DrawFormattedText(Scr.w,'Ran out of time!','center',Scr.wRect(4)-1.0*Scr.pixelsperdegree,[255 0 ceil(255/4)]);
                 else
-                    DrawFormattedText(Scr.w,'Invalid response!','center',Scr.wRect(4)*0.95,[255 0 ceil(255/4)]);
+                    DrawFormattedText(Scr.w,'Invalid response!','center',Scr.wRect(4)-1.0*Scr.pixelsperdegree,[255 0 ceil(255/4)]);
                 end
+                
+                Screen('DrawLines',Scr.w,all_fix_coords,myVar.lineWidthPix,Scr.white,fixationCoord,0);
+                Screen('FrameRect',Scr.w,quadFrameColors,myVar.RDMRects,myVar.frameLineWidth);
+                Screen('FillRect',Scr.w,quadColors,myVar.RDMRects);
                 vbl = Screen('Flip',Scr.w,vbl + (Scr.waitframes - 0.5) * Scr.ifi);
                 
                 if grab_flag && save_flag
@@ -494,8 +498,8 @@ end
 
 % Clear screen
 Screen('DrawLines',Scr.w,all_fix_coords,myVar.lineWidthPix,Scr.white,fixationCoord,0);
-Screen('FrameRect',Scr.w,quadFrameColors,myVar.RDMRects,myVar.frameLineWidth);
 Screen('FillRect',Scr.w,quadColors,myVar.RDMRects);
+Screen('FrameRect',Scr.w,quadFrameColors,myVar.RDMRects,myVar.frameLineWidth);
 Screen('Flip', Scr.w);
 
 

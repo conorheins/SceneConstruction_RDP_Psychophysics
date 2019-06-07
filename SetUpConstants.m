@@ -103,14 +103,15 @@ myVar.fixXLoc                 = myVar.centerX;                  % Define Fixatio
 myVar.fixYLoc                 = myVar.centerY;                  % Define Fixation point Y
 myVar.RDPHalfQuad             = floor(2*Scr.pixelsperdegree);   % Define half-width in pixels, of one RDP-containing quadrant
 myVar.frameLineWidth          = floor(.2*Scr.pixelsperdegree); % Define width of frames that surround each quadrant
+myVar.feedbackFrameWidth      = floor(.1*Scr.pixelsperdegree); % Define width of frames that surround choice symbols upon response
 
 % IMPORTANT variables!
 inf.eyeWindow                 = 2;                              % window in visual degrees around fixation center, that subject must keep eyes within 
 Scr.cueDistance               = floor(6*Scr.pixelsperdegree);   % Distance of quadrants from the screen center
 Scr.waitframes                = 1;                              % Number of frames to wait before re-drawing (Used in Threshold)
-Scr.choice_distance           = floor(Scr.pixelsperdegree.*[ [-10, -6, 4, 8]; [-8, -4, 6, 10] ]);  % distance of choice symbols from fixation center (in horizontal plane)
+Scr.choice_distance           = floor(Scr.pixelsperdegree.*[ [-10.25, -6.25, 3.75, 7.75]; [-7.75, -3.75, 6.25, 10.25] ]);  % distance of choice symbols from fixation center (in horizontal plane)
                                                                                                     % first row is leftmost displacements, second row is rightmost displacements
-Scr.vertdisplace              = floor(2*Scr.pixelsperdegree);   % vertical displacements, second row is rightmost displacements                                                              
+Scr.vertdisplace              = floor(2.25*Scr.pixelsperdegree);   % vertical displacements                                                            
 
 
 myVar.fixationTime      = 5;    % time in seconds of fixation window (basically, participant has to hold gaze / mouse position in center for 5 seconds before proceeding)
