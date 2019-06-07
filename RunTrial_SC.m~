@@ -333,17 +333,11 @@ if trialIsOK
             end
 
 %             quadrant_idx = sqrt(sum( ( repmat([pos_x,pos_y],numQuads,1) - myVar.centers').^2,2)) <= myVar.gazeWindow;
-            % old boundary conditions (using radius from center)
+            %replace with rectangular boundary conditions
             
-            %new rectangular boundary conditions (more appropriate for the
-            %quadrants)
-            quadrant_idx = false(numQuads,1);
-            for quad_i = 1:numQuads
-                xv = [myVar.RDMRects(1,quad_i) myVar.RDMRects(1,quad_i) myVar.RDMRects(3,quad_i) myVar.RDMRects(3,quad_i)];
-                yv = [myVar.RDMRects(2,quad_i) myVar.RDMRects(4,quad_i) myVar.RDMRects(4,quad_i) myVar.RDMRects(2,quad_i)];
-                quadrant_idx(quad_i) = inpolygon(pos_x,pos_y,xv,yv);
-            end
-                    
+            for quad_i = 1:size(myVar.RDMRects,2)
+                xv = [RDMRects(1,i) RDMRects(1,i) RDMRects(3,i) RDMR
+            
             if any(quadrant_idx)
                 
                 rev_quadrant = find(quadrant_idx);
