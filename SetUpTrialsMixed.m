@@ -91,7 +91,7 @@ for b = 1:numBlocks
     randomOrder = randperm(size(block(b).trials,2)); % create random order from that.
     block(b).trials = block(b).trials(randomOrder);
 
-    block(b).trials = block(b).trials(1:10); % for testing purposes
+    block(b).trials = block(b).trials(1:30); % for testing purposes
     
     % [~,randomOrder] = CheckShuffle([block(b).trials.conSort],2); %Advanced check by Adam
     % block(b).trials = block(b).trials(randomOrder);

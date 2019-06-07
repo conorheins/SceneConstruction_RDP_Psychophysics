@@ -43,6 +43,8 @@ trialIsOK   = true;             % Check eye position during trial
 respToBeMade= true;
 noResponse  = true;
 
+Reward = nan; % fix this later
+
 % Timing in frames
 if tr == 1
     ShowCursor(1) 
