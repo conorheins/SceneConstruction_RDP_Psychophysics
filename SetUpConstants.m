@@ -115,12 +115,19 @@ Scr.vertdisplace              = floor(2.25*Scr.pixelsperdegree);   % vertical di
 
 
 myVar.fixationTime      = 5;    % time in seconds of fixation window (basically, participant has to hold gaze / mouse position in center for 5 seconds before proceeding)
-myVar.exploreTime       = 15;   % time in seconds to explore the scene 
+myVar.exploreTime       = 5;   % time in seconds to explore the scene 
 % myVar.train_exploreTime = 100;  % time in seconds to explore the scene in practice blocks
-myVar.train_exploreTime = 15;  % time in seconds to explore the scene in practice blocks -- for debugging purposes
-myVar.feedbackTime      = 1;    % the length in seconds of the feedback window
+myVar.train_exploreTime = 5;   % time in seconds to explore the scene in practice blocks -- for debugging purposes
+myVar.choiceTime        = 0.5;  % the length in seconds of choice display
+myVar.feedbackTime      = 1.5;  % the length in seconds of the feedback window
 myVar.intertrialTime    = 2;    % time in seconds of fixation window for all other trials 
 myVar.ITI_sd            = 0.5;  % standard deviation in seconds of fixation window for all other trials
+
+myVar.revealTime        = 0.1; % time in seconds before quadrant is revealed, once fixation has been detected
+myVar.starting_points   = 100; % starting points
+myVar.discount_scale    = myVar.starting_points / (myVar.exploreTime / Scr.ifi); % scale of discounting function
+myVar.discount_function = @(x) (-(myVar.discount_scale)*x + myVar.starting_points); % function handle to encode temporal discounting of rewards over exploration time
+myVar.miss_cost         = 200; % cost (in points) of being incorrect or failing to respond
 
 myVar.gazeWindow        = floor(2*Scr.pixelsperdegree);  % how far your cursor/eye position needs to be from the center of a quadrant in order to uncover it
 myVar.fixCrossDimPix    = 40;   % size of the arms of fixation cross

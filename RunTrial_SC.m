@@ -15,8 +15,8 @@ function [inf,trial_data,el] = RunTrial_SC(Scr,inf,myVar,el,bl,tr,block,trialPar
 % - bl:          index of current block
 % - tr:          index of current trial
 % - block:       structure containing block- and trial-specific experimental (independent) and behavioral (dependent) measures, e.g
-%                parameters of stimuli to display on block(bl).trial(tr), participant's reaction time
-%                on block(bl).trial(tr).
+%                parameters of stimuli to display on block(bl).trials(tr), participant's reaction time
+%                on block(bl).trials(tr).
 % - trialParams: structure containing trial-specific experimental (independent) and behavioral (dependent) measures
 % - save_flag:   Boolean true/false flag (1 / 0) indicating whether to save
 %                the frames of the trial into a video
@@ -33,6 +33,7 @@ sceneChoice             = nan;
 % Timing Points
 fixationOnset           = nan;
 exploreOnset            = nan;
+choiceOnset             = nan;
 feedbackOnset           = nan;
 trialEND                = nan;
 
@@ -55,7 +56,9 @@ if bl < 6
 else
     exploreDur     = round(myVar.exploreTime /Scr.ifi);                       % Duration of explore phase
 end
-feedbackDur  = round(myVar.feedbackTime/Scr.ifi);                        % Feedback display for 250 ms
+choiceDur  = round(myVar.choiceTime/Scr.ifi);                        % Choice display duration in flips
+feedbackDur  = round(myVar.feedbackTime/Scr.ifi);                        % Feedback display duration in flips
+
 
 % Adjust response keys
 up_right   = myVar.aKey;
@@ -306,6 +309,8 @@ if trialIsOK
         
         grab_flag = true;
         
+        quadrant_dwell_counters = zeros(numQuads,1);
+
         while and(((KeyIsDown~=1) && noResponse),exploreFlips < exploreDur)
             
             [~,~, KeyCode] = KbCheck();     % In case if eye tracker lost eye
@@ -343,25 +348,37 @@ if trialIsOK
                 yv = [myVar.RDMRects(2,quad_i) myVar.RDMRects(4,quad_i) myVar.RDMRects(4,quad_i) myVar.RDMRects(2,quad_i)];
                 quadrant_idx(quad_i) = inpolygon(pos_x,pos_y,xv,yv);
             end
-                    
+                                
             if any(quadrant_idx)
                 
                 rev_quadrant = find(quadrant_idx);
                 
-                if ismember(rev_quadrant,find(filled_quad_idx))      
-                    patt_id_temp = filled_quad_idx(rev_quadrant);
-                    dotData(patt_id_temp) = update_dots(dotData(patt_id_temp));                    
-                    % draws the current dots, using position, single size argument and dotType
-                    Screen('DrawDots', Scr.w, dotData(patt_id_temp).dotPos, dotData(patt_id_temp).size, [255 255 255], [0 0], dotData(patt_id_temp).dotType);
+                quadrant_dwell_counters(rev_quadrant) = quadrant_dwell_counters(rev_quadrant) + Scr.ifi;
+                
+                if  quadrant_dwell_counters(rev_quadrant) >= myVar.revealTime
+                    if ismember(rev_quadrant,find(filled_quad_idx))
+                   
+                        patt_id_temp = filled_quad_idx(rev_quadrant);
+                        dotData(patt_id_temp) = update_dots(dotData(patt_id_temp));
+                        % draws the current dots, using position, single size argument and dotType
+                        Screen('DrawDots', Scr.w, dotData(patt_id_temp).dotPos, dotData(patt_id_temp).size, [255 255 255], [0 0], dotData(patt_id_temp).dotType);
+                                              
+                    end
+                    
+                    remaining_quadrants = ~ismember(1:numQuads,rev_quadrant); % this yields the logical indices for the remaining, non-revealed quadrants
+                    % for the following 'FillRect' command
+                    
+                    Screen('FillRect',Scr.w,quadColors(:,remaining_quadrants),myVar.RDMRects(:,remaining_quadrants))
+                    Screen('FrameRect',Scr.w,quadFrameColors(:,remaining_quadrants),myVar.RDMRects(:,remaining_quadrants),myVar.frameLineWidth);
+                else
+                    Screen('FillRect',Scr.w,quadColors,myVar.RDMRects)
+                    Screen('FrameRect',Scr.w,quadFrameColors,myVar.RDMRects,myVar.frameLineWidth);     
                 end
                 
-                remaining_quadrants = ~ismember(1:numQuads,rev_quadrant); % this yields the logical indices for the remaining, non-revealed quadrants 
-                % for the following 'FillRect' command
-
-                Screen('FillRect',Scr.w,quadColors(:,remaining_quadrants),myVar.RDMRects(:,remaining_quadrants))
-                Screen('FrameRect',Scr.w,quadFrameColors(:,remaining_quadrants),myVar.RDMRects(:,remaining_quadrants),myVar.frameLineWidth);
 
             else
+                quadrant_dwell_counters = zeros(numQuads,1);
+
                 Screen('FillRect',Scr.w,quadColors,myVar.RDMRects)
                 Screen('FrameRect',Scr.w,quadFrameColors,myVar.RDMRects,myVar.frameLineWidth);
 
@@ -379,6 +396,8 @@ if trialIsOK
             if exploreFlips == 1
                 exploreOnset = vbl;                                                          %%%%TIME%%%%%%%
             end
+            
+            Reward = myVar.discount_function(exploreFlips);
             
             exploreFlips = exploreFlips + 1;
             
@@ -424,20 +443,25 @@ if trialIsOK
                             trialAcc = 0; sceneChoice = NaN;
                         end                       
                     else
-%                         trialError = 1; trialIsOK = false; noResponse = false; sceneChoice = NaN;          % END THE TRIAL
                         trialError = 1; noResponse = false; sceneChoice = NaN;          % END THE TRIAL
                     end
                 end
             else
                 noResponse = true; sceneChoice = NaN; % ran out of time
             end
-             
+              
+        end
+        
+        if trialAcc == 1
+            Reward = Reward + 200;
+        else
+            Reward = Reward - 400;
         end
         
         if trialIsOK
             
             grab_flag = true;
-            for i = 1:feedbackDur 
+            for i = 1:choiceDur 
                 
                 [~,~, KeyCode] = KbCheck();     % In case if eye tracker lost eye
                 if KeyCode(myVar.escapeKey)             % EXIT key pressed to exit experiment
@@ -459,7 +483,7 @@ if trialIsOK
                     DrawFormattedText(Scr.w,'Incorrect','center',Scr.wRect(4)-1.0*Scr.pixelsperdegree,[255 0 ceil(255/4)]);
                 elseif noResponse
                     DrawFormattedText(Scr.w,'Ran out of time!','center',Scr.wRect(4)-1.0*Scr.pixelsperdegree,[255 0 ceil(255/4)]);
-                else
+                else                   
                     DrawFormattedText(Scr.w,'Invalid response!','center',Scr.wRect(4)-1.0*Scr.pixelsperdegree,[255 0 ceil(255/4)]);
                 end
                 
@@ -477,9 +501,56 @@ if trialIsOK
                 grab_flag = ~grab_flag;
                 
                 if i == 1
+                    choiceOnset = vbl;                                              %%%%%%%TIME%%%%%%%%%
+                end
+                
+            end
+            
+            grab_flag = true;
+            for i = 1:feedbackDur 
+                
+                [~,~, KeyCode] = KbCheck();     % In case if eye tracker lost eye
+                if KeyCode(myVar.escapeKey)             % EXIT key pressed to exit experiment
+                    Screen('CloseAll')
+                    error('EXIT button!\n');
+                end
+                      
+                
+                if trialAcc == 1
+                    rew_message = sprintf('%.2f points awarded!',Reward);
+                    DrawFormattedText(Scr.w,rew_message,'center',myVar.centerY,[0 200 50]);
+                elseif and(trialAcc == 0,~isnan(sceneChoice))
+                    rew_message = sprintf('%.2f points awarded!',Reward);
+                    DrawFormattedText(Scr.w,rew_message,'center',myVar.centerY,[255 0 ceil(255/4)]);
+                elseif noResponse
+                    rew_message = sprintf('%.2f points awarded!',Reward);
+                    DrawFormattedText(Scr.w,rew_message,'center',myVar.centerY,[255 0 ceil(255/4)]);
+                else
+                    rew_message = sprintf('%.2f points awarded!',Reward);
+                    DrawFormattedText(Scr.w,rew_message,'center',myVar.centerY,[255 0 ceil(255/4)]);
+                end
+                
+                if tr == 1
+                    DrawFormattedText(Scr.w,sprintf('Total score: %.2f points',Reward),'center',myVar.centerY + (1.5 * Scr.pixelsperdegree),[255 255 255]);
+                else
+                    DrawFormattedText(Scr.w,sprintf('Total score: %.2f points',(block(bl).trials(tr-1).Reward + Reward)),'center',myVar.centerY + (1.5 * Scr.pixelsperdegree),[255 255 255]);
+                end
+                
+                vbl = Screen('Flip',Scr.w,vbl + (Scr.waitframes - 0.5) * Scr.ifi);
+                
+                if grab_flag && save_flag
+                    tmp_img = Screen('GetImage',Scr.w);
+                    tmp_img = tmp_img(1:2:end,1:2:end,:); % downsample by a factor of 2 to save space
+                    trial_video = cat(4,trial_video,tmp_img);
+                end
+                
+                grab_flag = ~grab_flag;
+                
+                if i == 1
                     feedbackOnset = vbl;                                              %%%%%%%TIME%%%%%%%%%
                 end
             end
+            
             trialEND = vbl;
             
         end    
@@ -493,10 +564,16 @@ trial_data.trialRT = trialRT;
 trial_data.trialAcc = trialAcc;
 trial_data.sceneChoice = sceneChoice;
 trial_data.trialError = trialError;
+if tr == 1
+    trial_data.Reward     = Reward;
+else
+    trial_data.Reward     = block(bl).trials(tr-1).Reward + Reward; % accumulate total score
+end
 
 trial_data.trialSTART = trialSTART;
 trial_data.fixationOnset = fixationOnset;
 trial_data.exploreOnset = exploreOnset;
+trial_data.choiceOnset = choiceOnset;
 trial_data.feedbackOnset = feedbackOnset;
 trial_data.trialEND = trialEND;
 

@@ -81,13 +81,15 @@ try
             block(bl).trials(tr).trialAcc= trialData.trialAcc;
             block(bl).trials(tr).sceneChoice = trialData.sceneChoice;
             block(bl).trials(tr).trialError = trialData.trialError;
+            block(bl).trials(tr).Reward     = trialData.Reward;
             
-            block(bl).trials(tr).trialSTART = trialData.trialSTART;
+            block(bl).trials(tr).trialSTART    = trialData.trialSTART;
             block(bl).trials(tr).fixationOnset = trialData.fixationOnset;
-            block(bl).trials(tr).exploreOnset = trialData.exploreOnset;
+            block(bl).trials(tr).exploreOnset  = trialData.exploreOnset;
+            block(bl).trials(tr).choiceOnset   = trialData.choiceOnset;
+
             block(bl).trials(tr).feedbackOnset = trialData.feedbackOnset;
             block(bl).trials(tr).trialEND = trialData.trialEND;
-
 
             tr = tr+1;
         end
