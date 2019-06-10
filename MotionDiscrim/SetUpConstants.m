@@ -138,10 +138,9 @@ myVar.DOWN  = imread('DOWN.png');
 myVar.LEFT  = imread('LEFT.png');
 
 myVar.subRect = [300 100 650 400];
-myVar.UPrect = [Scr.wRect(3)/4 - 200 3*Scr.wRect(4)/4 Scr.wRect(3)/4 - 100 3*Scr.wRect(4)/4 + 85];
-myVar.RIGHTrect = [2*Scr.wRect(3)/4 - 200 3*Scr.wRect(4)/4 2*Scr.wRect(3)/4 - 100 3*Scr.wRect(4)/4 + 85];
+myVar.LEFTrect = [Scr.wRect(3)/4 - 200 3*Scr.wRect(4)/4 Scr.wRect(3)/4 - 100 3*Scr.wRect(4)/4 + 85];
+myVar.UPrect = [2*Scr.wRect(3)/4 - 200 3*Scr.wRect(4)/4 2*Scr.wRect(3)/4 - 100 3*Scr.wRect(4)/4 + 85];
 myVar.DOWNrect = [3*Scr.wRect(3)/4 - 200 3*Scr.wRect(4)/4 3*Scr.wRect(3)/4 - 100  3*Scr.wRect(4)/4 + 85];
-myVar.LEFTrect  = [Scr.wRect(3) - 200 3*Scr.wRect(4)/4 Scr.wRect(3) - 100  3*Scr.wRect(4)/4 + 85];
-
+myVar.RIGHTrect  = [Scr.wRect(3) - 200 3*Scr.wRect(4)/4 Scr.wRect(3) - 100  3*Scr.wRect(4)/4 + 85];
 
 end
