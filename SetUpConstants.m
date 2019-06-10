@@ -86,13 +86,13 @@ myVar.fKey      = KbName('f'); % Scene 4 - LEFT UP
 myVar.centerX           = Scr.width/2;
 myVar.centerY           = Scr.height/2;
 
-% myVar.centW             = 33.24;      % MacBook Pro monitor width (cm.)
-% myVar.centD             = 50;         % Distance to the screen (cm.)
-% myVar.centH             = 20.77;      % MacBook Pro monitor height (cm.)
+myVar.centW             = 33.24;      % MacBook Pro monitor width (cm.)
+myVar.centD             = 50;         % Distance to the screen (cm.)
+myVar.centH             = 20.77;      % MacBook Pro monitor height (cm.)
 
-myVar.centW             = 52.2;       % ViewPixx EEG (cm.)
-myVar.centD             = 91.0;       % Distance to the screen (cm.)
-myVar.centH             = 29.1;       % ViewPixx EEG (cm.)
+% myVar.centW             = 52.2;       % ViewPixx EEG (cm.)
+% myVar.centD             = 91.0;       % Distance to the screen (cm.)
+% myVar.centH             = 29.1;       % ViewPixx EEG (cm.)
 
 % PPD based on Visual Psyhcophysics book, Lu and Dosher
 Scr.pixelsperdegree = pi/180 * myVar.centD /myVar.centH * Scr.wRect(4);
@@ -140,12 +140,12 @@ myVar.nDots    = ceil(20/(Scr.pixelsperdegree.^2) .* prod(myVar.apSize) ./ (1/my
 myVar.lifetime = floor( 1/Scr.ifi * myVar.lifetime_ms);  % lifetime of dots in flips -- use this value for psychophysics monitor
 myVar.dotSize = 0.1 * Scr.pixelsperdegree;  % size of dots in pixels, following Palmer Huk & Shadlen 2005
 
-myVar.UR_symbol    = imread('images/UR.png');  
-myVar.RD_symbol = imread('images/RD.png');
+myVar.UR_symbol  = imread('images/UR.png');  
+myVar.RD_symbol  = imread('images/RD.png');
 myVar.DL_symbol  = imread('images/DL.png');
 myVar.LU_symbol  = imread('images/LU.png');
 
-myVar.subRect = [200 80 700 440];
+myVar.subRect = [275 80 715 440];
 myVar.UR_rect = [myVar.centerX + Scr.choice_distance(1,1) myVar.centerY - Scr.vertdisplace/2 myVar.centerX + Scr.choice_distance(2,1) myVar.centerY + Scr.vertdisplace/2];
 myVar.RD_rect = [myVar.centerX + Scr.choice_distance(1,2) myVar.centerY - Scr.vertdisplace/2 myVar.centerX + Scr.choice_distance(2,2) myVar.centerY + Scr.vertdisplace/2];
 myVar.DL_rect = [myVar.centerX + Scr.choice_distance(1,3) myVar.centerY - Scr.vertdisplace/2 myVar.centerX + Scr.choice_distance(2,3) myVar.centerY + Scr.vertdisplace/2];

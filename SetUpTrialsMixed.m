@@ -12,7 +12,14 @@ function [myVar, block] = SetUpTrialsMixed(Scr,inf, myVar)
 %Number of iterations and blocks
 numBlocks          = inf.numBlocks;     % How many blocks do we have?
 
-coherz = [0 12.8 25.6 36 51.2 100]';
+% coherz = [0 12.8 25.6 36 51.2 100]';
+
+coherz = [12.8 12.8;
+          12.8 36.0;
+          12.8 80.0;
+          36.0 36.0;
+          36.0 80.0;
+          80.0 80.0];
 
 factor.RDMcohers      = 2; % the number of values that a given RDP can take, per level/factor
 factor.scenes         = 2; % the number of values that a given RDP can take, per level/factor
@@ -33,7 +40,8 @@ factor.RDMconfigs = config_counter;
 
 RDM.cohers = zeros(length(coherz),factor.RDMcohers); 
 for coh_i = 1:length(coherz)
-    RDM.cohers(coh_i,:) = [coherz(coh_i) coherz(coh_i)];
+        RDM.cohers(coh_i,:) = [coherz(coh_i,1) coherz(coh_i,2)];
+%     RDM.cohers(coh_i,:) = [coherz(coh_i) coherz(coh_i)];
 end
     
 RDM.scenes = zeros(4,factor.scenes); 
@@ -50,16 +58,16 @@ numPatterns = size(RDM.scenes,2);
 for bl = 1:numBlocks
     tr = 0;
     for config_i = 1:factor.RDMconfigs
-        for coh_i = 1:length(coherz)
+        for coh_i = 1:size(coherz,1)
             for scene_i = 1:size(RDM.scenes,1)
                 tr = tr + 1;
                 block(bl).trials(tr).dotParams = createDotParams_struct(Scr.wRect,numPatterns,'centers',RDM.configs(config_i).x,'cohers',RDM.cohers(coh_i,:),'directions',RDM.scenes(scene_i,:),...
                     'speeds',repmat(myVar.speed,1,numPatterns),'apSizes',repmat(myVar.apSize,numPatterns,1),'nDots',repmat(myVar.nDots,1,numPatterns),...
                     'lifetimes',repmat(myVar.lifetime,1,numPatterns),'dotSizes',repmat(myVar.dotSize,1,numPatterns));
-                block(bl).trials(tr).scene_dirs= RDM.scenes(scene_i);
+                block(bl).trials(tr).scene_dirs= RDM.scenes(scene_i,:);
                 block(bl).trials(tr).scene_ID  = scene_i;
                 block(bl).trials(tr).config = config_i;
-                block(bl).trials(tr).coher = coherz(coh_i);
+                block(bl).trials(tr).coher = RDM.cohers(coh_i,:);
             end
         end
     end
@@ -91,7 +99,7 @@ for b = 1:numBlocks
     randomOrder = randperm(size(block(b).trials,2)); % create random order from that.
     block(b).trials = block(b).trials(randomOrder);
 
-    block(b).trials = block(b).trials(1:30); % for testing purposes
+    block(b).trials = block(b).trials(1:10); % for testing purposes
     
     % [~,randomOrder] = CheckShuffle([block(b).trials.conSort],2); %Advanced check by Adam
     % block(b).trials = block(b).trials(randomOrder);

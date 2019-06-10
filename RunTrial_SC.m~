@@ -355,14 +355,6 @@ if trialIsOK
                 quadrant_idx(quad_i) = inpolygon(pos_x,pos_y,xv,yv);
             end
             
-            numChoices = size(myVar.choiceRects,2);
-            choice_idx = false(numChoices,1);
-            for c_i = 1:numChoices
-                xv = [myVar.choiceRects(1,c_i) myVar.choiceRects(1,c_i) myVar.choiceRects(3,c_i) myVar.choiceRects(3,c_i)];
-                yv = [myVar.choiceRects(2,c_i) myVar.choiceRects(4,c_i) myVar.choiceRects(4,c_i) myVar.choiceRects(2,c_i)];
-                choice_idx(c_i) = inpolygon(pos_x,pos_y,xv,yv);
-            end
-            
                                 
             if any(quadrant_idx)
                 
@@ -417,45 +409,38 @@ if trialIsOK
             exploreFlips = exploreFlips + 1;
             
             %%%%%%%%%%%%%%II.Check Response
-            [KeyIsDown,endRTRaw, KeyCodeRaw] = KbCheck();
-            
-%             if (KeyIsDown==1) && respToBeMade
-            if or( ((KeyIsDown==1) && respToBeMade),button_state(1))
+%             [KeyIsDown,endRTRaw, KeyCodeRaw] = KbCheck();
 
+            if (KeyIsDown==1) && respToBeMade
                 if KeyCodeRaw(KbName('ESCAPE'))  % EXIT key pressed to exit experiment
                     Screen('CloseAll')
                     error('EXIT button!\n');
                 else
-%                     if any(KeyCodeRaw([up_right,right_down,down_left,left_up]))      
-                    if any(choice_idx)
+                    if any(KeyCodeRaw([up_right,right_down,down_left,left_up]))                       
                         trialRT = endRTRaw - exploreOnset; % save RT!!!!
                         noResponse = false;
-                        if choice_idx(1)
-%                         if KeyCodeRaw(up_right)
+                        if KeyCodeRaw(up_right)
                             sceneChoice = 1;
                             if trialParams.scene_ID == 1
                                 trialAcc = 1;
                             else
                                 trialAcc = 0;
                             end
-%                         elseif KeyCodeRaw(right_down)
-                        elseif choice_idx(2)
+                        elseif KeyCodeRaw(right_down)
                             sceneChoice = 2;
                             if trialParams.scene_ID == 2
                                 trialAcc = 1;
                             else
                                 trialAcc = 0;
                             end
-%                         elseif KeyCodeRaw(down_left) 
-                        elseif choice_idx(3)
+                        elseif KeyCodeRaw(down_left) 
                             sceneChoice = 3;
                             if trialParams.scene_ID == 3
                                 trialAcc = 1;
                             else
                                 trialAcc = 0;
                             end
-%                         elseif KeyCodeRaw(left_up)
-                        elseif choice_idx(4)
+                        elseif KeyCodeRaw(left_up)
                             sceneChoice = 4;
                             if trialParams.scene_ID == 4
                                 trialAcc = 1;
