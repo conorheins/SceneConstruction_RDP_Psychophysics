@@ -476,9 +476,10 @@ if trialIsOK
         end
         
         if trialAcc == 1
-            Reward = Reward + 200;
+            Reward = Reward + myVar.correct_reward;
         else
-            Reward = Reward - 400;
+%             Reward = Reward - myVar.miss_cost;
+            Reward = -myVar.miss_cost;
         end
         
         if trialIsOK

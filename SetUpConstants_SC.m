@@ -127,7 +127,8 @@ myVar.revealTime        = 0.1; % time in seconds before quadrant is revealed, on
 myVar.starting_points   = 100; % starting points
 myVar.discount_scale    = myVar.starting_points / (myVar.exploreTime / Scr.ifi); % scale of discounting function
 myVar.discount_function = @(x) (-(myVar.discount_scale)*x + myVar.starting_points); % function handle to encode temporal discounting of rewards over exploration time
-myVar.miss_cost         = 200; % cost (in points) of being incorrect or failing to respond
+myVar.correct_reward    = 200; % reward (in points) of categorizing correctly
+myVar.miss_cost         = 400; % cost (in points) of being incorrect or failing to respond
 
 myVar.gazeWindow        = floor(2*Scr.pixelsperdegree);  % how far your cursor/eye position needs to be from the center of a quadrant in order to uncover it
 myVar.fixCrossDimPix    = 40;   % size of the arms of fixation cross
