@@ -1,4 +1,4 @@
-function [Scr,inf, myVar] = SetUpConstants(Scr,inf)
+function [Scr,inf, myVar] = SetUpConstants_SC(Scr,inf)
 %   SetUpConstants create all constant variables for the experiment.
 %
 %   Structure:
