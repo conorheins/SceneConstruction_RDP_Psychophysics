@@ -25,17 +25,19 @@ function [Scr,inf, myVar] = SetUpConstants_SC(Scr,inf)
 % In this section, we define the name of the file with Pp responses.
 
 % Save file directory before we start.
-Scr.rootDir = pwd;
+Scr.mainDir = pwd;
+Scr.expDir = fullfile(Scr.mainDir,'SceneConstructionProper');
+% Scr.rootDir = pwd;
 
 % Define filenames of input files and result file:
-cd(Scr.rootDir);
+cd(Scr.expDir);
 
 % Create a unique name for participant files:
 if inf.subNo == 1                                                       % in GetSubInfo we define the subject name as 1, so it is a test
     inf.afterBreak = false;
-    inf.rootTest = fullfile(Scr.rootDir,'Data','test');
+    inf.rootTest = fullfile(Scr.expDir,'Data','test');
     if ~exist(inf.rootTest,'dir')
-        mkdir(Scr.rootDir,fullfile('Data','test'));
+        mkdir(Scr.expDir,fullfile('Data','test'));
     end
     cd(inf.rootTest);                                                   % move to the test directory
     while exist(fullfile(inf.rootTest,sprintf('test%d__allData.mat',inf.subNo)),'file')
@@ -43,7 +45,7 @@ if inf.subNo == 1                                                       % in Get
     end
 else                                                                    % in the main script we define inf.subNo as first argument
     %...the subject code.
-    inf.rootSub = fullfile(Scr.rootDir,'Data','SubjectsData',num2str(inf.subNo));
+    inf.rootSub = fullfile(Scr.expDir,'Data','SubjectsData',num2str(inf.subNo));
     if exist(fullfile(inf.rootSub,sprintf('Subject%d__allData.mat',inf.subNo)),'file') % Does the matlab file exists?
         inf.afterBreak = true;                                          % Then use this folder!
     else %if not
@@ -51,7 +53,9 @@ else                                                                    % in the
         mkdir(inf.rootSub);
     end  
 end
-cd(Scr.rootDir); % Go back to our core directory.
+
+% cd(Scr.rootDir); % Go back to our main directory.
+cd(Scr.mainDir); % Go back to our main directory..
 
 %% SCREEN: KEYS and PPD
 

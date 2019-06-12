@@ -67,7 +67,19 @@ try
         while tr <= length(block(bl).trials)
             
             [inf,trialData,el] = RunTrial_MD(Scr,inf,myVar,el,bl,tr,block,block(bl).trials(tr),false);
-             
+            
+            % add current trial's results to block structure
+            block(bl).trials(tr).trialRT = trialData.trialRT;
+            block(bl).trials(tr).trialAcc= trialData.trialAcc;
+            block(bl).trials(tr).dirResponse = trialData.dirResponse;
+            block(bl).trials(tr).trialError = trialData.trialError;
+            
+            block(bl).trials(tr).trialSTART = trialData.trialSTART;
+            block(bl).trials(tr).fixationOnset = trialData.fixationOnset;
+            block(bl).trials(tr).accumOnset = trialData.accumOnset;
+            block(bl).trials(tr).feedbackOnset = trialData.feedbackOnset;
+            block(bl).trials(tr).trialEND = trialData.trialEND;
+            
             tr = tr+1;
             
         end
@@ -88,7 +100,9 @@ try
             fName = sprintf('test%d__allData.mat',inf.subNo);
             save(fName);
         end
-        cd(Scr.rootDir);
+%         cd(Scr.rootDir);
+        cd(Scr.mainDir); % Go back to our main directory..
+
     end
     
     
@@ -115,6 +129,11 @@ catch errorInfo
     end
 end
 
+%% Determine subject's psychometric function in order to choose coherences
+
+[coherences,flags] = analyze_MDdata(block,inf);
+
+
 %% SETUP EXPERIMENT
 %%%%%%%%%%%%%%%%%%%%%%
 
@@ -130,20 +149,23 @@ try
     % Gather answers into variables
     inf.numBlocks_SC                 = str2double(answer{1});
     
-    [Scr]               = InitializeWindow(inf,0,false);        % Turn on Screen
+    % look into this -- may not need to do this if we don't close the
+    % screen from before! can just add a waiting screen in between or
+    % something
+    [Scr]              = InitializeWindow(inf,0,false);        % Turn on Screen
     
-    [inst_rdp]          = Instructions_RDP(inf,Scr);     % Load pictures with instructions
+    [inst_sc]          = Instructions_SC(inf,Scr);     % Load pictures with instructions
     
-    [Scr,inf,myVar]     = SetUpConstants_RDP(Scr,inf);        % setUp VARIABLES
+    [Scr,inf,myVar]    = SetUpConstants_SC(Scr,inf);        % setUp VARIABLES
     
-    [el,inf]            = EyeLinkON(Scr,inf);           % Turn on EyeLink
+    [el,inf]           = EyeLinkON(Scr,inf);           % Turn on EyeLink
     
     if ~inf.afterBreak
         
-        [myVar, block]  = SetUpTrialsMixed_RDP(Scr,inf, myVar); % setUp CONDITIONS
+        [myVar, block]  = SetUpTrialsMixed_SC(Scr,inf, myVar); % setUp CONDITIONS
         
 %         Show general instructions
-        Screen('DrawTexture', Scr.w, inst_rdp.intro); % intro instruction
+        Screen('DrawTexture', Scr.w, inst_sc.intro); % intro instruction
         Screen('Flip',Scr.w); KbStrokeWait; bl = 1;
         
     else % IF AFTER BREAK
@@ -166,7 +188,7 @@ try
         tr = 1;
         while tr <= length(block(bl).trials)
             
-            [inf,trialData,el] = RunTrial_MD(Scr,inf,myVar,el,bl,tr,block,block(bl).trials(tr),false);
+            [inf,trialData,el] = RunTrial_SC(Scr,inf,myVar,el,bl,tr,block,block(bl).trials(tr),false);
              
             tr = tr+1;
             
@@ -188,9 +210,9 @@ try
             fName = sprintf('test%d__allData.mat',inf.subNo);
             save(fName);
         end
-        cd(Scr.rootDir);
+        %         cd(Scr.rootDir);
+        cd(Scr.mainDir); % Go back to our main directory..
     end
-    
     
     %% END OF FIRST EXPERIMENT
     %%%%%%%%%%%%%%%%%%%%
