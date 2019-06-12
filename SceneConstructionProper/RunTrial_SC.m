@@ -29,6 +29,8 @@ fixationCoord = [myVar.fixXLoc myVar.fixYLoc];% location of center of fixation c
 trialRT                 = nan;
 trialAcc                = nan;
 sceneChoice             = nan;
+eyeCheck                = true;
+
 
 % Timing Points
 fixationOnset           = nan;
@@ -60,7 +62,7 @@ else
 end
 choiceDur  = round(myVar.choiceTime/Scr.ifi);                        % Choice display duration in flips
 feedbackDur  = round(myVar.feedbackTime/Scr.ifi);                        % Feedback display duration in flips
-
+eyeCheckDur             = round(.2/Scr.ifi); %NEW YZ!!!!!!!!!!!!!!!!!!!!
 
 % Adjust response keys
 up_right   = myVar.aKey;
@@ -96,7 +98,7 @@ for patt_id = 1:numPatterns
 end
 
 %% Prepare EyeTracker
-if ~inf.dummy && bl ~= 1
+if ~inf.dummy
     
     % START RECORDING to EDF file.
     Eyelink('Command', 'set_idle_mode');
@@ -113,8 +115,8 @@ if ~inf.dummy && bl ~= 1
     if(elERR~=0)
         error('EyeTracker is not recording!\n');
     end
-    accuracyForEye = round(nanmean([block(bl).trials.Accuracy])*100,0); %Calculate mean accuracy of Pp
-    if isnan(accuracyForEye),accuracyForEye = 0; end                    % EyeTracker accepts only positive numbers
+%     accuracyForEye = round(nanmean([block(bl).trials.Accuracy])*100,0); %Calculate mean accuracy of Pp
+%     if isnan(accuracyForEye),accuracyForEye = 0; end                    % EyeTracker accepts only positive numbers
     
     % Important messages
     Eyelink('message', 'Bl_Tr_Sc_Config %d %d %d %d',...              % MESSAGE FOR EDF
@@ -122,8 +124,8 @@ if ~inf.dummy && bl ~= 1
     
     
     % Ask Roman about this -- May 28 2019
-    Eyelink('command', 'record_status_message "TRIAL %d/%d   BLOCK %d/%d   ACCURACY %d proc  ThExtra(2-Yes) %d"',...
-        length(block(bl).trials)-tr, length(block(length(block)).trials),bl,length(block),accuracyForEye,inf.GabCalibExtra+1);% MESSAGE FOR eyeTraker SCREEN
+%     Eyelink('command', 'record_status_message "TRIAL %d/%d   BLOCK %d/%d   ACCURACY %d proc  ThExtra(2-Yes) %d"',...
+%         length(block(bl).trials)-tr, length(block(length(block)).trials),bl,length(block),accuracyForEye,inf.GabCalibExtra+1);% MESSAGE FOR eyeTraker SCREEN
 end
 
 % Prepare SCREEN
@@ -152,10 +154,9 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 eyeCheckOnset = vbl;                                                                           %%%%TIME%%%%%%%
-if ~inf.dummy && bl ~= 1
+if ~inf.dummy
     Eyelink('message', 'EYE_CHECK');
-    while eyeCheck
-        
+    while eyeCheck      
         [~,~, KeyCode] = KbCheck();     % In case if eye tracker lost eye
         if KeyCode(myVar.escapeKey)             % EXIT key pressed to exit experiment
             Screen('CloseAll')
@@ -163,7 +164,7 @@ if ~inf.dummy && bl ~= 1
         elseif KeyCode(myVar.cKey)      % Do whole CALIBRATION
             Eyelink('stoprecording');
             EyelinkDoTrackerSetup(el);  % CALIBRATION!!!!
-            trialRep  = true; trialError = 5; trialIsOK = false; eyeCheck  = false; % Stop EyeCheck
+%             trialRep  = true; trialError = 5; trialIsOK = false; eyeCheck  = false; % Stop EyeCheck
         elseif KeyCode(myVar.dKey)      % Do DRIFT CORRECTION
             Eyelink('stoprecording');
             % Do drift correction
@@ -175,14 +176,14 @@ if ~inf.dummy && bl ~= 1
             Screen('DrawDots', Scr.w, fixationCoord, 6, Scr.white, [], 2);
             Screen('Flip', Scr.w);
             %finish the trial
-            trialRep  = true; trialError = 5; trialIsOK = false; eyeCheck  = false; % Stop EyeCheck
+%             trialRep  = true; trialError = 5; trialIsOK = false; eyeCheck  = false; % Stop EyeCheck
         elseif KeyCode(myVar.pKey)      % Skip EyeCheck
             eyeCheck  = false;
         elseif KeyCode(myVar.tKey)      % Do Threshold calibration before the next block
             % Ask Roman about this -- May 28 2019
-            Eyelink('command', 'record_status_message "TRIAL %d/%d   BLOCK %d/%d   ACCURACY %d proc  ThExtra(2-Yes) %d"',...
-                length(block(bl).trials)-tr, length(block(length(block)).trials),bl,length(block),accuracyForEye,inf.GabCalibExtra+1);% MESSAGE FOR eyeTraker SCREEN
-            inf.GabCalibExtra = true;
+%             Eyelink('command', 'record_status_message "TRIAL %d/%d   BLOCK %d/%d   ACCURACY %d proc  ThExtra(2-Yes) %d"',...
+%                 length(block(bl).trials)-tr, length(block(length(block)).trials),bl,length(block),accuracyForEye,inf.GabCalibExtra+1);% MESSAGE FOR eyeTraker SCREEN
+%             inf.GabCalibExtra = true;
         end
         
         if Eyelink('NewFloatSampleAvailable')>0 % If NO EYE DATA
@@ -193,7 +194,7 @@ if ~inf.dummy && bl ~= 1
             if eyeX ~= el.MISSING_DATA && eyeY ~= el.MISSING_DATA && evt.pa(inf.eye +1) > 0  % IF EYE OK
                 
                 % IF Pp NOT LOOKING AT THE FIXATION
-                if sqrt(sum( (fixationCoord - [eyeX eyeY]).^2,2)) > inf.eyeWindow * Scr.pixelsperdegee
+                if sqrt(sum( (fixationCoord - [eyeX eyeY]).^2,2)) > inf.eyeWindow * Scr.pixelsperdegree
 %                 if sqrt((eyeX - myVar.centerX)^2 + (eyeY - myVar.centerY)^2) > inf.eyeWindow * Scr.pixelsperdegree
                     Eyelink('command','draw_filled_box %d %d %d %d 4', 0, round(Scr.height-Scr.height/16), Scr.width, Scr.height);
                     Eyelink('command', 'draw_text %d %d 0 Eye NOT in the CENTER!',round(Scr.width/2),round(Scr.height-Scr.height/32));
@@ -204,7 +205,7 @@ if ~inf.dummy && bl ~= 1
                     vbl = Screen('Flip', Scr.w, vbl + (Scr.waitframes - 0.5) * Scr.ifi);
                     eyeCheckDur = round(.2/Scr.ifi);    % Restore eyeCheckDur
                 else % OR LOOKING
-                    Eyelink('command','draw_filled_box %d %d %d %d %d', 0, round(Scr.height-Scr.height/16), Scr.width, Scr.height,frameCol);
+                    Eyelink('command','draw_filled_box %d %d %d %d %d', 0, round(Scr.height-Scr.height/16), Scr.width, Scr.height,1);
                     Eyelink('command', 'draw_text %d %d 0 Eye is OK',round(Scr.width/2),round(Scr.height-Scr.height/32));
                     % EYE AT THE SCREEN CENTER
 %                     Screen('DrawDots', Scr.w, fixationCoord, 6, Scr.black, [], 2);
@@ -253,7 +254,7 @@ if trialIsOK
     fixationOnset = vbl;             %%%%TIME%%%%%%%
     
     grab_flag = true;
-    
+
     for fixationFlips = 1:fixationDur-1
         %%%%%%%%%%%%%%I.Present the Fixation point
         
@@ -287,11 +288,13 @@ if trialIsOK
         
         if inf.dummy
             [pos_x,pos_y] = GetMouse(Scr.w);
-            %             else
-            % check for position of eyes
-            %                 evt = Eyelink('NewestFloatSample'); % take EyePosition
-            %                 pos_x = evt.gx(inf.eye +1);
-            %                 pos_y = evt.gy(inf.eye +1);
+        else
+            %  check for position of eyes
+             if Eyelink('NewFloatSampleAvailable')>0 % If NO EYE DATA
+                evt = Eyelink('NewestFloatSample'); % take EyePosition
+                pos_x = evt.gx(inf.eye +1);
+                pos_y = evt.gy(inf.eye +1);
+            end
         end
                 
         if sqrt(sum(([pos_x,pos_y] - fixationCoord).^2)) <= inf.eyeWindow * Scr.pixelsperdegree
@@ -333,14 +336,18 @@ if trialIsOK
             
             DrawFormattedText(Scr.w,'Explore the scene...','center',Scr.wRect(4)-0.1*Scr.pixelsperdegree,[255 255 255]);
             
+            
             if inf.dummy
                 [pos_x,pos_y,button_state] = GetMouse(Scr.w);
 %                 [pos_x,pos_y] = GetMouse(Scr.w);
-%             else
-                % check for position of eyes
-%                 evt = Eyelink('NewestFloatSample'); % take EyePosition
-%                 pos_x = evt.gx(inf.eye +1);
-%                 pos_y = evt.gy(inf.eye +1);
+            else
+                [~,~,button_state] = GetMouse(Scr.w);
+%                 check for position of eyes
+                if Eyelink('NewFloatSampleAvailable')>0 % If NO EYE DATA
+                    evt = Eyelink('NewestFloatSample'); % take EyePosition
+                    pos_x = evt.gx(inf.eye +1);
+                    pos_y = evt.gy(inf.eye +1);                
+                end
             end
 
 %             quadrant_idx = sqrt(sum( ( repmat([pos_x,pos_y],numQuads,1) - myVar.centers').^2,2)) <= myVar.gazeWindow;
