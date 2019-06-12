@@ -53,7 +53,7 @@ else
     fixationDur = round(  (myVar.ITI_sd*randn(1) + myVar.intertrialTime) /Scr.ifi );
 end
 
-if bl < 6
+if bl < 2
     exploreDur     = round(myVar.train_exploreTime /Scr.ifi);                 % For early/practice blocks, make scene exploration time basically infinite
 else
     exploreDur     = round(myVar.exploreTime /Scr.ifi);                       % Duration of explore phase

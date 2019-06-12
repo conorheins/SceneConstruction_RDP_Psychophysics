@@ -50,7 +50,7 @@ else
     fixationDur = round(  (myVar.ITI_sd*randn(1) + myVar.intertrialTime) /Scr.ifi );
 end
 
-if bl < 6
+if bl < 3
     accumDur = round(myVar.train_accumTime /Scr.ifi);                            % For early/practice blocks, make RDP time basically infinite
 else
     accumDur     = round(myVar.accumTime /Scr.ifi);                             % Duration of RDP duration 
@@ -370,10 +370,11 @@ if trialIsOK
                 end
                 
                 % draw the direction choice symbols at the bottom of the screen
-                Screen('DrawTexture', Scr.w, UP_ptr,myVar.subRect,myVar.UPrect); 
+                Screen('DrawTexture', Scr.w, UP_ptr,myVar.subRect,myVar.UPrect);
                 Screen('DrawTexture', Scr.w, RIGHT_ptr,myVar.subRect,myVar.RIGHTrect);
                 Screen('DrawTexture', Scr.w, DOWN_ptr,myVar.subRect,myVar.DOWNrect);
                 Screen('DrawTexture', Scr.w, LEFT_ptr,myVar.subRect,myVar.LEFTrect);
+                
                 % uncomment if you want to provide feedback on accuracy
 %                 if trialAcc == 1
 %                     Screen('FrameOval', Scr.w, [0 255 0], CenterRectOnPointd([0 0 50 50],fixationCoord(1),fixationCoord(2)));
@@ -384,19 +385,27 @@ if trialIsOK
 %                 end
                 if noResponse
                     DrawFormattedText(Scr.w,'No response made!','center',Scr.wRect(4)*0.95,[255 0 ceil(255/4)]);
-                else
+                elseif and(~noResponse,bl==1)
                     if KeyCodeRaw(UP_choice)
-                        DrawFormattedText(Scr.w,'Chose UP','center',Scr.wRect(4)*0.95,[0 255 ceil(255/2)]);
-                        Screen('FrameRect', Scr.w, [0 200 50], myVar.UPrect, 5);
+%                         DrawFormattedText(Scr.w,'Chose UP','center',Scr.wRect(4)*0.95,[0 255 ceil(255/2)]);
+                        DrawFormattedText(Scr.w,'Chose UP','center',Scr.wRect(4)*0.95,Scr.white);
+%                         Screen('FrameRect', Scr.w, [0 200 50], myVar.UPrect, 5);
+                        Screen('FrameRect', Scr.w, Scr.white, myVar.UPrect, 5);
                     elseif KeyCodeRaw(RIGHT_choice)
-                        DrawFormattedText(Scr.w,'Chose RIGHT','center',Scr.wRect(4)*0.95,[0 255 ceil(255/2)]);
-                        Screen('FrameRect', Scr.w, [0 200 50], myVar.RIGHTrect, 5);
+%                         DrawFormattedText(Scr.w,'Chose RIGHT','center',Scr.wRect(4)*0.95,[0 255 ceil(255/2)]);
+                        DrawFormattedText(Scr.w,'Chose RIGHT','center',Scr.wRect(4)*0.95,Scr.white);
+%                         Screen('FrameRect', Scr.w, [0 200 50], myVar.RIGHTrect, 5);
+                        Screen('FrameRect', Scr.w, Scr.white, myVar.RIGHTrect, 5);
                     elseif KeyCodeRaw(DOWN_choice)
-                        DrawFormattedText(Scr.w,'Chose DOWN','center',Scr.wRect(4)*0.95,[0 255 ceil(255/2)]);
-                        Screen('FrameRect', Scr.w, [0 200 50], myVar.DOWNrect, 5);
+%                         DrawFormattedText(Scr.w,'Chose DOWN','center',Scr.wRect(4)*0.95,[0 255 ceil(255/2)]);
+                        DrawFormattedText(Scr.w,'Chose DOWN','center',Scr.wRect(4)*0.95,Scr.white);
+%                         Screen('FrameRect', Scr.w, [0 200 50], myVar.DOWNrect, 5);
+                        Screen('FrameRect', Scr.w, Scr.white, myVar.DOWNrect, 5);
                     elseif KeyCodeRaw(LEFT_choice)
-                        DrawFormattedText(Scr.w,'Chose LEFT','center',Scr.wRect(4)*0.95,[0 255 ceil(255/2)]);
-                        Screen('FrameRect', Scr.w, [0 200 50], myVar.LEFTrect, 5);
+%                         DrawFormattedText(Scr.w,'Chose LEFT','center',Scr.wRect(4)*0.95,[0 255 ceil(255/2)]);
+                        DrawFormattedText(Scr.w,'Chose LEFT','center',Scr.wRect(4)*0.95,Scr.white);
+%                         Screen('FrameRect', Scr.w, [0 200 50], myVar.LEFTrect, 5);
+                        Screen('FrameRect', Scr.w, Scr.white, myVar.LEFTrect, 5);
                     end 
                 end
                 vbl = Screen('Flip',Scr.w,vbl + (Scr.waitframes - 0.5) * Scr.ifi);
