@@ -54,7 +54,7 @@ try
         
         fName = sprintf('Subject%d__allData.mat',inf.subNo);
         fileLoc = fullfile(Scr.rootDir,'Data','SubjectsData',num2str(inf.subNo), fName);
-        load(fileLoc); bl = bl+1; inf.threshold = false;
+        load(fileLoc); bl = bl+1; 
         
     end
     
@@ -65,7 +65,7 @@ try
     for bl = 1:length(block)
 %         if ismember(bl,[3 20]), CountDown(Scr,myVar,300);end % break for 300 sec.
         
-        [inf,myVar,bl] = EyeLinkCalibration(Scr,inf,myVar,inst,bl,el); % REMEMBER TO ADD THIS TO OTHER SCRIPTS LIKE MD & WHOLE SCRIPT
+        [inf,myVar,bl] = EyeLinkCalibration(Scr,inf,myVar,inst,bl,el); 
 
         %% INSTRUCTIONS
         FileName        = ['block_' num2str(bl)];

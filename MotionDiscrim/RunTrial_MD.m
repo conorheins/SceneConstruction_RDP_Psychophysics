@@ -156,7 +156,7 @@ if trialIsOK
         [~,~, KeyCode] = KbCheck();     % In case if eye tracker lost eye
         if KeyCode(myVar.escapeKey)             % EXIT key pressed to exit experiment
             Screen('CloseAll')
-            error('EXIT button!\n');
+            error(sprintf('EXIT button!\n'));
         end
         
         Screen('DrawLines',Scr.w,all_fix_coords,myVar.lineWidthPix,Scr.white,fixationCoord,0);

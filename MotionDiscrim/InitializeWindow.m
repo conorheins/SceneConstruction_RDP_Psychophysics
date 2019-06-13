@@ -67,6 +67,7 @@ catch
     if inf.isFullScreen
 %         [Scr.w, Scr.wRect] = Screen('OpenWindow',screenNumber,Scr.black,[],[],[]);
         [Scr.w, Scr.wRect] = Screen('OpenWindow',screenNumber,Scr.gray,[],[],[]);
+        ListenChar(2)
     end
 end
 

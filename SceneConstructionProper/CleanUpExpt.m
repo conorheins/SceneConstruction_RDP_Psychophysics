@@ -1,5 +1,5 @@
 function  CleanUpExpt(inf)
-if ~inf.dummy && ~inf.threshold
+if ~inf.dummy
     Eyelink('Command','set_idle_mode');        % to write on EyeTracker screen first we need to set it in idle mode
     WaitSecs(0.05);
     Eyelink('Command','clear_screen %d', 0);   % clear the screen

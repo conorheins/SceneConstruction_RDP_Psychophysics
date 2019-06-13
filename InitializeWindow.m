@@ -65,7 +65,9 @@ try
     Scr.ifi = Screen('GetFlipInterval', Scr.w);
 catch
     if inf.isFullScreen
-        [Scr.w, Scr.wRect] = Screen('OpenWindow',screenNumber,Scr.black,[],[],[]);
+%         [Scr.w, Scr.wRect] = Screen('OpenWindow',screenNumber,Scr.black,[],[],[]);
+        [Scr.w, Scr.wRect] = Screen('OpenWindow',screenNumber,Scr.gray,[],[],[]);
+        ListenChar(2)
     end
 end
 
@@ -88,7 +90,7 @@ Scr.ifi=Screen('GetFlipInterval', Scr.w);
 
 % Enable alpha blending with proper blend-function. We need it for drawing
 % of smoothed points.
-Screen('BlendFunction', Scr.w, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+% Screen('BlendFunction', Scr.w, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 % Set text size (Most Screen functions must be called after
 % opening an onscreen window, as they only take window handles 'Scr.w' as

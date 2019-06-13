@@ -139,10 +139,14 @@ myVar.lifetime = floor( 1/Scr.ifi * myVar.lifetime_ms);  % lifetime of dots in f
 % myVar.dotSize = floor( 0.1 * Scr.pixelsperdegree);  % size of dots in pixels, following Palmer Huk & Shadlen 2005
 myVar.dotSize = 0.1 * Scr.pixelsperdegree;  % size of dots in pixels, following Palmer Huk & Shadlen 2005
 
-myVar.UP    = imread('UP.png');  
-myVar.RIGHT = imread('RIGHT.png');
-myVar.DOWN  = imread('DOWN.png');
-myVar.LEFT  = imread('LEFT.png');
+% myVar.UP    = imread('UP.png');  
+% myVar.RIGHT = imread('RIGHT.png');
+% myVar.DOWN  = imread('DOWN.png');
+% myVar.LEFT  = imread('LEFT.png');
+myVar.UP    = imread('UP_gray.png');  
+myVar.RIGHT = imread('RIGHT_gray.png');
+myVar.DOWN  = imread('DOWN_gray.png');
+myVar.LEFT  = imread('LEFT_gray.png');
 
 myVar.subRect = [300 100 650 400];
 myVar.LEFTrect = [Scr.wRect(3)/4 - 200 3*Scr.wRect(4)/4 Scr.wRect(3)/4 - 100 3*Scr.wRect(4)/4 + 85];

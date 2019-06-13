@@ -50,13 +50,17 @@ try
         
         fName = sprintf('Subject%d__allData.mat',inf.subNo);
         fileLoc = fullfile(Scr.expDir,'Data','SubjectsData',num2str(inf.subNo), fName);
-        load(fileLoc); bl = bl+1; inf.threshold = false;
+        load(fileLoc); bl = bl+1; 
         
     end
         
     %% BLOCK LOOP---------%
     %%%%%%%%%%%%%
     for bl = 1:length(block)
+%         if ismember(bl,[3 20]), CountDown(Scr,myVar,300);end % break for 300 sec.
+        
+        [inf,myVar,bl] = EyeLinkCalibration(Scr,inf,myVar,inst,bl,el); 
+
         
         FileName        = ['block_' num2str(bl)];
         [inf,myVar, edfFile]  = EyeLinkStart(Scr,inf,myVar,bl,FileName); % Instructions inside!!!!
@@ -165,7 +169,10 @@ try
         [myVar, block]  = SetUpTrialsMixed_SC(Scr,inf, myVar); % setUp CONDITIONS
         
 %         Show general instructions
-        Screen('DrawTexture', Scr.w, inst_sc.intro); % intro instruction
+        Screen('DrawTexture', Scr.w, inst_sc.intro1); % intro instruction
+        Screen('Flip',Scr.w); KbStrokeWait;
+        
+        Screen('DrawTexture', Scr.w, inst_sc.intro2); % intro instruction
         Screen('Flip',Scr.w); KbStrokeWait; bl = 1;
         
     else % IF AFTER BREAK
@@ -179,6 +186,11 @@ try
     %% BLOCK LOOP---------%
     %%%%%%%%%%%%%
     for bl = 1:length(block)
+        
+%         if ismember(bl,[3 20]), CountDown(Scr,myVar,300);end % break for 300 sec.
+        
+        [inf,myVar,bl] = EyeLinkCalibration(Scr,inf,myVar,inst,bl,el); 
+
         
         FileName        = ['block_' num2str(bl)];
         [inf,myVar, edfFile]  = EyeLinkStart(Scr,inf,myVar,bl,FileName); % Instructions inside!!!!
