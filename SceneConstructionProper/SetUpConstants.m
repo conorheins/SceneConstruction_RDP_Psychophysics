@@ -142,10 +142,16 @@ myVar.nDots    = ceil(20/(Scr.pixelsperdegree.^2) .* prod(myVar.apSize) ./ (1/my
 myVar.lifetime = floor( 1/Scr.ifi * myVar.lifetime_ms);  % lifetime of dots in flips -- use this value for psychophysics monitor
 myVar.dotSize = 0.1 * Scr.pixelsperdegree;  % size of dots in pixels, following Palmer Huk & Shadlen 2005
 
-myVar.UR_symbol  = imread('images/UR.png');  
-myVar.RD_symbol  = imread('images/RD.png');
-myVar.DL_symbol  = imread('images/DL.png');
-myVar.LU_symbol  = imread('images/LU.png');
+% myVar.UR_symbol  = imread('images/UR.png');  
+% make sure background of these in powerpoint is #808080ff in hex
+myVar.UR_symbol  = imread('images/UR_gray.png');  
+% myVar.RD_symbol  = imread('images/RD.png');
+myVar.RD_symbol  = imread('images/RD_gray.png');
+% myVar.DL_symbol  = imread('images/DL.png');
+myVar.DL_symbol  = imread('images/DL_gray.png');
+% myVar.LU_symbol  = imread('images/LU.png');
+myVar.LU_symbol  = imread('images/LU_gray.png');
+
 
 myVar.subRect = [275 80 715 440];
 myVar.UR_rect = [myVar.centerX + Scr.choice_distance(1,1) myVar.centerY - Scr.vertdisplace/2 myVar.centerX + Scr.choice_distance(2,1) myVar.centerY + Scr.vertdisplace/2];

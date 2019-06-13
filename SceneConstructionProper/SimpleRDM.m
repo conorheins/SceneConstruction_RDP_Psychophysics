@@ -39,7 +39,10 @@ try
         [myVar, block]  = SetUpTrialsMixed(Scr,inf, myVar); % setUp CONDITIONS
         
 %         Show general instructions
-        Screen('DrawTexture', Scr.w, inst.intro); % intro instruction
+        Screen('DrawTexture', Scr.w, inst.intro1); % intro instruction
+        Screen('Flip',Scr.w); KbStrokeWait;
+        
+        Screen('DrawTexture', Scr.w, inst.intro2); % intro instruction
         Screen('Flip',Scr.w); KbStrokeWait; bl = 1;
         
 %     else % IF AFTER BREAK
@@ -77,7 +80,7 @@ try
             
              % accumulate data into matrix
             dataArray = [dataArray;...
-                [bl, tr, block(bl).trials(tr).scene_ID, block(bl).trials(tr).config, block(bl).trials(tr).coher, trialData.trialRT, trialData.trialAcc, trialData.sceneChoice]];
+                [bl, tr, block(bl).trials(tr).scene_ID, block(bl).trials(tr).config, block(bl).trials(tr).coherence, trialData.trialRT, trialData.trialAcc, trialData.sceneChoice]];
             
             block(bl).trials(tr).trialRT = trialData.trialRT;
             block(bl).trials(tr).trialAcc= trialData.trialAcc;

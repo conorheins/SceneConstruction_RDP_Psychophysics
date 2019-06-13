@@ -82,8 +82,9 @@ dotParams = trialParams.dotParams; % get the RDP dot parameters for the current 
 % RDP-containing and empty quadrants
 
 numQuads = size(myVar.centers,2); 
-quadColors = repmat(ceil([255/2 255/2 255/2])',1,numQuads);      % gray rects to cover each quadrant when they're not being inspected
-quadFrameColors = repmat(ceil((5/8).*[255 255 255])',1,numQuads); % slightly-lighter gray frames around the covering quadrants
+% quadColors = repmat(ceil([255/2 255/2 255/2])',1,numQuads);      % gray rects to cover each quadrant when they're not being inspected
+quadColors = repmat(ceil((5/8).*[255 255 255])',1,numQuads);      % light-gray rects to cover each quadrant when they're not being inspected
+quadFrameColors = repmat(ceil((7/8).*[255 255 255])',1,numQuads); % even-lighter gray frames around the covering quadrants
 
 numPatterns = size(dotParams,2);
 
@@ -242,7 +243,7 @@ if trialIsOK
                
         button_state = false(1,3);
 
-        while and(( ~button_state(1) && noResponse),exploreFlips < exploreDur)
+        while and(( ~any(button_state) && noResponse),exploreFlips < exploreDur)
             
             [~,~, KeyCode] = KbCheck();     % In case if eye tracker lost eye
             if KeyCode(myVar.escapeKey)             % EXIT key pressed to exit experiment
@@ -344,7 +345,7 @@ if trialIsOK
             [KeyIsDown,endRTRaw, KeyCodeRaw] = KbCheck();
             
 %             if (KeyIsDown==1) && respToBeMade
-            if or( ((KeyIsDown==1) && respToBeMade),button_state(1))
+            if or( ((KeyIsDown==1) && respToBeMade),any(button_state))
 
                 if KeyCodeRaw(KbName('ESCAPE'))  % EXIT key pressed to exit experiment
                     Screen('CloseAll')
