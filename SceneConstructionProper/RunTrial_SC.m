@@ -46,9 +46,10 @@ noResponse  = true;
 
 Reward = 0; % fix this later
 
+ShowCursor('Arrow') 
+
 % Timing in frames
 if tr == 1
-    ShowCursor(1) 
     fixationDur  = round(myVar.fixationTime/Scr.ifi);                        % Duration of Fixation is longer if it's the first trial (gives subject time to move cursor/eyes to center)
 else
     fixationDur = round(  (myVar.ITI_sd*randn(1) + myVar.intertrialTime) /Scr.ifi );
@@ -154,7 +155,7 @@ eyeCheckOnset = vbl;                                                            
 if ~inf.dummy
     Eyelink('message', 'EYE_CHECK');
     while eyeCheck   
-        [ eyeCheck,eyeCheckDur,vbl] = doEyeCheck(Scr,myVar,inf,el,fixationCoord,eyeCheckDur,vbl);   
+        [ eyeCheck,eyeCheckDur,vbl] = doEyeCheck(Scr,myVar,inf,el,fixationCoord,eyeCheck,eyeCheckDur,vbl);
     end
 end
 
@@ -261,10 +262,11 @@ if trialIsOK
             DrawFormattedText(Scr.w,'Explore the scene...','center',Scr.wRect(4)-0.1*Scr.pixelsperdegree,[255 255 255]);
             
             
+            [mouse_x,mouse_y,button_state] = GetMouse(Scr.w);
             if inf.dummy
-                [pos_x,pos_y,button_state] = GetMouse(Scr.w);
+                pos_x = mouse_x;
+                pos_y = mouse_y;
             else
-                [~,~,button_state] = GetMouse(Scr.w);
                 if Eyelink('NewFloatSampleAvailable')>0 % If NO EYE DATA
                     evt = Eyelink('NewestFloatSample'); % take EyePosition
                     pos_x = evt.gx(inf.eye +1);
@@ -285,7 +287,7 @@ if trialIsOK
             for c_i = 1:numChoices
                 xv = [myVar.choiceRects(1,c_i) myVar.choiceRects(1,c_i) myVar.choiceRects(3,c_i) myVar.choiceRects(3,c_i)];
                 yv = [myVar.choiceRects(2,c_i) myVar.choiceRects(4,c_i) myVar.choiceRects(4,c_i) myVar.choiceRects(2,c_i)];
-                choice_idx(c_i) = inpolygon(pos_x,pos_y,xv,yv);
+                choice_idx(c_i) = inpolygon(mouse_x,mouse_y,xv,yv);
             end
             
                                 

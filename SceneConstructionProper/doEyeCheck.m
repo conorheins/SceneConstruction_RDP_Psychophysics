@@ -1,4 +1,4 @@
-function [ eyeCheck,eyeCheckDur,vbl] = doEyeCheck(Scr,myVar,inf,el,fixationCoord,eyeCheckDur,vbl)
+function [ eyeCheck,eyeCheckDur,vbl] = doEyeCheck(Scr,myVar,inf,el,fixationCoord,eyeCheck,eyeCheckDur,vbl)
 %DOEYECHECK: Wrapper function for Roman's eye-checking procedures (checks
 %            if eyes are in the fixation window)
 % INPUTS:   Scr: structure containing Screen-specific information
@@ -46,8 +46,9 @@ if Eyelink('NewFloatSampleAvailable')>0 % If NO EYE DATA
             Screen('DrawDots', Scr.w, fixationCoord, 12, Scr.black, [], 2);
             vbl = Screen('Flip', Scr.w, vbl + (Scr.waitframes - 0.5) * Scr.ifi);
             eyeCheckDur = round(myVar.eyeCheckTime/Scr.ifi);    % Restore eyeCheckDur
+            eyeCheck = true;
         else % OR LOOKING
-            Eyelink('command','draw_filled_box %d %d %d %d %d', 0, round(Scr.height-Scr.height/16), Scr.width, Scr.height,frameCol);
+%             Eyelink('command','draw_filled_box %d %d %d %d %d', 0, round(Scr.height-Scr.height/16), Scr.width, Scr.height,frameCol);
             Eyelink('command', 'draw_text %d %d 0 Eye is OK',round(Scr.width/2),round(Scr.height-Scr.height/32));
             % EYE AT THE SCREEN CENTER
             Screen('DrawDots', Scr.w, fixationCoord, 6, Scr.black, [], 2);
@@ -55,6 +56,8 @@ if Eyelink('NewFloatSampleAvailable')>0 % If NO EYE DATA
             eyeCheckDur = eyeCheckDur - 1;  % COUNTDOWN FLIPS
             if  eyeCheckDur-1 <= 0
                 eyeCheck = false; % NO errDur and NO checkDur
+            else
+                eyeCheck = true;
             end
         end
         
@@ -64,6 +67,7 @@ if Eyelink('NewFloatSampleAvailable')>0 % If NO EYE DATA
         Screen('DrawDots', Scr.w, fixationCoord, 12, Scr.black, [], 2);
         vbl = Screen('Flip', Scr.w, vbl + (Scr.waitframes - 0.5) * Scr.ifi);
         eyeCheckDur = round(myVar.eyeCheckTime/Scr.ifi); % Restore eyeCheckDur
+        eyeCheck = true;
     end
 end
 
