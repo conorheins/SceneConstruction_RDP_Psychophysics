@@ -179,9 +179,18 @@ if trialIsOK
         end
         grab_flag = ~grab_flag;
 
-        [mouse_x,mouse_y] = GetMouse(Scr.w);
+        if inf.dummy
+            [pos_x,pos_y] = GetMouse(Scr.w);
+        else
+            %  check for position of eyes
+            if Eyelink('NewFloatSampleAvailable')>0 % If NO EYE DATA
+                evt = Eyelink('NewestFloatSample'); % take EyePosition
+                pos_x = evt.gx(inf.eye +1);
+                pos_y = evt.gy(inf.eye +1);
+            end
+        end
         
-        if sqrt(sum(([mouse_x,mouse_y] - fixationCoord).^2)) <= inf.eyeWindow * Scr.pixelsperdegree
+        if sqrt(sum(([pos_x,pos_y] - fixationCoord).^2)) <= inf.eyeWindow * Scr.pixelsperdegree
             trialIsOK = true;
         else
             trialIsOK = false;

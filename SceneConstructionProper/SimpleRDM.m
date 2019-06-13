@@ -62,6 +62,8 @@ try
     for bl = 1:length(block)
 %         if ismember(bl,[3 20]), CountDown(Scr,myVar,300);end % break for 300 sec.
         
+        [inf,myVar,bl] = EyeLinkCalibration(Scr,inf,myVar,inst,bl,el); % REMEMBER TO ADD THIS TO OTHER SCRIPTS LIKE MD & WHOLE SCRIPT
+
         %% INSTRUCTIONS
         FileName        = ['block_' num2str(bl)];
         [inf,myVar, edfFile]  = EyeLinkStart(Scr,inf,myVar,bl,FileName); % Instructions inside!!!!
