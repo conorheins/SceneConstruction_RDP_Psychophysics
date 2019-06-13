@@ -110,6 +110,7 @@ myVar.ITI_sd           = 0.15;    % standard deviation in seconds of fixation wi
 % myVar.accumTime      = 2;       % time in seconds to make decision
 myVar.accumTime        = 5;       % time in seconds to make decision
 myVar.train_accumTime  = 1000;    % time in seconds to make decision for early/practice blocks
+myVar.eyeCheckTime      = 0.2;  % duration of EyeLink fixation period in seconds 
 
 myVar.feedbackTime   = 0.2;     % the length in seconds of the feedback window
 myVar.fixCrossDimPix = 40;      % size of the arms of fixation cross

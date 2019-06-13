@@ -67,7 +67,7 @@ for bl = 1:numBlocks
                 block(bl).trials(tr).scene_dirs= RDM.scenes(scene_i,:);
                 block(bl).trials(tr).scene_ID  = scene_i;
                 block(bl).trials(tr).config = config_i;
-                block(bl).trials(tr).coher = RDM.cohers(coh_i,:);
+                block(bl).trials(tr).coherence = RDM.cohers(coh_i,:);
             end
         end
     end

@@ -122,6 +122,7 @@ myVar.choiceTime        = 0.5;  % the length in seconds of choice display
 myVar.feedbackTime      = 1.5;  % the length in seconds of the feedback window
 myVar.intertrialTime    = 2;    % time in seconds of fixation window for all other trials 
 myVar.ITI_sd            = 0.5;  % standard deviation in seconds of fixation window for all other trials
+myVar.eyeCheckTime      = 0.2;  % duration of EyeLink fixation period in seconds 
 
 myVar.revealTime        = 0.1; % time in seconds before quadrant is revealed, once fixation has been detected
 myVar.starting_points   = 100; % starting points

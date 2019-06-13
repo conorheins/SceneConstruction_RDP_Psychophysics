@@ -127,15 +127,82 @@ end
 eyeCheckOnset = vbl;                                                                           %%%%TIME%%%%%%%
 if ~inf.dummy
     Eyelink('message', 'EYE_CHECK');
-    while eyeCheck   
-        [ eyeCheck,eyeCheckDur,vbl] = doEyeCheck(Scr,myVar,inf,el,fixationCoord,eyeCheckDur,vbl);   
+    while eyeCheck        
+        [~,~, KeyCode] = KbCheck();     % In case if eye tracker lost eye
+        if KeyCode(myVar.escapeKey)             % EXIT key pressed to exit experiment
+            Screen('CloseAll')
+            error('EXIT button!\n');
+        elseif KeyCode(myVar.cKey)      % Do whole CALIBRATION
+            Eyelink('stoprecording');
+            EyelinkDoTrackerSetup(el);  % CALIBRATION!!!!
+%             trialRep  = true; trialError = 5; trialIsOK = false; eyeCheck  = false; % Stop EyeCheck
+        elseif KeyCode(myVar.dKey)      % Do DRIFT CORRECTION
+            Eyelink('stoprecording');
+            % Do drift correction
+%             Screen('DrawDots', Scr.w, fixationCoord, 6, Scr.black, [], 2);
+            Screen('DrawDots', Scr.w, fixationCoord, 6, Scr.white, [], 2); 
+            Screen('Flip', Scr.w);
+            EyelinkDoDriftCorrection(el, myVar.fixXLoc, myVar.fixYLoc,0); % DRIFT CORRECTION!!!!
+%             Screen('DrawDots', Scr.w, fixationCoord, 6, Scr.black, [], 2);
+            Screen('DrawDots', Scr.w, fixationCoord, 6, Scr.white, [], 2);
+            Screen('Flip', Scr.w);
+            %finish the trial
+%             trialRep  = true; trialError = 5; trialIsOK = false; eyeCheck  = false; % Stop EyeCheck
+        elseif KeyCode(myVar.pKey)      % Skip EyeCheck
+            eyeCheck  = false;
+        end
+        
+        if Eyelink('NewFloatSampleAvailable')>0 % If NO EYE DATA
+            evt = Eyelink('NewestFloatSample'); % take EyePosition
+            eyeX = evt.gx(inf.eye +1);
+            eyeY = evt.gy(inf.eye +1);
+            
+            if eyeX ~= el.MISSING_DATA && eyeY ~= el.MISSING_DATA && evt.pa(inf.eye +1) > 0  % IF EYE OK
+                
+                % IF Pp NOT LOOKING AT THE FIXATION
+                if sqrt(sum( (fixationCoord - [eyeX eyeY]).^2,2)) > inf.eyeWindow * Scr.pixelsperdegee
+%                 if sqrt((eyeX - myVar.centerX)^2 + (eyeY - myVar.centerY)^2) > inf.eyeWindow * Scr.pixelsperdegree
+                    Eyelink('command','draw_filled_box %d %d %d %d 4', 0, round(Scr.height-Scr.height/16), Scr.width, Scr.height);
+                    Eyelink('command', 'draw_text %d %d 0 Eye NOT in the CENTER!',round(Scr.width/2),round(Scr.height-Scr.height/32));
+%                     Screen('DrawDots', Scr.w, fixationCoord, 12, Scr.black, [], 2);
+                    Screen('DrawDots', Scr.w, fixationCoord, 12, Scr.white, [], 2);
+                    % if trialData.BlPrePost==3,Screen('FrameOval', Scr.w, myVar.colGrey, myVar.frameRects, myVar.frameLineWidth);end
+                    % Screen('FillOval', Scr.w, [0 0 0], myVar.gaborRects(:,1)); %%%for test
+                    vbl = Screen('Flip', Scr.w, vbl + (Scr.waitframes - 0.5) * Scr.ifi);
+                    eyeCheckDur = round(.2/Scr.ifi);    % Restore eyeCheckDur
+                else % OR LOOKING
+                    Eyelink('command','draw_filled_box %d %d %d %d %d', 0, round(Scr.height-Scr.height/16), Scr.width, Scr.height,frameCol);
+                    Eyelink('command', 'draw_text %d %d 0 Eye is OK',round(Scr.width/2),round(Scr.height-Scr.height/32));
+                    % EYE AT THE SCREEN CENTER
+%                     Screen('DrawDots', Scr.w, fixationCoord, 6, Scr.black, [], 2);
+                    Screen('DrawDots', Scr.w, fixationCoord, 6, Scr.white, [], 2);
+                    % if trialData.BlPrePost==3,Screen('FrameOval', Scr.w, myVar.colGrey, myVar.frameRects, myVar.frameLineWidth);end
+                    % Screen('FillOval', Scr.w, [0 0 0], myVar.gaborRects(:,1)); %%%for test
+                    vbl = Screen('Flip', Scr.w, vbl + (Scr.waitframes - 0.5) * Scr.ifi);
+                    eyeCheckDur = eyeCheckDur - 1;  % COUNTDOWN FLIPS
+                    if  eyeCheckDur-1 <= 0
+                        eyeCheck = false; % NO errDur and NO checkDur
+                    end
+                end
+                
+            else % Pp BLINKED
+                Eyelink('command','draw_filled_box %d %d %d %d 1', 0, round(Scr.height-Scr.height/16), Scr.width, Scr.height);
+                Eyelink('command', 'draw_text %d %d 15 NO EYE!',round(Scr.width/2),round(Scr.height-Scr.height/32));
+%                 Screen('DrawDots', Scr.w, fixationCoord, 12, Scr.black, [], 2);
+                Screen('DrawDots', Scr.w, fixationCoord, 12, Scr.white, [], 2);
+                % if trialData.BlPrePost==3,Screen('FrameOval', Scr.w, myVar.colGrey, myVar.frameRects, myVar.frameLineWidth);end
+                % Screen('FillOval', Scr.w, [0 0 0], myVar.gaborRects(:,1)); %%%for test
+                vbl = Screen('Flip', Scr.w, vbl + (Scr.waitframes - 0.5) * Scr.ifi);
+                eyeCheckDur = round(.2/Scr.ifi); % Restore eyeCheckDur
+            end
+        end
     end
 end
 
-%% FIXATION
-%%%%%%%%%%%
-
 if trialIsOK
+    
+    %% FIXATION
+    %%%%%%%%%%%
     
     % Synchronize screen and send messages
     Screen('DrawLines',Scr.w,all_fix_coords,myVar.lineWidthPix,Scr.white,fixationCoord,0);
@@ -362,7 +429,6 @@ trial_data.dirResponse = dirResponse;
 trial_data.trialError = trialError;
 
 trial_data.trialSTART = trialSTART;
-trial_data.eyeCheckOnset = eyeCheckOnset;
 trial_data.fixationOnset = fixationOnset;
 trial_data.accumOnset = accumOnset;
 trial_data.feedbackOnset = feedbackOnset;
