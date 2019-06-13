@@ -128,7 +128,7 @@ eyeCheckOnset = vbl;                                                            
 if ~inf.dummy
     Eyelink('message', 'EYE_CHECK');
     while eyeCheck   
-        [ eyeCheck,eyeCheckDur,vbl] = doEyeCheck(Scr,myVar,inf,el,fixationCoord,eyeCheckDur,vbl);   
+        [ eyeCheck,eyeCheckDur,vbl] = doEyeCheck(Scr,myVar,inf,el,fixationCoord,eyeCheck,eyeCheckDur,vbl);
     end
 end
 
