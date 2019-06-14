@@ -177,8 +177,10 @@ vbl = fixationPeriod(Scr,myVar,fixationCoord,quadFrameColors,quadColors,fixation
 
 %% EXPLORATION ONSET
 %%%%%%%%%%
+if ~inf.dummy
+    Eyelink('message', 'EXPLORE_START');
+end
 
-Eyelink('message', 'EXPLORE_START');
 KeyIsDown = KbCheck();
 exploreFlips = 1;
 
@@ -335,7 +337,10 @@ while and(( ~any(button_state) && noResponse),exploreFlips < exploreDur)
     end
     
 end
-Eyelink('Message', 'EXPLORE_END');
+
+if ~inf.dummy
+    Eyelink('Message', 'EXPLORE_END');
+end
 
 
 if trialAcc == 1

@@ -75,7 +75,7 @@ myVar.sKey      = KbName('s'); % Scene 2 - RIGHT DOWN
 myVar.dKey      = KbName('d'); % Scene 3 - DOWN LEFT
 myVar.fKey      = KbName('f'); % Scene 4 - LEFT UP
 
-myVar.spacebar  = Kbname('space'); % spacebar -- in eyetracking mode, must be pressed simultaneous to looking at a scene
+myVar.spacebar  = KbName('space'); % spacebar -- in eyetracking mode, must be pressed simultaneous to looking at a scene
 
 % In this section we will define screen and distances
 
