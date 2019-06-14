@@ -14,13 +14,15 @@ local_fname = uigetfile(fullfile(dirName,'*.asc'));
 eye_data = readEDFASC(fullfile(dirName,local_fname),1,1);                                 % Process current block
 
 
-
 %% loop over trials and plot gaze trajectories
 
-image_directory = '/Users/conorheins/Desktop';
+% image_directory = '/Users/conorheins/Desktop';
 for trial_idx = 1:length(eye_data)
+    
+    start_t = eye_data(trial_idx).EXPLORE_START_t;
+    end_t = eye_data(trial_idx).EXPLORE_END_t;
 
-    gaze_x_y = eye_data(trial_idx).pos(:,2:3);
+    gaze_x_y = eye_data(trial_idx).pos(start_t:end_t,2:3);
     saccade_data = eye_data(trial_idx).saccade;
     fix_data = eye_data(trial_idx).fixation;
     
@@ -30,7 +32,6 @@ for trial_idx = 1:length(eye_data)
     dotCols = cool(size(gaze_x_y,1));
     
     figure('Position',[100 500 1200 900])
-    title(sprintf('Trial # %d',trial_idx))
     
     subplot(121)
     scatter(gaze_x_y(:,1),gaze_x_y(:,2),10,dotCols);
@@ -56,7 +57,7 @@ for trial_idx = 1:length(eye_data)
     sacc_legend = cell(1,size(saccade_data,1));
     color_iter = 0;
     for sacc_i = 1:size(saccade_data,1)
-        sacc_idx = saccade_data(sacc_i,1):saccade_data(sacc_i,2);
+        sacc_idx = (saccade_data(sacc_i,1)-start_t):(saccade_data(sacc_i,2)-end_t);
 %         hold on; scatter(gaze_x_y(sacc_idx,1),gaze_x_y(sacc_idx,2),50,sacc_colors(mod(color_iter,length(sacc_colors))+1,:),'filled',...
 %             'DisplayName',sprintf('Saccade Number: %d',sacc_i));
 %         hold on; scatter(gaze_x_y(sacc_idx,1),gaze_x_y(sacc_idx,2),50,sacc_colors{mod(color_iter,length(sacc_colors))+1},'filled',...
@@ -78,8 +79,10 @@ for trial_idx = 1:length(eye_data)
         legend(sacc_legend,'Location','Best','FontSize',10);
     end
     
-%     pause;
-    saveas(gcf,fullfile(image_directory,sprintf('Trial_%d_traj',trial_idx)),'jpg')
+    pause;
+%     saveas(gcf,fullfile(image_directory,sprintf('Trial_%d_traj',trial_idx)),'jpg')
+    title(sprintf('Trial # %d',trial_idx))
+
     close gcf;
 
 end

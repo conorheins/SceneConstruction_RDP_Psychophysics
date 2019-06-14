@@ -234,7 +234,11 @@ while and(( ~any(button_state) && noResponse),exploreFlips < exploreDur)
     for c_i = 1:numChoices
         xv = [myVar.choiceRects(1,c_i) myVar.choiceRects(1,c_i) myVar.choiceRects(3,c_i) myVar.choiceRects(3,c_i)];
         yv = [myVar.choiceRects(2,c_i) myVar.choiceRects(4,c_i) myVar.choiceRects(4,c_i) myVar.choiceRects(2,c_i)];
-        choice_idx(c_i) = inpolygon(mouse_x,mouse_y,xv,yv);
+        if inf.dummy
+            choice_idx(c_i) = inpolygon(mouse_x,mouse_y,xv,yv);
+        else
+            choice_idx(c_i) = inpolygon(pos_x,pos_y,xv,yv);
+        end
     end
     
     
@@ -288,7 +292,7 @@ while and(( ~any(button_state) && noResponse),exploreFlips < exploreDur)
             Screen('CloseAll')
             error('EXIT button!\n');
         else
-            if any(choice_idx)
+            if any(choice_idx) && KeyCodeRaw(myVar.spacebar)
                 trialRT = endRTRaw - exploreOnset; % save RT!!!!
                 noResponse = false;
                 if choice_idx(1)
