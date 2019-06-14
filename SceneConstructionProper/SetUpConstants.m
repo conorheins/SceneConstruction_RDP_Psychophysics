@@ -86,13 +86,13 @@ myVar.fKey      = KbName('f'); % Scene 4 - LEFT UP
 myVar.centerX           = Scr.width/2;
 myVar.centerY           = Scr.height/2;
 
-myVar.centW             = 33.24;      % MacBook Pro monitor width (cm.)
-myVar.centD             = 50;         % Distance to the screen (cm.)
-myVar.centH             = 20.77;      % MacBook Pro monitor height (cm.)
+% myVar.centW             = 33.24;      % MacBook Pro monitor width (cm.)
+% myVar.centD             = 50;         % Distance to the screen (cm.)
+% myVar.centH             = 20.77;      % MacBook Pro monitor height (cm.)
 
-% myVar.centW             = 52.2;       % ViewPixx EEG (cm.)
-% myVar.centD             = 91.0;       % Distance to the screen (cm.)
-% myVar.centH             = 29.1;       % ViewPixx EEG (cm.)
+myVar.centW             = 52.2;       % ViewPixx EEG (cm.)
+myVar.centD             = 91.0;       % Distance to the screen (cm.)
+myVar.centH             = 29.1;       % ViewPixx EEG (cm.)
 
 % PPD based on Visual Psyhcophysics book, Lu and Dosher
 Scr.pixelsperdegree = pi/180 * myVar.centD /myVar.centH * Scr.wRect(4);
@@ -114,15 +114,16 @@ Scr.choice_distance           = floor(Scr.pixelsperdegree.*[ [-10.25, -6.25, 3.7
 Scr.vertdisplace              = floor(2.25*Scr.pixelsperdegree);   % vertical displacements                                                            
 
 
-myVar.fixationTime      = 3;    % time in seconds of fixation window (basically, participant has to hold gaze / mouse position in center for 5 seconds before proceeding)
+myVar.fixationTime      = 0.2;    % time in seconds of fixation window (basically, participant has to hold gaze / mouse position in center for 5 seconds before proceeding)
 myVar.exploreTime       = 30;   % time in seconds to explore the scene 
 % myVar.train_exploreTime = 100;  % time in seconds to explore the scene in practice blocks
 myVar.train_exploreTime = 30;   % time in seconds to explore the scene in practice blocks -- for debugging purposes
 myVar.choiceTime        = 0.5;  % the length in seconds of choice display
-myVar.feedbackTime      = 1.5;  % the length in seconds of the feedback window
+% myVar.feedbackTime      = 1.5;  % the length in seconds of the feedback window
+myVar.feedbackTime      = 2.5;  % the length in seconds of the feedback window
 myVar.intertrialTime    = 2;    % time in seconds of fixation window for all other trials 
 myVar.ITI_sd            = 0.5;  % standard deviation in seconds of fixation window for all other trials
-myVar.eyeCheckTime      = 0.2;  % duration of EyeLink fixation period in seconds 
+myVar.eyeCheckTime      = 2;  % duration of EyeLink fixation period in seconds 
 
 myVar.revealTime        = 0.1; % time in seconds before quadrant is revealed, once fixation has been detected
 myVar.starting_points   = 100; % starting points
