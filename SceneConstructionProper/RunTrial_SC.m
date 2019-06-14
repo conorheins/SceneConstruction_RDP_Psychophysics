@@ -21,6 +21,9 @@ function [inf,trial_data,el] = RunTrial_SC(Scr,inf,myVar,el,bl,tr,block,trialPar
 % - save_flag:   Boolean true/false flag (1 / 0) indicating whether to save
 %                the frames of the trial into a video
 
+% write_flag = true;
+% counter = 1;
+
 trialSTART = GetSecs;                                                      %%%%TIME%%%%%%%
 
 fixationCoord = [myVar.fixXLoc myVar.fixYLoc];% location of center of fixation cross
@@ -118,7 +121,7 @@ if ~inf.dummy
     end
     
     % Important messages
-    Eyelink('message', 'Bl_Tr_Dir1_Dir2_Scene_Config_Coh %d %d %d %d %d',...              % MESSAGE FOR EDF
+    Eyelink('message', 'Bl_Tr_Dir1_Dir2_Scene_Config_Coh %d %d %d %d %d %d %d',...              % MESSAGE FOR EDF
         bl, tr,trialParams.scene_dirs(1),trialParams.scene_dirs(2),trialParams.scene_ID,trialParams.config,trialParams.coherence);
     
     Eyelink('command', 'record_status_message "BLOCK %d/%d TRIAL %d/%d"',...               % MESSAGE TO BE DISPLAYED ON EYELINK SCREEN
@@ -304,7 +307,16 @@ if trialIsOK
                         dotData(patt_id_temp) = update_dots(dotData(patt_id_temp));
                         % draws the current dots, using position, single size argument and dotType
                         Screen('DrawDots', Scr.w, dotData(patt_id_temp).dotPos, dotData(patt_id_temp).size, [255 255 255], [0 0], dotData(patt_id_temp).dotType);
-                                              
+                        
+%                         if write_flag
+%                             if counter == 10
+%                                 tmp_img = Screen('GetImage',Scr.w);
+%                                 imwrite(tmp_img,'example_trial_screen','png')
+%                                 write_flag = false;
+%                             end
+%                             counter = counter + 1;
+%                         end
+                      
                     end
                     
                     remaining_quadrants = ~ismember(1:numQuads,rev_quadrant); % this yields the logical indices for the remaining, non-revealed quadrants

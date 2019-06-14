@@ -91,7 +91,7 @@ try
         elseif strcmp(token,'EFIX')
             tmp=fscanf(fid,'%s',1); t=fscanf(fid,'%g',6)';
             result(trial).fixation=[result(trial).fixation; t - [trialstart trialstart 0 0 0 0]];
-            fprintf('f');
+%             fprintf('f');
         elseif strcmp(token,'ESACC')
             tmp=fscanf(fid,'%s',1); t=fscanf(fid,'%g',9)';
             if length(t)==9
@@ -99,11 +99,11 @@ try
             else
                 fprintf(['?']); disp(t);
             end;
-            fprintf('s');
+%             fprintf('s');
         elseif strcmp(token, 'EBLINK')
             tmp=fscanf(fid,'%s',1); t=fscanf(fid,'%g',3)';
             result(trial).blink  =[result(trial).blink; t - [trialstart trialstart 0]];
-            fprintf('B');
+%             fprintf('B');
         else
             fgets(fid); %gobble
         end
