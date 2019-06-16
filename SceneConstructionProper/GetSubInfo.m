@@ -2,7 +2,7 @@ function [inf] = GetSubInfo(inf)
 
 if inf.isTestMode % No name provided yet
     inf.subNo               = 1; % call this participant test1, latter we will assign proper number
-    inf.dummy               = menu('Dummy mode? (without EyeTraking)', {'Yes','No'});
+    inf.dummy               = menu('Dummy mode? (without EyeTracking)', {'Yes','No'});
     inf.isFullScreen        = menu('Display full screen?', {'Yes','No'});
     inf.language            = menu('What language?', {'English','German'});
     
@@ -18,7 +18,7 @@ else % check for the participance name
 %     inf.dummy               = 2;
 %     inf.isFullScreen        = 1;
 
-    inf.dummy               = menu('Dummy mode? (without EyeTraking)', {'Yes','No'});
+    inf.dummy               = menu('Dummy mode? (without EyeTracking)', {'Yes','No'});
     inf.isFullScreen        = menu('Display full screen?', {'Yes','No'});
     inf.language            = menu('What language?', {'English','German'});
 

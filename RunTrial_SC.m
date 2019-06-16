@@ -61,6 +61,17 @@ choiceDur  = round(myVar.choiceTime/Scr.ifi);               % Choice display dur
 feedbackDur  = round(myVar.feedbackTime/Scr.ifi);           % Feedback display duration in flips
 eyeCheckDur  = round(myVar.eyeCheckTime/Scr.ifi);           % Duration of EyeLink fixation in frames
 
+% Adjust response keys
+up_right   = myVar.aKey;
+right_down = myVar.sKey;
+down_left  = myVar.dKey;
+left_up    = myVar.fKey;
+
+% Initialize coordinates of fixation cross
+fix_x = [-myVar.fixCrossDimPix myVar.fixCrossDimPix 0 0];
+fix_y = [0 0 -myVar.fixCrossDimPix myVar.fixCrossDimPix];
+all_fix_coords = [fix_x;fix_y];
+
 dotParams = trialParams.dotParams; % get the RDP dot parameters for the current trial
 
 % Retrieve coordinates of the frames / quadrants 

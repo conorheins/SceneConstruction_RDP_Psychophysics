@@ -154,7 +154,6 @@ myVar.DL_symbol  = imread('images/DL_gray.png');
 % myVar.LU_symbol  = imread('images/LU.png');
 myVar.LU_symbol  = imread('images/LU_gray.png');
 
-
 myVar.subRect = [275 80 715 440];
 myVar.UR_rect = [myVar.centerX + Scr.choice_distance(1,1) myVar.centerY - Scr.vertdisplace/2 myVar.centerX + Scr.choice_distance(2,1) myVar.centerY + Scr.vertdisplace/2];
 myVar.RD_rect = [myVar.centerX + Scr.choice_distance(1,2) myVar.centerY - Scr.vertdisplace/2 myVar.centerX + Scr.choice_distance(2,2) myVar.centerY + Scr.vertdisplace/2];
