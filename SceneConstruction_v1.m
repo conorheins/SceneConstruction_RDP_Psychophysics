@@ -3,7 +3,7 @@
 fclose all;
 PsychDefaultSetup(1);       % to define color in range of 255 instead of 1
 delete AA_lasterrormsg.mat  % If we got an error, we would see it in root folder
-
+addpath(genpath('psignifit-master'));
 
 % Number of blocks to run
 prompt                  ={'Please enter the subject ID'};
@@ -43,7 +43,10 @@ try
         [myVar, block]  = SetUpTrialsMixed_RDP(Scr,inf, myVar); % setUp CONDITIONS
         
 %         Show general instructions
-        Screen('DrawTexture', Scr.w, inst_rdp.intro); % intro instruction
+        Screen('DrawTexture', Scr.w, inst_rdp.intro1); % intro instruction
+        Screen('Flip',Scr.w); KbStrokeWait; bl = 1;
+        
+        Screen('DrawTexture', Scr.w, inst_rdp.intro2); % intro instruction
         Screen('Flip',Scr.w); KbStrokeWait; bl = 1;
         
     else % IF AFTER BREAK
@@ -57,10 +60,23 @@ try
     %% BLOCK LOOP---------%
     %%%%%%%%%%%%%
     for bl = 1:length(block)
-%         if ismember(bl,[3 20]), CountDown(Scr,myVar,300);end % break for 300 sec.
         
-        [inf,myVar,bl] = EyeLinkCalibration(Scr,inf,myVar,inst,bl,el); 
-
+        if bl == 1
+            
+            [inf,myVar,bl] = EyeLinkCalibration(Scr,inf,myVar,inst,bl,el); % calibrate before first block
+            
+        end
+            
+        if bl > 2
+            
+            Screen('DrawTexture', Scr.w, inst_rdp.intro3); % slide telling participants that next blocks are gonna be the real deal
+            Screen('Flip',Scr.w); KbStrokeWait; 
+            CountDown(Scr,myVar,120);
+            
+            [inf,myVar,bl] = EyeLinkCalibration(Scr,inf,myVar,inst,bl,el); % recalibrate before main experiment
+                    
+        end
+            
         
         FileName        = ['block_' num2str(bl)];
         [inf,myVar, edfFile]  = EyeLinkStart(Scr,inf,myVar,bl,FileName); % Instructions inside!!!!
@@ -138,6 +154,7 @@ end
 [coherences,flags] = analyze_MDdata(block,inf);
 
 
+
 %% SETUP EXPERIMENT
 %%%%%%%%%%%%%%%%%%%%%%
 
@@ -187,9 +204,10 @@ try
     %%%%%%%%%%%%%
     for bl = 1:length(block)
         
-%         if ismember(bl,[3 20]), CountDown(Scr,myVar,300);end % break for 300 sec.
         
-        [inf,myVar,bl] = EyeLinkCalibration(Scr,inf,myVar,inst,bl,el); 
+        if bl == 1
+            [inf,myVar,bl] = EyeLinkCalibration(Scr,inf,myVar,inst,bl,el); 
+        end
 
         
         FileName        = ['block_' num2str(bl)];

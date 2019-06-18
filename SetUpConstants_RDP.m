@@ -85,13 +85,13 @@ myVar.dKey      = KbName('d'); % do drift correction
 myVar.centerX           = Scr.width/2;
 myVar.centerY           = Scr.height/2;
 
-% myVar.centW             = 33.24;      % MacBook Pro monitor width (cm.)
-% myVar.centD             = 50;         % Distance to the screen (cm.)
-% myVar.centH             = 20.77;      % MacBook Pro monitor height (cm.)
-% 
-myVar.centW             = 52.2;       % ViewPixx EEG (cm.)
-myVar.centD             = 91.0;       % Distance to the screen (cm.)
-myVar.centH             = 29.1;       % ViewPixx EEG (cm.)
+myVar.centW             = 33.24;      % MacBook Pro monitor width (cm.)
+myVar.centD             = 50;         % Distance to the screen (cm.)
+myVar.centH             = 20.77;      % MacBook Pro monitor height (cm.)
+
+% myVar.centW             = 52.2;       % ViewPixx EEG (cm.)
+% myVar.centD             = 91.0;       % Distance to the screen (cm.)
+% myVar.centH             = 29.1;       % ViewPixx EEG (cm.)
 
 % PPD based on Visual Psyhcophysics book, Lu and Dosher
 Scr.pixelsperdegree = pi/180 * myVar.centD /myVar.centH * Scr.wRect(4);
@@ -143,10 +143,10 @@ myVar.dotSize = 0.1 * Scr.pixelsperdegree;  % size of dots in pixels, following 
 % myVar.RIGHT = imread('RIGHT.png');
 % myVar.DOWN  = imread('DOWN.png');
 % myVar.LEFT  = imread('LEFT.png');
-myVar.UP    = imread('UP_gray.png');  
-myVar.RIGHT = imread('RIGHT_gray.png');
-myVar.DOWN  = imread('DOWN_gray.png');
-myVar.LEFT  = imread('LEFT_gray.png');
+myVar.UP    = imread('MotionDiscrim/UP_gray.png');  
+myVar.RIGHT = imread('MotionDiscrim/RIGHT_gray.png');
+myVar.DOWN  = imread('MotionDiscrim/DOWN_gray.png');
+myVar.LEFT  = imread('MotionDiscrim/LEFT_gray.png');
 
 myVar.subRect = [300 100 650 400];
 myVar.LEFTrect = [Scr.wRect(3)/4 - 200 3*Scr.wRect(4)/4 Scr.wRect(3)/4 - 100 3*Scr.wRect(4)/4 + 85];
