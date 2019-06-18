@@ -59,22 +59,11 @@ for accur_i = 1:length(desired_accur)
 end
 
 flag = false(length(desired_accur),1); % these are true/false flags that indicate whether the confidence intervals of the fit for each coherence
-% value threshold are too large (e.g. if the width of the interval is
-% larger than twice the difference between successive coherence values
-for accur_i = 1:length(desired_accur)
+% value threshold are
+for accur_i = 2:length(desired_accur)
     
-    if accur_i == 1
-        if diff(squeeze(CIs(accur_i,1,:))) > 2*(coherences(accur_i+1) - coherences(accur_i))
-            flag(accur_i) = true;
-        end 
-    elseif accur_i == length(desired_accur)
-        if diff(squeeze(CIs(accur_i+1,1,:))) > 2*(coherences(accur_i+1) - coherences(accur_i))
-            flag(accur_i) = true;
-        end 
-    else
-        if or(diff(squeeze(CIs(accur_i,1,:))) > 2 *(coherences(accur_i)-coherences(accur_i-1)), diff(squeeze(CIs(accur_i,1,:))) > 2 *(coherences(accur_i+1)-coherences(accur_i)))
-            flag(accur_i) = true;
-        end
+    if diff(squeeze(CIs(accur_i,1,:))) > 2 *(coherences(accur_i)-coherences(accur_i-1))
+        flag(accur_i) = true;
     end
     
 end
