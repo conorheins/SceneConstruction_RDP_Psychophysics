@@ -3,7 +3,8 @@
 fclose all;
 PsychDefaultSetup(1);       % to define color in range of 255 instead of 1
 delete AA_lasterrormsg.mat  % If we got an error, we would see it in root folder
-addpath(genpath('psignifit-master'));
+addpath(genpath('MotionDiscrim/psignifit-master'));
+addpath(genpath('utilities'));
 
 % Number of blocks to run
 prompt                  ={'Please enter the subject ID'};
@@ -63,7 +64,7 @@ try
         
         if bl == 1
             
-            [inf,myVar,bl] = EyeLinkCalibration(Scr,inf,myVar,inst,bl,el); % calibrate before first block
+            [inf,myVar,bl] = EyeLinkCalibration(Scr,inf,myVar,inst_rdp,bl,el); % calibrate before first block
             
         end
             
@@ -73,7 +74,7 @@ try
             Screen('Flip',Scr.w); KbStrokeWait; 
             CountDown(Scr,myVar,120);
             
-            [inf,myVar,bl] = EyeLinkCalibration(Scr,inf,myVar,inst,bl,el); % recalibrate before main experiment
+            [inf,myVar,bl] = EyeLinkCalibration(Scr,inf,myVar,inst_rdp,bl,el); % recalibrate before main experiment
                     
         end
             
@@ -86,7 +87,7 @@ try
         tr = 1;
         while tr <= length(block(bl).trials)
             
-            [inf,trialData,el] = RunTrial_MD(Scr,inf,myVar,el,bl,tr,block,block(bl).trials(tr),false);
+            [inf,trialData,el] = RunTrial_MD(Scr,inf,myVar,el,bl,tr,block,block(bl).trials(tr));
             
             % add current trial's results to block structure
             block(bl).trials(tr).trialRT = trialData.trialRT;
@@ -151,10 +152,13 @@ end
 
 %% Determine subject's psychometric function in order to choose coherences
 
-[coherences,flags] = analyze_MDdata(block,inf);
+[myVar.coherences2use,flags] = analyze_MDdata(block,[0.05 1 3]);
 
+if any(flags)
+    warning('Coherence calibration is sub-optimal!')
+end
 
-
+clear ans answer bl block edfFile el FileName fName inst_rdp prompt Scr text title tr trialData
 %% SETUP EXPERIMENT
 %%%%%%%%%%%%%%%%%%%%%%
 
@@ -177,7 +181,7 @@ try
     
     [inst_sc]          = Instructions_SC(inf,Scr);     % Load pictures with instructions
     
-    [Scr,inf,myVar]    = SetUpConstants_SC(Scr,inf);        % setUp VARIABLES
+    [Scr,inf,myVar]    = SetUpConstants_SC(Scr,inf,myVar);        % setUp VARIABLES
     
     [el,inf]           = EyeLinkON(Scr,inf);           % Turn on EyeLink
     
@@ -185,7 +189,7 @@ try
         
         [myVar, block]  = SetUpTrialsMixed_SC(Scr,inf, myVar); % setUp CONDITIONS
         
-%         Show general instructions
+%        Show general instructions
         Screen('DrawTexture', Scr.w, inst_sc.intro1); % intro instruction
         Screen('Flip',Scr.w); KbStrokeWait;
         
@@ -206,7 +210,17 @@ try
         
         
         if bl == 1
-            [inf,myVar,bl] = EyeLinkCalibration(Scr,inf,myVar,inst,bl,el); 
+            [inf,myVar,bl] = EyeLinkCalibration(Scr,inf,myVar,inst_sc,bl,el); 
+        end
+        
+        if bl == 3
+            
+            Screen('DrawTexture', Scr.w, inst_sc.breakScreen); % slide telling participants they have a break
+            Screen('Flip',Scr.w); KbStrokeWait; 
+            CountDown(Scr,myVar,300);
+            
+            [inf,myVar,bl] = EyeLinkCalibration(Scr,inf,myVar,inst_sc,bl,el); % recalibrate before main experiment
+                    
         end
 
         
@@ -218,8 +232,21 @@ try
         tr = 1;
         while tr <= length(block(bl).trials)
             
-            [inf,trialData,el] = RunTrial_SC(Scr,inf,myVar,el,bl,tr,block,block(bl).trials(tr),false);
-             
+            [inf,trialData,el] = RunTrial_SC(Scr,inf,myVar,el,bl,tr,block,block(bl).trials(tr));
+            % add current trial's results to block structure
+            block(bl).trials(tr).trialRT = trialData.trialRT;
+            block(bl).trials(tr).trialAcc= trialData.trialAcc;
+            block(bl).trials(tr).sceneChoice = trialData.sceneChoice;
+            block(bl).trials(tr).trialError = trialData.trialError;
+            block(bl).trials(tr).Reward = trialData.Reward;
+
+            block(bl).trials(tr).trialSTART = trialData.trialSTART;
+            block(bl).trials(tr).fixationOnset = trialData.fixationOnset;
+            block(bl).trials(tr).exploreOnset = trialData.exploreOnset;
+            block(bl).trials(tr).choiceOnset = trialData.choiceOnset;
+            block(bl).trials(tr).feedbackOnset = trialData.feedbackOnset;
+            block(bl).trials(tr).trialEND = trialData.trialEND; 
+            
             tr = tr+1;
             
         end

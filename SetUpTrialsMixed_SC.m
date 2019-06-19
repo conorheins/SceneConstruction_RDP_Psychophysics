@@ -10,16 +10,23 @@ function [myVar, block] = SetUpTrialsMixed_SC(Scr,inf, myVar)
 %% Levels of variables
 
 %Number of iterations and blocks
-numBlocks          = inf.numBlocks;     % How many blocks do we have?
+numBlocks          = inf.numBlocks_SC;     % How many blocks do we have?
 
 % coherz = [0 12.8 25.6 36 51.2 100]';
 
-coherz = [12.8 12.8;
-          12.8 36.0;
-          12.8 80.0;
-          36.0 36.0;
-          36.0 80.0;
-          80.0 80.0];
+% coherz = [12.8 12.8;
+%           12.8 36.0;
+%           12.8 80.0;
+%           36.0 36.0;
+%           36.0 80.0;
+%           80.0 80.0];
+
+% newest version, with coherence values chosen based on psychometric
+% function of individual participants:
+
+% this function will automatically generate all possible pairs of coherences - namely, each condition 
+% (with replacement, i.e. you can have two RDPs with the same coherence) 
+coherz = nchoosek_withR(myVar.coherences2use,2); 
 
 factor.RDMcohers      = 2; % the number of values that a given RDP can take, per level/factor
 factor.scenes         = 2; % the number of values that a given RDP can take, per level/factor
@@ -78,21 +85,16 @@ for b = 1:numBlocks
 
     %-------------PreDefineVarisbles-------------%
     %Resp
-    [block(b).trials.Accuracy]          = deal(nan);
-    [block(b).trials.RT]                = deal(nan);
-    [block(b).trials.keyPressed]        = deal(nan);
-    [block(b).trials.error]             = deal(0);
+    [block(b).trials.trialRT]           = deal(nan);
+    [block(b).trials.trialAcc]          = deal(nan);
     %Stim&Struct
-    [block(b).trials.trialNum]          = deal(nan);
-    [block(b).trials.Pp]                = deal(inf.subNo);
     [block(b).trials.Reward]            = deal(nan);
-    [block(b).trials.BlType]            = deal(nan);
     %Timing
     [block(b).trials.trialSTART]        = deal(nan);
     [block(b).trials.eyeCheckOnset]     = deal(nan);
     [block(b).trials.fixationOnset]     = deal(nan);
-    [block(b).trials.endRT]             = deal(nan);
-    [block(b).trials.RespOnsetFlip]     = deal(nan);
+    [block(b).trials.exploreOnset]     = deal(nan);
+    [block(b).trials.choiceOnset]     = deal(nan);
     [block(b).trials.feedbackOnset]     = deal(nan);
     [block(b).trials.trialEND]          = deal(nan);
     
@@ -100,6 +102,9 @@ for b = 1:numBlocks
     block(b).trials = block(b).trials(randomOrder);
 
     block(b).trials = block(b).trials(1:10); % for testing purposes
+    
+    [~,newOrder] = CheckShuffle([block(b).trials.sceneID],2); % make sure the same scene repeats at most twice in a row within a block
+    block(b).trials = block(b).trials(newOrder);
     
     % [~,randomOrder] = CheckShuffle([block(b).trials.conSort],2); %Advanced check by Adam
     % block(b).trials = block(b).trials(randomOrder);

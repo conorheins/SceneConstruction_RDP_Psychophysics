@@ -7,7 +7,7 @@ if inf.isTestMode % No name provided yet
     inf.language            = menu('What language?', {'English','German'});
     
     % Number of blocks to run
-    prompt                  ={'How many blocks would you like to run?'};
+    prompt                  ={'How many blocks of motion discrimination would you like to run?'};
     title                   ='Number of blocks to complete';  % The main title of input dialog interface.
     answer                  =inputdlg(prompt,title);
     
@@ -41,7 +41,7 @@ else % check for the participance name
     answer                  =inputdlg(prompt,title);
     
     % Gather answers into variables
-    inf.numBlocks                 = str2double(answer{1});
+    inf.numBlocks_MD                 = str2double(answer{1});
     
 end
 

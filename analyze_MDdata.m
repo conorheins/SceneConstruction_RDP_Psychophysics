@@ -50,6 +50,8 @@ psychometric_fit = psignifit(acc_Table,options);
 % this is how to go from desired accuracies to precisions
 % precisions = log((3*desired_accur)./(1-desired_accur));
 
+% this is how to go from desired precisions to the corresponding probability of 
+% choosing correctly in a 4-AFC task
 desired_accur = exp(desired_precisions)./(3+exp(desired_precisions));
 
 coherences = zeros(length(desired_accur),1);
@@ -64,15 +66,16 @@ flag = false(length(desired_accur),1); % these are true/false flags that indicat
 for accur_i = 1:length(desired_accur)
     
     if accur_i == 1
-        if diff(squeeze(CIs(accur_i,1,:))) > 2*(coherences(accur_i+1) - coherences(accur_i))
+        if abs(diff(squeeze(CIs(accur_i,1,:)))) > 2*(coherences(accur_i+1) - coherences(accur_i))
             flag(accur_i) = true;
         end 
     elseif accur_i == length(desired_accur)
-        if diff(squeeze(CIs(accur_i+1,1,:))) > 2*(coherences(accur_i+1) - coherences(accur_i))
+        if abs(diff(squeeze(CIs(accur_i,1,:)))) > 2*(coherences(accur_i) - coherences(accur_i-1))
             flag(accur_i) = true;
         end 
     else
-        if or(diff(squeeze(CIs(accur_i,1,:))) > 2 *(coherences(accur_i)-coherences(accur_i-1)), diff(squeeze(CIs(accur_i,1,:))) > 2 *(coherences(accur_i+1)-coherences(accur_i)))
+        if or(abs(diff(squeeze(CIs(accur_i,1,:)))) > 2 *(coherences(accur_i)-coherences(accur_i-1)),...
+                diff(squeeze(CIs(accur_i,1,:))) > 2 *(coherences(accur_i+1)-coherences(accur_i)))
             flag(accur_i) = true;
         end
     end

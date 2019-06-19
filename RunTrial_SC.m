@@ -444,7 +444,6 @@ trial_data.feedbackOnset = feedbackOnset;
 trial_data.trialEND = trialEND;
 
 % Clear screen
-% Screen('DrawLines',Scr.w,all_fix_coords,myVar.lineWidthPix,Scr.white,fixationCoord,0);
 Screen('FillRect',Scr.w,quadColors,myVar.RDMRects);
 Screen('FrameRect',Scr.w,quadFrameColors,myVar.RDMRects,myVar.frameLineWidth);
 Screen('Flip', Scr.w);

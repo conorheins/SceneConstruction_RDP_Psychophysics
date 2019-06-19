@@ -7,7 +7,7 @@ function [myVar, block] = SetUpTrialsMixed_RDP(Scr,inf, myVar)
 %% Levels of variables
 
 %Number of iterations and blocks
-numBlocks          = inf.numBlocks;     % How many blocks do we have?
+numBlocks          = inf.numBlocks_MD;     % How many blocks do we have?
 
 coherz = [0 12.8 25.6 36 51.2 100]';
 dirz = [0 90 180 270]';
