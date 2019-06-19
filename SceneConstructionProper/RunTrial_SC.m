@@ -166,11 +166,7 @@ vbl = fixationPeriod_SC(Scr,myVar,fixationCoord,quadFrameColors,quadColors,fixat
 if ~inf.dummy
     Eyelink('message', 'EXPLORE_START');
 end
-
-KeyIsDown = KbCheck();
 exploreFlips = 1;
-
-grab_flag = true;
 
 quadrant_dwell_counters = zeros(numQuads,1);
 
@@ -278,7 +274,7 @@ while and(( ~any(button_state) && noResponse),exploreFlips < exploreDur)
         
         if KeyCodeRaw(KbName('ESCAPE'))  % EXIT key pressed to exit experiment
             Screen('CloseAll')
-            error('EXIT button!\n');
+            error(sprintf('EXIT button!\n'));
         else
             if any(choice_idx) && KeyCodeRaw(myVar.spacebar)
                 trialRT = endRTRaw - exploreOnset; % save RT!!!!
@@ -433,7 +429,6 @@ trial_data.feedbackOnset = feedbackOnset;
 trial_data.trialEND = trialEND;
 
 % Clear screen
-% Screen('DrawLines',Scr.w,all_fix_coords,myVar.lineWidthPix,Scr.white,fixationCoord,0);
 Screen('FillRect',Scr.w,quadColors,myVar.RDMRects);
 Screen('FrameRect',Scr.w,quadFrameColors,myVar.RDMRects,myVar.frameLineWidth);
 Screen('Flip', Scr.w);

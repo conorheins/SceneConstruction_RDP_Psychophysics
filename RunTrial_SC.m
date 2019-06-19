@@ -61,17 +61,6 @@ choiceDur  = round(myVar.choiceTime/Scr.ifi);               % Choice display dur
 feedbackDur  = round(myVar.feedbackTime/Scr.ifi);           % Feedback display duration in flips
 eyeCheckDur  = round(myVar.eyeCheckTime/Scr.ifi);           % Duration of EyeLink fixation in frames
 
-% Adjust response keys
-up_right   = myVar.aKey;
-right_down = myVar.sKey;
-down_left  = myVar.dKey;
-left_up    = myVar.fKey;
-
-% Initialize coordinates of fixation cross
-fix_x = [-myVar.fixCrossDimPix myVar.fixCrossDimPix 0 0];
-fix_y = [0 0 -myVar.fixCrossDimPix myVar.fixCrossDimPix];
-all_fix_coords = [fix_x;fix_y];
-
 dotParams = trialParams.dotParams; % get the RDP dot parameters for the current trial
 
 % Retrieve coordinates of the frames / quadrants 
@@ -177,11 +166,7 @@ vbl = fixationPeriod_SC(Scr,myVar,fixationCoord,quadFrameColors,quadColors,fixat
 if ~inf.dummy
     Eyelink('message', 'EXPLORE_START');
 end
-
-KeyIsDown = KbCheck();
 exploreFlips = 1;
-
-grab_flag = true;
 
 quadrant_dwell_counters = zeros(numQuads,1);
 
@@ -289,7 +274,7 @@ while and(( ~any(button_state) && noResponse),exploreFlips < exploreDur)
         
         if KeyCodeRaw(KbName('ESCAPE'))  % EXIT key pressed to exit experiment
             Screen('CloseAll')
-            error('EXIT button!\n');
+            error(sprintf('EXIT button!\n'));
         else
             if any(choice_idx) && KeyCodeRaw(myVar.spacebar)
                 trialRT = endRTRaw - exploreOnset; % save RT!!!!
