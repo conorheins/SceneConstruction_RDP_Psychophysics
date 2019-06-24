@@ -1,4 +1,4 @@
-function [coherences,flag] = analyze_MDdata(block,desired_precisions)
+function [coherences,flag] = analyze_MDdata(block,desired_precisions,starting_bl)
 
 % this function analyzes a single subject's categorization accuracy data from the
 % motion discrimination task, and chooses subject-specific coherence levels to use
@@ -10,7 +10,7 @@ function [coherences,flag] = analyze_MDdata(block,desired_precisions)
 
 allCoh = [];
 allAcc = [];
-for bl = 1:length(block)
+for bl = starting_bl:length(block)
     
     allCoh = [allCoh; [block(bl).trials.coherence]'];
     allAcc = [allAcc; [block(bl).trials.trialAcc]'];

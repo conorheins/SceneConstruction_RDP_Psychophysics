@@ -115,14 +115,12 @@ Scr.vertdisplace              = floor(2.25*Scr.pixelsperdegree);   % vertical di
 
 myVar.fixationTime      = 0.250;    % time in seconds of fixation window (basically, participant has to hold gaze / mouse position in center for 5 seconds before proceeding)
 myVar.exploreTime       = 30;   % time in seconds to explore the scene 
-% myVar.train_exploreTime = 100;  % time in seconds to explore the scene in practice blocks
 myVar.train_exploreTime = 30;   % time in seconds to explore the scene in practice blocks -- for debugging purposes
 myVar.choiceTime        = 0.5;  % the length in seconds of choice display
-% myVar.feedbackTime      = 1.5;  % the length in seconds of the feedback window
-myVar.feedbackTime      = 2.5;  % the length in seconds of the feedback window
-myVar.intertrialTime    = 2;    % time in seconds of fixation window for all other trials 
-myVar.ITI_sd            = 0.5;  % standard deviation in seconds of fixation window for all other trials
-myVar.eyeCheckTime      = 0.5;  % duration of EyeLink fixation period in seconds 
+myVar.feedbackTime      = 2.25;  % the length in seconds of the feedback window
+myVar.eyeCheckTime      = 1.0;  %  duration of EyeLink fixation period in seconds for the first trial of each block 
+myVar.intertrialTime    = 0.5;  % time in seconds of EyeCheck window for all other trials 
+myVar.ITI_sd            = 0.15; % standard deviation in seconds of EyeCheck window for all other trials
 
 myVar.revealTime        = 0.1; % time in seconds before quadrant is revealed, once fixation has been detected
 myVar.starting_points   = 100; % starting points

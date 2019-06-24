@@ -50,11 +50,12 @@ end
 
 if bl < 3
     accumDur = round(myVar.train_accumTime /Scr.ifi);                            % For early/practice blocks, make RDP time basically infinite
+    eyeCheckDur = round(myVar.train_eyeTime/Scr.ifi);                            % Duration of EyeLink fixation in frames for early/practice blocks
 else
     accumDur     = round(myVar.accumTime /Scr.ifi);                             % Duration of RDP duration 
+    eyeCheckDur  = round(myVar.eyeCheckTime/Scr.ifi);           % Duration of EyeLink fixation in frames
 end
 feedbackDur  = round(myVar.feedbackTime/Scr.ifi);           % Duration of 'Feedback' display (just shows participant what they chose)
-eyeCheckDur  = round(myVar.eyeCheckTime/Scr.ifi);           % Duration of EyeLink fixation in frames
 
 % Adjust response keys
 UP_choice    = myVar.upKey;

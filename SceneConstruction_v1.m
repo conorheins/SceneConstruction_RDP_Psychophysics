@@ -68,7 +68,7 @@ try
             
         end
             
-        if bl > 2
+        if bl == 3
             
             Screen('DrawTexture', Scr.w, inst_rdp.intro3); % slide telling participants that next blocks are gonna be the real deal
             Screen('Flip',Scr.w); KbStrokeWait; 
@@ -153,13 +153,14 @@ end
 %% Determine subject's psychometric function in order to choose coherences
 
 desired_precisions = [1 2 5]; % correspond to accuracies of ~47%, 71%, and 98%
-[myVar.coherences2use,flags] = analyze_MDdata(block,[0.05 1 3]);
+starting_bl_idx = 3;
+[myVar.coherences2use,flags] = analyze_MDdata(block,desired_precisions,starting_bl_idx);
 
 if any(flags)
     warning('Coherence calibration is sub-optimal!')
 end
 
-clear ans answer bl block edfFile el FileName fName inst_rdp prompt Scr text title tr trialData
+clear ans answer bl block edfFile el FileName fName inst_rdp prompt Scr text title tr trialData desired_precisions starting_bl
 %% SETUP EXPERIMENT
 %%%%%%%%%%%%%%%%%%%%%%
 
@@ -212,6 +213,8 @@ try
         
         if bl == 1
             [inf,myVar,bl] = EyeLinkCalibration(Scr,inf,myVar,inst_sc,bl,el); 
+        else
+            block(bl).trials(1).Reward = block(bl-1).trials(end).Reward; % initialize next block's reward to be the reward accumulated at the end of the previous block 
         end
         
         if bl == 3

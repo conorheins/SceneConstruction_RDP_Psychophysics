@@ -47,9 +47,9 @@ ShowCursor('Arrow')
 
 % Timing in frames
 if tr == 1
-    fixationDur  = round(myVar.fixationTime/Scr.ifi);                        % Duration of Fixation is longer if it's the first trial (gives subject time to move cursor/eyes to center)
+    eyeCheckDur  = round(myVar.eyeCheckTime/Scr.ifi);           % Duration of EyeLink fixation in frames
 else
-    fixationDur = round(  (myVar.ITI_sd*randn(1) + myVar.intertrialTime) /Scr.ifi );
+    eyeCheckDur = round(  (myVar.ITI_sd*randn(1) + myVar.intertrialTime) /Scr.ifi );
 end
 
 if bl < 2
@@ -59,7 +59,7 @@ else
 end
 choiceDur  = round(myVar.choiceTime/Scr.ifi);               % Choice display duration in flips
 feedbackDur  = round(myVar.feedbackTime/Scr.ifi);           % Feedback display duration in flips
-eyeCheckDur  = round(myVar.eyeCheckTime/Scr.ifi);           % Duration of EyeLink fixation in frames
+fixationDur  = round(myVar.fixationTime/Scr.ifi);           % Duration of EyeLink fixation in frames
 
 dotParams = trialParams.dotParams; % get the RDP dot parameters for the current trial
 
