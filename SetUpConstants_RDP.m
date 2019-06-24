@@ -85,13 +85,13 @@ myVar.dKey      = KbName('d'); % do drift correction
 myVar.centerX           = Scr.width/2;
 myVar.centerY           = Scr.height/2;
 
-myVar.centW             = 33.24;      % MacBook Pro monitor width (cm.)
-myVar.centD             = 50;         % Distance to the screen (cm.)
-myVar.centH             = 20.77;      % MacBook Pro monitor height (cm.)
+% myVar.centW             = 33.24;      % MacBook Pro monitor width (cm.)
+% myVar.centD             = 50;         % Distance to the screen (cm.)
+% myVar.centH             = 20.77;      % MacBook Pro monitor height (cm.)
 
-% myVar.centW             = 52.2;       % ViewPixx EEG (cm.)
-% myVar.centD             = 91.0;       % Distance to the screen (cm.)
-% myVar.centH             = 29.1;       % ViewPixx EEG (cm.)
+myVar.centW             = 52.2;       % ViewPixx EEG (cm.)
+myVar.centD             = 91.0;       % Distance to the screen (cm.)
+myVar.centH             = 29.1;       % ViewPixx EEG (cm.)
 
 % PPD based on Visual Psyhcophysics book, Lu and Dosher
 Scr.pixelsperdegree = pi/180 * myVar.centD /myVar.centH * Scr.wRect(4);
@@ -108,7 +108,7 @@ inf.eyeWindow                 = 2;                              % window in visu
 Scr.cueDistance               = floor(9*Scr.pixelsperdegree);   % Distance of quadrants from the screen center
 Scr.waitframes                = 1;                              % Numer of frames to wait before re-drawing (Used in Threshold)
 
-myVar.fixationTime     = 0.25;    % time in seconds of fixation window for first trial of each block (this is longer to give participant time to move cursor/eyes to the center)
+myVar.fixationTime     = 0.4;     % time in seconds of fixation window 
 myVar.accumTime        = 5;       % time in seconds to make decision
 myVar.train_accumTime  = 1000;    % time in seconds to make decision for early/practice blocks
 myVar.train_eyeTime    = 0.75;    % duration of EyeLink fixation period in seconds for early/practice blocks 

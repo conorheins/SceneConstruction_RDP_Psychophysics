@@ -53,6 +53,7 @@ else
         eyeCheckDur = round(  (myVar.ITI_sd*randn(1) + myVar.intertrialTime) /Scr.ifi ); % Duration of eyeCheckTime for all other trials (has jitter)
     end
 end
+fixationDur  = round(myVar.fixationTime/Scr.ifi);           % Duration of fixation in frames
 feedbackDur  = round(myVar.feedbackTime/Scr.ifi);           % Duration of 'Feedback' display (shows participant what they chose for that trial)
 
 % Adjust response keys
