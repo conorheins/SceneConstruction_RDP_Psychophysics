@@ -108,16 +108,13 @@ inf.eyeWindow                 = 2;                              % window in visu
 Scr.cueDistance               = floor(9*Scr.pixelsperdegree);   % Distance of quadrants from the screen center
 Scr.waitframes                = 1;                              % Numer of frames to wait before re-drawing (Used in Threshold)
 
-myVar.fixationTime     = 2;       % time in seconds of fixation window for first trial of each block (this is longer to give participant time to move cursor/eyes to the center)
-% myVar.intertrialTime = 0.25;    % time in seconds of fixation window for all other trials 
-myVar.intertrialTime   = 0.75;    % time in seconds of fixation window for all other trials 
-myVar.ITI_sd           = 0.15;    % standard deviation in seconds of fixation window for all other trials
-% myVar.accumTime      = 1.25;    % time in seconds to make decision
-% myVar.accumTime      = 2;       % time in seconds to make decision
+myVar.fixationTime     = 0.25;    % time in seconds of fixation window for first trial of each block (this is longer to give participant time to move cursor/eyes to the center)
 myVar.accumTime        = 5;       % time in seconds to make decision
 myVar.train_accumTime  = 1000;    % time in seconds to make decision for early/practice blocks
 myVar.train_eyeTime    = 0.75;    % duration of EyeLink fixation period in seconds for early/practice blocks 
-myVar.eyeCheckTime     = 0.2;     % duration of EyeLink fixation period in seconds 
+myVar.eyeCheckTime     = 1.0;     %  duration of EyeLink fixation period in seconds for the first trial of each block 
+myVar.intertrialTime   = 0.75;    % time in seconds of EyeCheck window for all other trials 
+myVar.ITI_sd           = 0.1;     % standard deviation in seconds of EyeCheck window for all other trials
 
 
 myVar.feedbackTime   = 0.2;     % the length in seconds of the feedback window

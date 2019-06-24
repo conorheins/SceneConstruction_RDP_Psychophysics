@@ -1,4 +1,4 @@
-function [inf,trial_data,el] = RunTrial_MD(Scr,inf,myVar,el,bl,tr,block,trialParams)
+function [inf,trial_data,el] = RunTrial_MD(Scr,inf,myVar,el,bl,tr,block,trialParams,real_bl_idx)
 
 % Script for a single trial of the motion-direction discrimination paradigm
 
@@ -41,21 +41,19 @@ trialError  = 0;
 respToBeMade= true;
 noResponse  = true;
 
-% Timing in frames
-if tr == 1
-    fixationDur  = round(myVar.fixationTime/Scr.ifi);                        % Duration of Fixation is longer if it's the first trial (gives subject time to move cursor/eyes to center)
+if bl < real_bl_idx
+    accumDur = round(myVar.train_accumTime /Scr.ifi);             % For early/practice blocks, make RDP time basically infinite
+    eyeCheckDur  = round(myVar.train_eyeTime/Scr.ifi);           % Duration of EyeLink fixation in frames for first trial
 else
-    fixationDur = round(  (myVar.ITI_sd*randn(1) + myVar.intertrialTime) /Scr.ifi );
+    accumDur     = round(myVar.accumTime /Scr.ifi);                             % Duration of RDP time
+    % for all other blocks ('real' blocks)...
+    if tr == 1
+        eyeCheckDur = round(myVar.eyeCheckTime/Scr.ifi); % for first trial of other blocks, make the eyeCheckTime longer (e.g. 1 second)
+    else
+        eyeCheckDur = round(  (myVar.ITI_sd*randn(1) + myVar.intertrialTime) /Scr.ifi ); % Duration of eyeCheckTime for all other trials (has jitter)
+    end
 end
-
-if bl < 3
-    accumDur = round(myVar.train_accumTime /Scr.ifi);                            % For early/practice blocks, make RDP time basically infinite
-    eyeCheckDur = round(myVar.train_eyeTime/Scr.ifi);                            % Duration of EyeLink fixation in frames for early/practice blocks
-else
-    accumDur     = round(myVar.accumTime /Scr.ifi);                             % Duration of RDP duration 
-    eyeCheckDur  = round(myVar.eyeCheckTime/Scr.ifi);           % Duration of EyeLink fixation in frames
-end
-feedbackDur  = round(myVar.feedbackTime/Scr.ifi);           % Duration of 'Feedback' display (just shows participant what they chose)
+feedbackDur  = round(myVar.feedbackTime/Scr.ifi);           % Duration of 'Feedback' display (shows participant what they chose for that trial)
 
 % Adjust response keys
 UP_choice    = myVar.upKey;
@@ -241,7 +239,7 @@ for i = 1:feedbackDur
     
     if noResponse
         DrawFormattedText(Scr.w,'No response made!','center',Scr.wRect(4)*0.95,[255 0 ceil(255/4)]);
-    elseif and(~noResponse,bl==1)
+    elseif and(~noResponse, bl < real_bl_idx)
         if KeyCodeRaw(UP_choice)
             %                         DrawFormattedText(Scr.w,'Chose UP','center',Scr.wRect(4)*0.95,[0 255 ceil(255/2)]);
             DrawFormattedText(Scr.w,'Chose UP','center',Scr.wRect(4)*0.95,Scr.white);

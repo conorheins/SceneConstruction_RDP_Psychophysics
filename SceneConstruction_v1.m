@@ -28,6 +28,8 @@ inf.experimentStart = clock;
 
 % First complete the motion-detection pre-calibration 
 
+real_bl_idx = 3; % this is the index after which the 'real' trials begin 
+
 try
     [inf]               = GetSubInfo(inf);              % Gather Pp information
     
@@ -68,7 +70,7 @@ try
             
         end
             
-        if bl == 3
+        if bl == real_bl_idx
             
             Screen('DrawTexture', Scr.w, inst_rdp.intro3); % slide telling participants that next blocks are gonna be the real deal
             Screen('Flip',Scr.w); KbStrokeWait; 
@@ -87,7 +89,7 @@ try
         tr = 1;
         while tr <= length(block(bl).trials)
             
-            [inf,trialData,el] = RunTrial_MD(Scr,inf,myVar,el,bl,tr,block,block(bl).trials(tr));
+            [inf,trialData,el] = RunTrial_MD(Scr,inf,myVar,el,bl,tr,block,block(bl).trials(tr),real_bl_idx);
             
             % add current trial's results to block structure
             block(bl).trials(tr).trialRT = trialData.trialRT;
@@ -153,8 +155,8 @@ end
 %% Determine subject's psychometric function in order to choose coherences
 
 desired_precisions = [1 2 5]; % correspond to accuracies of ~47%, 71%, and 98%
-starting_bl_idx = 3;
-[myVar.coherences2use,flags] = analyze_MDdata(block,desired_precisions,starting_bl_idx);
+real_bl_idx = 3;
+[myVar.coherences2use,flags] = analyze_MDdata(block,desired_precisions,real_bl_idx);
 
 if any(flags)
     warning('Coherence calibration is sub-optimal!')
