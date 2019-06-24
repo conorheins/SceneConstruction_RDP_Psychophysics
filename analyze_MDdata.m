@@ -48,7 +48,7 @@ psychometric_fit = psignifit(acc_Table,options);
 % psychometric function
 
 % this is how to go from desired accuracies to precisions
-% precisions = log((3*desired_accur)./(1-desired_accur));
+% precisions = log((3*desired_accur)./((1-desired_accur)+exp(-16)));
 
 % this is how to go from desired precisions to the corresponding probability of 
 % choosing correctly in a 4-AFC task

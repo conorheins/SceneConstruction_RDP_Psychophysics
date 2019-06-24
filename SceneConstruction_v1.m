@@ -152,6 +152,7 @@ end
 
 %% Determine subject's psychometric function in order to choose coherences
 
+desired_precisions = [1 2 5]; % correspond to accuracies of ~47%, 71%, and 98%
 [myVar.coherences2use,flags] = analyze_MDdata(block,[0.05 1 3]);
 
 if any(flags)
@@ -217,7 +218,7 @@ try
             
             Screen('DrawTexture', Scr.w, inst_sc.breakScreen); % slide telling participants they have a break
             Screen('Flip',Scr.w); KbStrokeWait; 
-            CountDown(Scr,myVar,300);
+            CountDown(Scr,myVar,10);
             
             [inf,myVar,bl] = EyeLinkCalibration(Scr,inf,myVar,inst_sc,bl,el); % recalibrate before main experiment
                     
