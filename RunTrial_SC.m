@@ -69,7 +69,6 @@ dotParams = trialParams.dotParams; % get the RDP dot parameters for the current 
 % RDP-containing and empty quadrants
 
 numQuads = size(myVar.centers,2); 
-% quadColors = repmat(ceil([255/2 255/2 255/2])',1,numQuads);      % gray rects to cover each quadrant when they're not being inspected
 quadColors = repmat(ceil((5/8).*[255 255 255])',1,numQuads);      % light-gray rects to cover each quadrant when they're not being inspected
 quadFrameColors = repmat(ceil((7/8).*[255 255 255])',1,numQuads); % even-lighter gray frames around the covering quadrants
 
