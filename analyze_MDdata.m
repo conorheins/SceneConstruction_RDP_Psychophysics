@@ -1,4 +1,4 @@
-function [coherences,flag] = analyze_MDdata(block,desired_precisions,starting_bl)
+function [coherences,flag,psychometric_fit] = analyze_MDdata(block,desired_precisions,starting_bl)
 
 % this function analyzes a single subject's categorization accuracy data from the
 % motion discrimination task, and chooses subject-specific coherence levels to use

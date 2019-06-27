@@ -156,13 +156,13 @@ end
 
 desired_precisions = [1 2 5]; % correspond to accuracies of ~47%, 71%, and 98%
 real_bl_idx = 3;
-[myVar.coherences2use,flags,psychometric_fit] = analyze_MDdata(block,desired_precisions,real_bl_idx);
+[myVar.coherences2use,flags.psychometric_fit] = analyze_MDdata(block,desired_precisions,real_bl_idx);
 
 if any(flags)
     warning('Coherence calibration is sub-optimal!')
 end
 
-save(fullfile(inf.rootSub,sprintf('Subject%d_psychometric.mat','flags','psychometric_fit')));
+s
 
 clear ans answer bl block edfFile el FileName fName inst_rdp prompt Scr text title tr trialData desired_precisions starting_bl
 %% SETUP EXPERIMENT
