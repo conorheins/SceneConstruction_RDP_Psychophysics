@@ -156,13 +156,19 @@ end
 
 desired_precisions = [1 2 5]; % correspond to accuracies of ~47%, 71%, and 98%
 real_bl_idx = 3;
-[myVar.coherences2use,flags,psychometric_fit] = analyze_MDdata(block,desired_precisions,real_bl_idx);
+% [myVar.coherences2use,flags,psychometric_fit] = analyze_MDdata(block,desired_precisions,real_bl_idx);
+
+% if you want to use all the data to fit the psychometric function, use
+% this code:
+[myVar.coherences2use,flags,psychometric_fit] = analyze_MDdata(block,desired_precisions,1);
 
 if any(flags)
     warning('Coherence calibration is sub-optimal!')
 end
 
-save(fullfile(inf.rootSub,sprintf('Subject%d_psychometric.mat','flags','psychometric_fit')));
+if ~inf.isTestMode
+    save(fullfile(inf.rootSub,sprintf('Subject%d_psychometric.mat',inf.subNo)),'flags','psychometric_fit');
+end
 
 clear ans answer bl block edfFile el FileName fName inst_rdp prompt Scr text title tr trialData desired_precisions starting_bl
 %% SETUP EXPERIMENT
@@ -221,6 +227,7 @@ try
         
         if bl == 1
             [inf,myVar,bl] = EyeLinkCalibration(Scr,inf,myVar,inst_sc,bl,el); 
+            block(bl).trials(1).Reward = 0;
         else
             block(bl).trials(1).Reward = block(bl-1).trials(end).Reward; % initialize next block's reward to be the reward accumulated at the end of the previous block 
         end
@@ -243,6 +250,10 @@ try
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         tr = 1;
         while tr <= length(block(bl).trials)
+            
+            if tr > 1
+                block(bl).trials(tr).Reward = block(bl).trials(tr-1).Reward;
+            end
             
             [inf,trialData,el] = RunTrial_SC(Scr,inf,myVar,el,bl,tr,block,block(bl).trials(tr));
             % add current trial's results to block structure

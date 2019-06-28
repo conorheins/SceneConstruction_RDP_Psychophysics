@@ -41,7 +41,7 @@ trialError  = 0;
 respToBeMade= true;
 noResponse  = true;
 
-Reward = 0; % fix this later
+Reward = block(bl).trials(tr).Reward;
 
 ShowCursor('Arrow') 
 
