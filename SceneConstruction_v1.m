@@ -47,7 +47,7 @@ try
         
 %         Show general instructions
         Screen('DrawTexture', Scr.w, inst_rdp.intro1); % intro instruction
-        Screen('Flip',Scr.w); KbStrokeWait; bl = 1;
+        Screen('Flip',Scr.w); KbStrokeWait; 
         
         Screen('DrawTexture', Scr.w, inst_rdp.intro2); % intro instruction
         Screen('Flip',Scr.w); KbStrokeWait; bl = 1;
@@ -227,7 +227,7 @@ try
         
         if bl == 1
             [inf,myVar,bl] = EyeLinkCalibration(Scr,inf,myVar,inst_sc,bl,el); 
-            block(bl).trials(1).Reward = 0;
+            block(bl).trials(1).Reward = 0; % initialize first trial of first block's reward to 0
         else
             block(bl).trials(1).Reward = block(bl-1).trials(end).Reward; % initialize next block's reward to be the reward accumulated at the end of the previous block 
         end

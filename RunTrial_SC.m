@@ -260,6 +260,10 @@ while and(( ~any(button_state) && noResponse),exploreFlips < exploreDur)
         
     end
     
+    if any(choice_idx)
+        Screen('FrameRect',Scr.w,[255 255 255],myVar.choiceRects(:,find(choice_idx)),myVar.feedbackFrameWidth);
+    end
+        
     vbl = Screen('Flip',Scr.w,vbl + (Scr.waitframes - 0.5) * Scr.ifi);
     
     Reward = myVar.discount_function(exploreFlips);
