@@ -37,20 +37,18 @@ for b = 1:numBlocks
 
     %-------------PreDefineVarisbles-------------%
     %Resp
-    [block(b).trials.Accuracy]          = deal(nan);
-    [block(b).trials.RT]                = deal(nan);
-    [block(b).trials.keyPressed]        = deal(nan);
-    [block(b).trials.error]             = deal(0);
+    [block(b).trials.trialAcc]          = deal(nan);
+    [block(b).trials.trialRT]           = deal(nan);
+    [block(b).trials.dirResponse]       = deal(nan);
+    
     %Stim&Struct
-    [block(b).trials.trialNum]          = deal(nan);
     [block(b).trials.Pp]                = deal(inf.subNo);
 
     %Timing
     [block(b).trials.trialSTART]        = deal(nan);
     [block(b).trials.eyeCheckOnset]     = deal(nan);
     [block(b).trials.fixationOnset]     = deal(nan);
-    [block(b).trials.endRT]             = deal(nan);
-    [block(b).trials.RespOnsetFlip]     = deal(nan);
+    [block(b).trials.accumOnset]        = deal(nan);
     [block(b).trials.feedbackOnset]     = deal(nan);
     [block(b).trials.trialEND]          = deal(nan);
     

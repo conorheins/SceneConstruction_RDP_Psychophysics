@@ -1,4 +1,4 @@
-function [inf,trial_data,el] = RunTrial_MD(Scr,inf,myVar,el,bl,tr,block,trialParams,real_bl_idx)
+function [inf,trial_data,el,recalib_flag] = RunTrial_MD(Scr,inf,myVar,el,bl,tr,block,trialParams,real_bl_idx)
 
 % Script for a single trial of the motion-direction discrimination paradigm
 
@@ -18,7 +18,11 @@ function [inf,trial_data,el] = RunTrial_MD(Scr,inf,myVar,el,bl,tr,block,trialPar
 %                parameters of stimuli to display on block(bl).trial(tr), participant's reaction time
 %                on block(bl).trial(tr).
 % - trialParams: structure containing trial-specific experimental (independent) and behavioral (dependent) measures
+% - real_bl_idx: index of the block beyond which experimental blocks begin;
+%                blocks with indices below real_bl_idx are practice blocks and may have different parameters 
 
+trial_data = struct;
+recalib_flag = false;
 
 trialSTART = GetSecs;                                                      %%%%TIME%%%%%%%
 
@@ -37,7 +41,6 @@ feedbackOnset           = nan;
 trialEND                = nan;
 
 % Prepare variables for stimulation.
-trialError  = 0;
 respToBeMade= true;
 noResponse  = true;
 
@@ -151,8 +154,12 @@ while and(((KeyIsDown~=1) && noResponse),accumFlips < accumDur)
             
     [~,~, KeyCode] = KbCheck();     % In case if eye tracker lost eye
     if KeyCode(myVar.escapeKey)             % EXIT key pressed to exit experiment
-        Screen('CloseAll')
+        Screen('CloseAll');
         error('EXIT button!\n');
+    elseif KeyCode(myVar.cKey)
+        fprintf('Recalibrating in middle of trial %d\n',tr);
+        recalib_flag = true;
+        return;
     end
             
     % draw the direction choice symbols at the bottom of the screen
@@ -178,6 +185,10 @@ while and(((KeyIsDown~=1) && noResponse),accumFlips < accumDur)
         if KeyCodeRaw(myVar.escapeKey)  % EXIT key pressed to exit experiment
             Screen('CloseAll')
             error('EXIT button!\n');
+        elseif KeyCodeRaw(myVar.cKey)
+            fprintf('Recalibrating in middle of trial %d\n',tr);
+            recalib_flag = true;
+            return;
         else
             if any(KeyCodeRaw([UP_choice,RIGHT_choice,DOWN_choice,LEFT_choice]))
                 trialRT = endRTRaw - accumOnset; % save RT!!!!
@@ -214,11 +225,11 @@ while and(((KeyIsDown~=1) && noResponse),accumFlips < accumDur)
                     trialAcc = 0; dirResponse = NaN;
                 end
             else
-                trialError = 1; trialIsOK = false; noResponse = false; dirResponse = NaN;          % END THE TRIAL
+               noResponse = true; dirResponse = NaN;         % if they press a random key on the keyboard, don't do anything
             end
         end
     else
-        noResponse = true; dirResponse = NaN;
+        noResponse = true; dirResponse = NaN; % this just makes sure the trial keeps going (the larger while loop that depends on noResponse being true
     end
     
 end
@@ -228,8 +239,12 @@ for i = 1:feedbackDur
     
     [~,~, KeyCode] = KbCheck();     % In case if eye tracker lost eye
     if KeyCode(myVar.escapeKey)             % EXIT key pressed to exit experiment
-        Screen('CloseAll')
+        Screen('CloseAll');
         error('EXIT button!\n');
+    elseif KeyCode(myVar.cKey)
+        fprintf('Recalibrating in middle of trial %d\n',tr);
+        recalib_flag = true;
+        return;
     end
     
     % draw the direction choice symbols at the bottom of the screen
@@ -276,7 +291,6 @@ trialEND = vbl;
 trial_data.trialRT = trialRT;
 trial_data.trialAcc = trialAcc;
 trial_data.dirResponse = dirResponse;
-trial_data.trialError = trialError;
 
 trial_data.trialSTART = trialSTART;
 trial_data.eyeCheckOnset = eyeCheckOnset;

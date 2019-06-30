@@ -1,4 +1,4 @@
-function [inf,trial_data,el] = RunTrial_SC(Scr,inf,myVar,el,bl,tr,block,trialParams)
+function [inf,trial_data,el,recalib_flag] = RunTrial_SC(Scr,inf,myVar,el,bl,tr,block,trialParams)
 
 % Script for a single trial of the scene construction paradigm
 
@@ -19,6 +19,9 @@ function [inf,trial_data,el] = RunTrial_SC(Scr,inf,myVar,el,bl,tr,block,trialPar
 %                on block(bl).trials(tr).
 % - trialParams: structure containing trial-specific experimental (independent) and behavioral (dependent) measures
 
+trial_data = struct;
+recalib_flag = false;
+
 trialSTART = GetSecs;                                                      %%%%TIME%%%%%%%
 
 fixationCoord = [myVar.fixXLoc myVar.fixYLoc];% location of center of fixation cross
@@ -37,11 +40,11 @@ feedbackOnset           = nan;
 trialEND                = nan;
 
 % Prepare variables for stimulation.
-trialError  = 0;
 respToBeMade= true;
 noResponse  = true;
 
-Reward = block(bl).trials(tr).Reward;
+prevReward = block(bl).trials(tr).Reward;
+trialReward = 0;
 
 ShowCursor('Arrow') 
 
@@ -177,8 +180,12 @@ while and(( ~any(button_state) && noResponse),exploreFlips < exploreDur)
     if KeyCode(myVar.escapeKey)             % EXIT key pressed to exit experiment
         Screen('CloseAll');
         error('EXIT button!\n');
+    elseif KeyCode(myVar.cKey)
+        fprintf('Recalibrating in middle of trial %d\n',tr);
+        recalib_flag = true;
+        return;
     end
-    
+        
 %     Screen('DrawLines',Scr.w,all_fix_coords,myVar.lineWidthPix,Scr.white,fixationCoord,0);
     % draw the scene symbols at the bottom of the screen
     Screen('DrawTexture', Scr.w, UR_ptr,myVar.subRect,myVar.UR_rect);
@@ -266,7 +273,7 @@ while and(( ~any(button_state) && noResponse),exploreFlips < exploreDur)
         
     vbl = Screen('Flip',Scr.w,vbl + (Scr.waitframes - 0.5) * Scr.ifi);
     
-    Reward = myVar.discount_function(exploreFlips);
+    trialReward = myVar.discount_function(exploreFlips);
     
     exploreFlips = exploreFlips + 1;
     
@@ -278,6 +285,10 @@ while and(( ~any(button_state) && noResponse),exploreFlips < exploreDur)
         if KeyCodeRaw(KbName('ESCAPE'))  % EXIT key pressed to exit experiment
             Screen('CloseAll')
             error(sprintf('EXIT button!\n'));
+        elseif KeyCodeRaw(myVar.cKey)
+            fprintf('Recalibrating in middle of trial %d\n',tr);
+            recalib_flag = true;
+            return;
         else
             if any(choice_idx) && KeyCodeRaw(myVar.spacebar)
                 trialRT = endRTRaw - exploreOnset; % save RT!!!!
@@ -314,11 +325,11 @@ while and(( ~any(button_state) && noResponse),exploreFlips < exploreDur)
                     trialAcc = 0; sceneChoice = NaN;
                 end
             else
-                trialError = 1; noResponse = false; sceneChoice = NaN;          % END THE TRIAL
+                noResponse = true; sceneChoice = NaN;    % if they press a random key on the keyboard, don't do anything
             end
         end
     else
-        noResponse = true; sceneChoice = NaN; % ran out of time
+        noResponse = true; sceneChoice = NaN; % this just makes sure the trial keeps going (the larger while loop that depends on noResponse being true
     end
     
 end
@@ -329,10 +340,9 @@ end
 
 
 if trialAcc == 1
-    Reward = Reward + myVar.correct_reward;
+    trialReward = trialReward + myVar.correct_reward;
 else
-    Reward = Reward - myVar.miss_cost;
-    %             Reward = -myVar.miss_cost;
+    trialReward = trialReward - myVar.miss_cost;
 end
 
 
@@ -340,8 +350,12 @@ for i = 1:choiceDur
     
     [~,~, KeyCode] = KbCheck();     % In case if eye tracker lost eye
     if KeyCode(myVar.escapeKey)             % EXIT key pressed to exit experiment
-        Screen('CloseAll')
+        Screen('CloseAll');
         error('EXIT button!\n');
+    elseif KeyCode(myVar.cKey)
+        fprintf('Recalibrating in middle of trial %d\n',tr);
+        recalib_flag = true;
+        return;
     end
     
     % draw the scene symbols at the bottom of the screen
@@ -377,29 +391,29 @@ for i = 1:feedbackDur
     
     [~,~, KeyCode] = KbCheck();     % In case if eye tracker lost eye
     if KeyCode(myVar.escapeKey)             % EXIT key pressed to exit experiment
-        Screen('CloseAll')
+        Screen('CloseAll');
         error('EXIT button!\n');
+    elseif KeyCode(myVar.cKey)
+        fprintf('Recalibrating in middle of trial %d\n',tr);
+        recalib_flag = true;
+        return;
     end
     
     if trialAcc == 1
-        rew_message = sprintf('%.2f points awarded!',Reward);
+        rew_message = sprintf('%.2f points awarded!',trialReward);
         DrawFormattedText(Scr.w,rew_message,'center',myVar.centerY,[0 200 50]);
     elseif and(trialAcc == 0,~isnan(sceneChoice))
-        rew_message = sprintf('%.2f points awarded!',Reward);
+        rew_message = sprintf('%.2f points awarded!',trialReward);
         DrawFormattedText(Scr.w,rew_message,'center',myVar.centerY,[255 0 ceil(255/4)]);
     elseif noResponse
-        rew_message = sprintf('%.2f points awarded!',Reward);
+        rew_message = sprintf('%.2f points awarded!',trialReward);
         DrawFormattedText(Scr.w,rew_message,'center',myVar.centerY,[255 0 ceil(255/4)]);
     else
-        rew_message = sprintf('%.2f points awarded!',Reward);
+        rew_message = sprintf('%.2f points awarded!',trialReward);
         DrawFormattedText(Scr.w,rew_message,'center',myVar.centerY,[255 0 ceil(255/4)]);
     end
     
-    if tr == 1
-        DrawFormattedText(Scr.w,sprintf('Total score: %.2f points',Reward),'center',myVar.centerY + (1.5 * Scr.pixelsperdegree),[255 255 255]);
-    else
-        DrawFormattedText(Scr.w,sprintf('Total score: %.2f points',(block(bl).trials(tr-1).Reward + Reward)),'center',myVar.centerY + (1.5 * Scr.pixelsperdegree),[255 255 255]);
-    end
+    DrawFormattedText(Scr.w,sprintf('Total score: %.2f points',prevReward + trialReward),'center',myVar.centerY + (1.5 * Scr.pixelsperdegree),[255 255 255]);
     
     vbl = Screen('Flip',Scr.w,vbl + (Scr.waitframes - 0.5) * Scr.ifi);
     
@@ -416,12 +430,7 @@ trialEND = vbl;
 trial_data.trialRT = trialRT;
 trial_data.trialAcc = trialAcc;
 trial_data.sceneChoice = sceneChoice;
-trial_data.trialError = trialError;
-if tr == 1
-    trial_data.Reward     = Reward;
-else
-    trial_data.Reward     = block(bl).trials(tr-1).Reward + Reward; % accumulate total score
-end
+trial_data.Reward     = prevReward + trialReward;
 
 trial_data.trialSTART = trialSTART;
 trial_data.eyeCheckOnset = eyeCheckOnset;
