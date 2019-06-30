@@ -50,19 +50,19 @@ try
         Screen('Flip',Scr.w); KbStrokeWait; 
         
         Screen('DrawTexture', Scr.w, inst_rdp.intro2); % intro instruction
-        Screen('Flip',Scr.w); KbStrokeWait; bl = 1;
+        Screen('Flip',Scr.w); KbStrokeWait; startBl = 1;
         
     else % IF AFTER BREAK
         
         fName = sprintf('Subject%d__allData.mat',inf.subNo);
         fileLoc = fullfile(Scr.expDir,'Data','SubjectsData',num2str(inf.subNo), fName);
-        load(fileLoc); bl = bl+1; 
+        load(fileLoc); startBl = bl+1; 
         
     end
         
     %% BLOCK LOOP---------%
     %%%%%%%%%%%%%
-    for bl = 1:length(block)
+    for bl = startBl:length(block)
         
         if bl == 1
             
@@ -74,7 +74,7 @@ try
             
             Screen('DrawTexture', Scr.w, inst_rdp.intro3); % slide telling participants that next blocks are gonna be the real deal
             Screen('Flip',Scr.w); KbStrokeWait; 
-            CountDown(Scr,myVar,120);
+            CountDown(Scr,myVar,30);
             
             [inf,myVar,bl] = EyeLinkCalibration(Scr,inf,myVar,inst_rdp,bl,el); % recalibrate before main experiment
                     
@@ -89,15 +89,20 @@ try
         tr = 1;
         while tr <= length(block(bl).trials)
             
-            [inf,trialData,el] = RunTrial_MD(Scr,inf,myVar,el,bl,tr,block,block(bl).trials(tr),real_bl_idx);
+            [inf,trialData,el,recalib_flag]  = RunTrial_MD(Scr,inf,myVar,el,bl,tr,block,block(bl).trials(tr),real_bl_idx);
             
+            while recalib_flag
+                EyeLinkCalibration_interrupt(Scr,inf,bl,tr,el);
+                [inf,trialData,el,recalib_flag]  = RunTrial_MD(Scr,inf,myVar,el,bl,tr,block,block(bl).trials(tr),real_bl_idx);
+            end               
+        
             % add current trial's results to block structure
             block(bl).trials(tr).trialRT = trialData.trialRT;
             block(bl).trials(tr).trialAcc= trialData.trialAcc;
             block(bl).trials(tr).dirResponse = trialData.dirResponse;
-            block(bl).trials(tr).trialError = trialData.trialError;
             
             block(bl).trials(tr).trialSTART = trialData.trialSTART;
+            block(bl).trials(tr).eyeCheckOnset = trialData.fixationOnset;
             block(bl).trials(tr).fixationOnset = trialData.fixationOnset;
             block(bl).trials(tr).accumOnset = trialData.accumOnset;
             block(bl).trials(tr).feedbackOnset = trialData.feedbackOnset;
@@ -209,20 +214,20 @@ try
         Screen('Flip',Scr.w); KbStrokeWait;
         
         Screen('DrawTexture', Scr.w, inst_sc.intro3); % intro instruction
-        Screen('Flip',Scr.w); KbStrokeWait; bl = 1;
+        Screen('Flip',Scr.w); KbStrokeWait; startBl = 1;
         
         
     else % IF AFTER BREAK
         
         fName = sprintf('Subject%d__allData.mat',inf.subNo);
         fileLoc = fullfile(Scr.expDir,'Data','SubjectsData',num2str(inf.subNo), fName);
-        load(fileLoc); bl = bl+1; inf.threshold = false;
+        load(fileLoc); startBl = bl+1; inf.threshold = false;
         
     end
         
     %% BLOCK LOOP---------%
     %%%%%%%%%%%%%
-    for bl = 1:length(block)
+    for bl = startBl:length(block)
         
         
         if bl == 1
@@ -236,7 +241,7 @@ try
             
             Screen('DrawTexture', Scr.w, inst_sc.breakScreen); % slide telling participants they have a break
             Screen('Flip',Scr.w); KbStrokeWait; 
-            CountDown(Scr,myVar,10);
+            CountDown(Scr,myVar,30);
             
             [inf,myVar,bl] = EyeLinkCalibration(Scr,inf,myVar,inst_sc,bl,el); % recalibrate before main experiment
                     
@@ -255,12 +260,17 @@ try
                 block(bl).trials(tr).Reward = block(bl).trials(tr-1).Reward;
             end
             
-            [inf,trialData,el] = RunTrial_SC(Scr,inf,myVar,el,bl,tr,block,block(bl).trials(tr));
+            [inf,trialData,el,recalib_flag] = RunTrial_SC(Scr,inf,myVar,el,bl,tr,block,block(bl).trials(tr));
+            
+             while recalib_flag
+                EyeLinkCalibration_interrupt(Scr,inf,bl,tr,el);
+                [inf,trialData,el,recalib_flag]  = RunTrial_SC(Scr,inf,myVar,el,bl,tr,block,block(bl).trials(tr));
+             end
+            
             % add current trial's results to block structure
             block(bl).trials(tr).trialRT = trialData.trialRT;
             block(bl).trials(tr).trialAcc= trialData.trialAcc;
             block(bl).trials(tr).sceneChoice = trialData.sceneChoice;
-            block(bl).trials(tr).trialError = trialData.trialError;
             block(bl).trials(tr).Reward = trialData.Reward;
 
             block(bl).trials(tr).trialSTART = trialData.trialSTART;

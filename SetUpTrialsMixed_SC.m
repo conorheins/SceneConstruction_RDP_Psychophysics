@@ -85,10 +85,13 @@ for b = 1:numBlocks
 
     %-------------PreDefineVarisbles-------------%
     %Resp
-    [block(b).trials.trialRT]           = deal(nan);
     [block(b).trials.trialAcc]          = deal(nan);
-    %Stim&Struct
+    [block(b).trials.trialRT]           = deal(nan);
+    [block(b).trials.sceneChoice]       = deal(nan);
+    
+    %Reward 
     [block(b).trials.Reward]            = deal(nan);
+    
     %Timing
     [block(b).trials.trialSTART]        = deal(nan);
     [block(b).trials.eyeCheckOnset]     = deal(nan);
@@ -101,8 +104,8 @@ for b = 1:numBlocks
     randomOrder = randperm(size(block(b).trials,2)); % create random order from that.
     block(b).trials = block(b).trials(randomOrder);
 
-    block(b).trials = block(b).trials(1:10); % for testing purposes
-%     block(b).trials = block(b).trials(1:100); % 100 trials per block
+%     block(b).trials = block(b).trials(1:25); % for testing purposes
+    block(b).trials = block(b).trials(1:100); % 100 trials per block
     
     [~,newOrder] = CheckShuffle([block(b).trials.scene_ID],2); % make sure the same scene repeats at most twice consecutively within a block
     block(b).trials = block(b).trials(newOrder);
