@@ -182,6 +182,7 @@ while and(( ~any(button_state) && noResponse),exploreFlips < exploreDur)
         error('EXIT button!\n');
     elseif KeyCode(myVar.cKey)
         fprintf('Recalibrating in middle of trial %d\n',tr);
+        Screen('Close',[UR_ptr,RD_ptr,DL_ptr,LU_ptr])
         recalib_flag = true;
         return;
     end
@@ -287,6 +288,7 @@ while and(( ~any(button_state) && noResponse),exploreFlips < exploreDur)
             error(sprintf('EXIT button!\n'));
         elseif KeyCodeRaw(myVar.cKey)
             fprintf('Recalibrating in middle of trial %d\n',tr);
+            Screen('Close',[UR_ptr,RD_ptr,DL_ptr,LU_ptr])
             recalib_flag = true;
             return;
         else
@@ -354,6 +356,7 @@ for i = 1:choiceDur
         error('EXIT button!\n');
     elseif KeyCode(myVar.cKey)
         fprintf('Recalibrating in middle of trial %d\n',tr);
+        Screen('Close',[UR_ptr,RD_ptr,DL_ptr,LU_ptr])
         recalib_flag = true;
         return;
     end
@@ -395,6 +398,7 @@ for i = 1:feedbackDur
         error('EXIT button!\n');
     elseif KeyCode(myVar.cKey)
         fprintf('Recalibrating in middle of trial %d\n',tr);
+        Screen('Close',[UR_ptr,RD_ptr,DL_ptr,LU_ptr])
         recalib_flag = true;
         return;
     end
@@ -443,6 +447,7 @@ trial_data.trialEND = trialEND;
 % Clear screen
 Screen('FillRect',Scr.w,quadColors,myVar.RDMRects);
 Screen('FrameRect',Scr.w,quadFrameColors,myVar.RDMRects,myVar.frameLineWidth);
+Screen('Close',[UR_ptr,RD_ptr,DL_ptr,LU_ptr])
 Screen('Flip', Scr.w);
 
 

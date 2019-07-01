@@ -48,16 +48,24 @@ try
 %         Show general instructions
         Screen('DrawTexture', Scr.w, inst_rdp.intro1); % intro instruction
         Screen('Flip',Scr.w); KbStrokeWait; 
+        Screen('Close',inst_rdp.intro1);
         
         Screen('DrawTexture', Scr.w, inst_rdp.intro2); % intro instruction
-        Screen('Flip',Scr.w); KbStrokeWait; startBl = 1;
+        Screen('Flip',Scr.w); KbStrokeWait; startBl = 1; tr = 1;
+        Screen('Close',inst_rdp.intro2);
         
     else % IF AFTER BREAK
         
         fName = sprintf('Subject%d__allData.mat',inf.subNo);
         fileLoc = fullfile(Scr.expDir,'Data','SubjectsData',num2str(inf.subNo), fName);
-        load(fileLoc); startBl = bl+1; 
-        
+        load(fileLoc); 
+        if any(isnan([block(bl).trials.trialEND])) % check for whether trials got interrupted
+            startBl = bl; % if so, start from the block during which the experiment was interrupted
+            tr = find(isnan([block(bl).trials.trialEND]),1); % start from the trial where the interruption happened -- here, assumed to be the same
+            % as where the first trial where no end was detected
+        else
+            startBl = bl+1; tr = 1; % otherwise, go to the next block and start from the first trial
+        end
     end
         
     %% BLOCK LOOP---------%
@@ -74,10 +82,11 @@ try
             
             Screen('DrawTexture', Scr.w, inst_rdp.intro3); % slide telling participants that next blocks are gonna be the real deal
             Screen('Flip',Scr.w); KbStrokeWait; 
-            CountDown(Scr,myVar,30);
+            Screen('Close',inst_rdp.intro3);
             
+            CountDown(Scr,myVar,30);     
             EyeLinkCalibration(Scr,inf,inst_rdp,el); % recalibrate before main experiment
-                    
+                               
         end
             
         
@@ -86,7 +95,7 @@ try
         
          %% Experiment Trials-by-Trial-------------%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        tr = 1;
+
         while tr <= length(block(bl).trials)
             
             [inf,trialData,el,recalib_flag]  = RunTrial_MD(Scr,inf,myVar,el,bl,tr,block,block(bl).trials(tr),real_bl_idx);
@@ -102,7 +111,7 @@ try
             block(bl).trials(tr).dirResponse = trialData.dirResponse;
             
             block(bl).trials(tr).trialSTART = trialData.trialSTART;
-            block(bl).trials(tr).eyeCheckOnset = trialData.fixationOnset;
+            block(bl).trials(tr).eyeCheckOnset = trialData.eyeCheckOnset;
             block(bl).trials(tr).fixationOnset = trialData.fixationOnset;
             block(bl).trials(tr).accumOnset = trialData.accumOnset;
             block(bl).trials(tr).feedbackOnset = trialData.feedbackOnset;
@@ -160,7 +169,6 @@ end
 %% Determine subject's psychometric function in order to choose coherences
 
 desired_precisions = [1 2 5]; % correspond to accuracies of ~47%, 71%, and 98%
-real_bl_idx = 3;
 % [myVar.coherences2use,flags,psychometric_fit] = analyze_MDdata(block,desired_precisions,real_bl_idx);
 
 % if you want to use all the data to fit the psychometric function, use
@@ -211,23 +219,32 @@ try
 %        Show general instructions
         Screen('DrawTexture', Scr.w, inst_sc.intro1); % intro instruction slide 1
         Screen('Flip',Scr.w); KbStrokeWait;
+        Screen('Close',inst_sc.intro1);
         
         Screen('DrawTexture', Scr.w, inst_sc.intro2); % intro instruction slide 2
         Screen('Flip',Scr.w); KbStrokeWait;
+        Screen('Close',inst_sc.intro2);
         
         Screen('DrawTexture', Scr.w, inst_sc.intro3); % intro instruction slide 3
         Screen('Flip',Scr.w); KbStrokeWait; 
+        Screen('Close',inst_sc.intro3);
         
         Screen('DrawTexture', Scr.w, inst_sc.intro4); % intro instruction slide 3
-        Screen('Flip',Scr.w); KbStrokeWait; startBl = 1;
-        
+        Screen('Flip',Scr.w); KbStrokeWait; startBl = 1; tr = 1;
+        Screen('Close',inst_sc.intro4);
         
     else % IF AFTER BREAK
         
         fName = sprintf('Subject%d__allData.mat',inf.subNo);
         fileLoc = fullfile(Scr.expDir,'Data','SubjectsData',num2str(inf.subNo), fName);
-        load(fileLoc); startBl = bl+1; inf.threshold = false;
-        
+        load(fileLoc); 
+        if any(isnan([block(bl).trials.trialEND])) % check for whether trials got interrupted
+            startBl = bl; % if so, start from the block during which the experiment was interrupted
+            tr = find(isnan([block(bl).trials.trialEND]),1); % start from the trial where the interruption happened -- here, assumed to be the same 
+            % as where the first trial where no end was detected 
+        else
+            startBl = bl+1; tr = 1; % otherwise, go to the next block and start from the first trial
+        end   
     end
         
     %% BLOCK LOOP---------%
@@ -238,6 +255,7 @@ try
         if bl == 1
             EyeLinkCalibration(Scr,inf,inst_sc,el);
             block(bl).trials(1).Reward = 0; % initialize first trial of first block's reward to 0
+            block(bl).trials = block(bl).trials(1:25); % make the first block only have 25 trials (since it's practice)
         else
             block(bl).trials(1).Reward = block(bl-1).trials(end).Reward; % initialize next block's reward to be the reward accumulated at the end of the previous block 
         end
@@ -245,10 +263,14 @@ try
         if bl == real_bl_idx
             
             Screen('DrawTexture', Scr.w, inst_sc.breakScreen); % slide telling participants they have a break
-            Screen('Flip',Scr.w); KbStrokeWait; 
+            Screen('Flip',Scr.w); KbStrokeWait;
+            Screen('Close',inst_sc.breakScreen);
+            
             CountDown(Scr,myVar,30);
             
             EyeLinkCalibration(Scr,inf,inst_sc,el); % recalibrate before main experiment
+            
+            block(bl).trials(1).Reward = 0; % initialize first trial of first 'real' block's reward to 0
                     
         end
 
@@ -258,7 +280,7 @@ try
         
          %% Experiment Trials-by-Trial-------------%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        tr = 1;
+
         while tr <= length(block(bl).trials)
             
             if tr > 1
@@ -279,6 +301,7 @@ try
             block(bl).trials(tr).Reward = trialData.Reward;
 
             block(bl).trials(tr).trialSTART = trialData.trialSTART;
+            block(bl).trials(tr).eyeCheckOnset = trialData.eyeCheckOnset;
             block(bl).trials(tr).fixationOnset = trialData.fixationOnset;
             block(bl).trials(tr).exploreOnset = trialData.exploreOnset;
             block(bl).trials(tr).choiceOnset = trialData.choiceOnset;
