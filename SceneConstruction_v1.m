@@ -66,7 +66,7 @@ try
         
         if bl == 1
             
-            [inf,myVar,bl] = EyeLinkCalibration(Scr,inf,myVar,inst_rdp,bl,el); % calibrate before first block
+            EyeLinkCalibration(Scr,inf,inst_rdp,el);  % calibrate before first block
             
         end
             
@@ -76,7 +76,7 @@ try
             Screen('Flip',Scr.w); KbStrokeWait; 
             CountDown(Scr,myVar,30);
             
-            [inf,myVar,bl] = EyeLinkCalibration(Scr,inf,myVar,inst_rdp,bl,el); % recalibrate before main experiment
+            EyeLinkCalibration(Scr,inf,inst_rdp,el); % recalibrate before main experiment
                     
         end
             
@@ -181,6 +181,8 @@ clear ans answer bl block edfFile el FileName fName inst_rdp prompt Scr text tit
 
 % Now we can proceed to the Scene Construction (main) study 
 
+real_bl_idx = 2; % this is the block number at which the experimental trials begins - everything before is just practice
+
 try
     
     % Number of blocks to run if SC
@@ -207,13 +209,16 @@ try
         [myVar, block]  = SetUpTrialsMixed_SC(Scr,inf, myVar); % setUp CONDITIONS
         
 %        Show general instructions
-        Screen('DrawTexture', Scr.w, inst_sc.intro1); % intro instruction
+        Screen('DrawTexture', Scr.w, inst_sc.intro1); % intro instruction slide 1
         Screen('Flip',Scr.w); KbStrokeWait;
         
-        Screen('DrawTexture', Scr.w, inst_sc.intro2); % intro instruction
+        Screen('DrawTexture', Scr.w, inst_sc.intro2); % intro instruction slide 2
         Screen('Flip',Scr.w); KbStrokeWait;
         
-        Screen('DrawTexture', Scr.w, inst_sc.intro3); % intro instruction
+        Screen('DrawTexture', Scr.w, inst_sc.intro3); % intro instruction slide 3
+        Screen('Flip',Scr.w); KbStrokeWait; 
+        
+        Screen('DrawTexture', Scr.w, inst_sc.intro4); % intro instruction slide 3
         Screen('Flip',Scr.w); KbStrokeWait; startBl = 1;
         
         
@@ -231,19 +236,19 @@ try
         
         
         if bl == 1
-            [inf,myVar,bl] = EyeLinkCalibration(Scr,inf,myVar,inst_sc,bl,el); 
+            EyeLinkCalibration(Scr,inf,inst_sc,el);
             block(bl).trials(1).Reward = 0; % initialize first trial of first block's reward to 0
         else
             block(bl).trials(1).Reward = block(bl-1).trials(end).Reward; % initialize next block's reward to be the reward accumulated at the end of the previous block 
         end
         
-        if bl == 3
+        if bl == real_bl_idx
             
             Screen('DrawTexture', Scr.w, inst_sc.breakScreen); % slide telling participants they have a break
             Screen('Flip',Scr.w); KbStrokeWait; 
             CountDown(Scr,myVar,30);
             
-            [inf,myVar,bl] = EyeLinkCalibration(Scr,inf,myVar,inst_sc,bl,el); % recalibrate before main experiment
+            EyeLinkCalibration(Scr,inf,inst_sc,el); % recalibrate before main experiment
                     
         end
 
@@ -260,11 +265,11 @@ try
                 block(bl).trials(tr).Reward = block(bl).trials(tr-1).Reward;
             end
             
-            [inf,trialData,el,recalib_flag] = RunTrial_SC(Scr,inf,myVar,el,bl,tr,block,block(bl).trials(tr));
+            [inf,trialData,el,recalib_flag] = RunTrial_SC(Scr,inf,myVar,el,bl,tr,block,block(bl).trials(tr),real_bl_idx);
             
              while recalib_flag
                 EyeLinkCalibration_interrupt(Scr,inf,bl,tr,el);
-                [inf,trialData,el,recalib_flag]  = RunTrial_SC(Scr,inf,myVar,el,bl,tr,block,block(bl).trials(tr));
+                [inf,trialData,el,recalib_flag]  = RunTrial_SC(Scr,inf,myVar,el,bl,tr,block,block(bl).trials(tr),real_bl_idx);
              end
             
             % add current trial's results to block structure

@@ -1,4 +1,4 @@
-function [inf,trial_data,el,recalib_flag] = RunTrial_SC(Scr,inf,myVar,el,bl,tr,block,trialParams)
+function [inf,trial_data,el,recalib_flag] = RunTrial_SC(Scr,inf,myVar,el,bl,tr,block,trialParams,real_bl_idx)
 
 % Script for a single trial of the scene construction paradigm
 
@@ -55,7 +55,7 @@ else
     eyeCheckDur = round(  (myVar.ITI_sd*randn(1) + myVar.intertrialTime) /Scr.ifi );
 end
 
-if bl < 2
+if bl < real_bl_idx
     exploreDur     = round(myVar.train_exploreTime /Scr.ifi);                 % For early/practice blocks, make scene exploration time basically infinite
 else
     exploreDur     = round(myVar.exploreTime /Scr.ifi);                       % Duration of explore phase
