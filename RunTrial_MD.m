@@ -158,6 +158,7 @@ while and(((KeyIsDown~=1) && noResponse),accumFlips < accumDur)
         error('EXIT button!\n');
     elseif KeyCode(myVar.cKey)
         fprintf('Recalibrating in middle of trial %d\n',tr);
+        Screen('Close',[UP_ptr,RIGHT_ptr,DOWN_ptr,LEFT_ptr])
         recalib_flag = true;
         return;
     end
@@ -187,6 +188,7 @@ while and(((KeyIsDown~=1) && noResponse),accumFlips < accumDur)
             error('EXIT button!\n');
         elseif KeyCodeRaw(myVar.cKey)
             fprintf('Recalibrating in middle of trial %d\n',tr);
+            Screen('Close',[UP_ptr,RIGHT_ptr,DOWN_ptr,LEFT_ptr])
             recalib_flag = true;
             return;
         else
@@ -243,6 +245,7 @@ for i = 1:feedbackDur
         error('EXIT button!\n');
     elseif KeyCode(myVar.cKey)
         fprintf('Recalibrating in middle of trial %d\n',tr);
+        Screen('Close',[UP_ptr,RIGHT_ptr,DOWN_ptr,LEFT_ptr])
         recalib_flag = true;
         return;
     end
@@ -300,6 +303,7 @@ trial_data.feedbackOnset = feedbackOnset;
 trial_data.trialEND = trialEND;
 
 % Clear screen
+Screen('Close',[UP_ptr,RIGHT_ptr,DOWN_ptr,LEFT_ptr])
 Screen('Flip', Scr.w);
 
 
