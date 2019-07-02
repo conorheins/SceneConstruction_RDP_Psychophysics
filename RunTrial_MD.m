@@ -1,4 +1,4 @@
-function [inf,trial_data,el,recalib_flag] = RunTrial_MD(Scr,inf,myVar,el,bl,tr,block,trialParams,real_bl_idx)
+function [inf,trial_data,el,recalib_flag] = RunTrial_MD(Scr,inf,myVar,el,bl,tr,block,trialParams,choice_pointers,real_bl_idx)
 
 % Script for a single trial of the motion-direction discrimination paradigm
 
@@ -18,6 +18,8 @@ function [inf,trial_data,el,recalib_flag] = RunTrial_MD(Scr,inf,myVar,el,bl,tr,b
 %                parameters of stimuli to display on block(bl).trial(tr), participant's reaction time
 %                on block(bl).trial(tr).
 % - trialParams: structure containing trial-specific experimental (independent) and behavioral (dependent) measures
+% - choice_pointers: cell array containing pointers to direction-choice
+%                graphics
 % - real_bl_idx: index of the block beyond which experimental blocks begin;
 %                blocks with indices below real_bl_idx are practice blocks and may have different parameters 
 
@@ -97,17 +99,11 @@ if ~inf.dummy
     
 end
 
-UP_ptr = Screen('MakeTexture',Scr.w,myVar.UP); 
-RIGHT_ptr = Screen('MakeTexture',Scr.w,myVar.RIGHT); 
-DOWN_ptr = Screen('MakeTexture',Scr.w,myVar.DOWN); 
-LEFT_ptr = Screen('MakeTexture',Scr.w,myVar.LEFT); 
-choice_pointers = {UP_ptr,RIGHT_ptr,DOWN_ptr,LEFT_ptr};
-
 % draw the direction choice symbols at the bottom of the screen
-Screen('DrawTexture', Scr.w, UP_ptr,myVar.subRect,myVar.UPrect); 
-Screen('DrawTexture', Scr.w, RIGHT_ptr,myVar.subRect,myVar.RIGHTrect); 
-Screen('DrawTexture', Scr.w, DOWN_ptr,myVar.subRect,myVar.DOWNrect); 
-Screen('DrawTexture', Scr.w, LEFT_ptr,myVar.subRect,myVar.LEFTrect); 
+Screen('DrawTexture', Scr.w, choice_pointers{1},myVar.subRect,myVar.UPrect); 
+Screen('DrawTexture', Scr.w, choice_pointers{2},myVar.subRect,myVar.RIGHTrect); 
+Screen('DrawTexture', Scr.w, choice_pointers{3},myVar.subRect,myVar.DOWNrect); 
+Screen('DrawTexture', Scr.w, choice_pointers{4},myVar.subRect,myVar.LEFTrect); 
 
 vbl = Screen('Flip', Scr.w); %%synch%%
 
@@ -128,10 +124,10 @@ end
 % Synchronize screen and send messages
 Screen('DrawDots', Scr.w, fixationCoord, 10, Scr.black, [], 2);
 % draw the direction choice symbols at the bottom of the screen
-Screen('DrawTexture', Scr.w, UP_ptr,myVar.subRect,myVar.UPrect);
-Screen('DrawTexture', Scr.w, RIGHT_ptr,myVar.subRect,myVar.RIGHTrect);
-Screen('DrawTexture', Scr.w, DOWN_ptr,myVar.subRect,myVar.DOWNrect);
-Screen('DrawTexture', Scr.w, LEFT_ptr,myVar.subRect,myVar.LEFTrect);
+Screen('DrawTexture', Scr.w, choice_pointers{1},myVar.subRect,myVar.UPrect); 
+Screen('DrawTexture', Scr.w, choice_pointers{2},myVar.subRect,myVar.RIGHTrect); 
+Screen('DrawTexture', Scr.w, choice_pointers{3},myVar.subRect,myVar.DOWNrect); 
+Screen('DrawTexture', Scr.w, choice_pointers{4},myVar.subRect,myVar.LEFTrect); 
 
 vbl = Screen('Flip', Scr.w);    % SCREEN SYNCH.
 fixationOnset = vbl;             %%%%TIME%%%%%%%
@@ -158,16 +154,15 @@ while and(((KeyIsDown~=1) && noResponse),accumFlips < accumDur)
         error('EXIT button!\n');
     elseif KeyCode(myVar.cKey)
         fprintf('Recalibrating in middle of trial %d\n',tr);
-        Screen('Close',[UP_ptr,RIGHT_ptr,DOWN_ptr,LEFT_ptr])
         recalib_flag = true;
         return;
     end
             
     % draw the direction choice symbols at the bottom of the screen
-    Screen('DrawTexture', Scr.w, UP_ptr,myVar.subRect,myVar.UPrect);
-    Screen('DrawTexture', Scr.w, RIGHT_ptr,myVar.subRect,myVar.RIGHTrect);
-    Screen('DrawTexture', Scr.w, DOWN_ptr,myVar.subRect,myVar.DOWNrect);
-    Screen('DrawTexture', Scr.w, LEFT_ptr,myVar.subRect,myVar.LEFTrect);
+    Screen('DrawTexture', Scr.w, choice_pointers{1},myVar.subRect,myVar.UPrect);
+    Screen('DrawTexture', Scr.w, choice_pointers{2},myVar.subRect,myVar.RIGHTrect);
+    Screen('DrawTexture', Scr.w, choice_pointers{3},myVar.subRect,myVar.DOWNrect);
+    Screen('DrawTexture', Scr.w, choice_pointers{4},myVar.subRect,myVar.LEFTrect);
             
     dotData = update_dots(dotData);
     Screen('DrawDots', Scr.w, dotData.dotPos, dotData.size, [255 255 255], [0 0], dotData.dotType);
@@ -188,7 +183,6 @@ while and(((KeyIsDown~=1) && noResponse),accumFlips < accumDur)
             error('EXIT button!\n');
         elseif KeyCodeRaw(myVar.cKey)
             fprintf('Recalibrating in middle of trial %d\n',tr);
-            Screen('Close',[UP_ptr,RIGHT_ptr,DOWN_ptr,LEFT_ptr])
             recalib_flag = true;
             return;
         else
@@ -245,16 +239,15 @@ for i = 1:feedbackDur
         error('EXIT button!\n');
     elseif KeyCode(myVar.cKey)
         fprintf('Recalibrating in middle of trial %d\n',tr);
-        Screen('Close',[UP_ptr,RIGHT_ptr,DOWN_ptr,LEFT_ptr])
         recalib_flag = true;
         return;
     end
     
     % draw the direction choice symbols at the bottom of the screen
-    Screen('DrawTexture', Scr.w, UP_ptr,myVar.subRect,myVar.UPrect);
-    Screen('DrawTexture', Scr.w, RIGHT_ptr,myVar.subRect,myVar.RIGHTrect);
-    Screen('DrawTexture', Scr.w, DOWN_ptr,myVar.subRect,myVar.DOWNrect);
-    Screen('DrawTexture', Scr.w, LEFT_ptr,myVar.subRect,myVar.LEFTrect);
+    Screen('DrawTexture', Scr.w, choice_pointers{1},myVar.subRect,myVar.UPrect);
+    Screen('DrawTexture', Scr.w, choice_pointers{2},myVar.subRect,myVar.RIGHTrect);
+    Screen('DrawTexture', Scr.w, choice_pointers{3},myVar.subRect,myVar.DOWNrect);
+    Screen('DrawTexture', Scr.w, choice_pointers{4},myVar.subRect,myVar.LEFTrect);
     
     if noResponse
         DrawFormattedText(Scr.w,'No response made!','center',Scr.wRect(4)*0.95,[255 0 ceil(255/4)]);
@@ -303,7 +296,6 @@ trial_data.feedbackOnset = feedbackOnset;
 trial_data.trialEND = trialEND;
 
 % Clear screen
-Screen('Close',[UP_ptr,RIGHT_ptr,DOWN_ptr,LEFT_ptr])
 Screen('Flip', Scr.w);
 
 
