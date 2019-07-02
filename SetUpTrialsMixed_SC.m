@@ -104,8 +104,8 @@ for b = 1:numBlocks
     randomOrder = randperm(size(block(b).trials,2)); % create random order from that.
     block(b).trials = block(b).trials(randomOrder);
 
-%     block(b).trials = block(b).trials(1:25); % for testing purposes
-    block(b).trials = block(b).trials(1:100); % 100 trials per block
+%     block(b).trials = block(b).trials(1:10); % for testing purposes
+    block(b).trials = block(b).trials(1:120); % 100 trials per block
     
     [~,newOrder] = CheckShuffle([block(b).trials.scene_ID],2); % make sure the same scene repeats at most twice consecutively within a block
     block(b).trials = block(b).trials(newOrder);

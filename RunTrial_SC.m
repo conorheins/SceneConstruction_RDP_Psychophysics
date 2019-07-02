@@ -1,4 +1,4 @@
-function [inf,trial_data,el,recalib_flag] = RunTrial_SC(Scr,inf,myVar,el,bl,tr,block,trialParams,real_bl_idx)
+function [inf,trial_data,el,recalib_flag] = RunTrial_SC(Scr,inf,myVar,el,bl,tr,block,trialParams,choice_pointers,real_bl_idx)
 
 % Script for a single trial of the scene construction paradigm
 
@@ -18,6 +18,8 @@ function [inf,trial_data,el,recalib_flag] = RunTrial_SC(Scr,inf,myVar,el,bl,tr,b
 %                parameters of stimuli to display on block(bl).trials(tr), participant's reaction time
 %                on block(bl).trials(tr).
 % - trialParams: structure containing trial-specific experimental (independent) and behavioral (dependent) measures
+
+% eyelink_timing = zeros(1,2);
 
 trial_data = struct;
 recalib_flag = false;
@@ -46,7 +48,9 @@ noResponse  = true;
 prevReward = block(bl).trials(tr).Reward;
 trialReward = 0;
 
-ShowCursor('Arrow') 
+if inf.dummy
+    ShowCursor('Arrow') 
+end
 
 % Timing in frames
 if tr == 1
@@ -87,6 +91,7 @@ for patt_id = 1:numPatterns
 end
 
 %% Prepare EyeTracker
+% tic
 if ~inf.dummy
     
     % START RECORDING to EDF file.
@@ -113,20 +118,15 @@ if ~inf.dummy
         bl,length(block),tr,length(block(bl).trials));
     
 end
+% eyelink_timing(1) = toc;
 
 % Prepare SCREEN
 
-UR_ptr = Screen('MakeTexture',Scr.w,myVar.UR_symbol); 
-RD_ptr = Screen('MakeTexture',Scr.w,myVar.RD_symbol); 
-DL_ptr = Screen('MakeTexture',Scr.w,myVar.DL_symbol); 
-LU_ptr = Screen('MakeTexture',Scr.w,myVar.LU_symbol); 
-choice_pointers = {UR_ptr,RD_ptr,DL_ptr,LU_ptr};
-
-% draw the scene symbols at the bottom of the screen
-Screen('DrawTexture', Scr.w, UR_ptr,myVar.subRect,myVar.UR_rect); 
-Screen('DrawTexture', Scr.w, RD_ptr,myVar.subRect,myVar.RD_rect); 
-Screen('DrawTexture', Scr.w, DL_ptr,myVar.subRect,myVar.DL_rect); 
-Screen('DrawTexture', Scr.w, LU_ptr,myVar.subRect,myVar.LU_rect); 
+% draw the scene symbols in the middle of the screen
+Screen('DrawTexture', Scr.w, choice_pointers{1},myVar.subRect,myVar.UR_rect); 
+Screen('DrawTexture', Scr.w, choice_pointers{2},myVar.subRect,myVar.RD_rect); 
+Screen('DrawTexture', Scr.w, choice_pointers{3},myVar.subRect,myVar.DL_rect); 
+Screen('DrawTexture', Scr.w, choice_pointers{4},myVar.subRect,myVar.LU_rect); 
 
 % Screen('DrawLines',Scr.w,all_fix_coords,myVar.lineWidthPix,Scr.white,fixationCoord,0);
 Screen('FillRect',Scr.w,quadColors,myVar.RDMRects);
@@ -149,10 +149,10 @@ end
 %%%%%%%%%%%
 
 % draw the scene symbols in the middle of the screen
-Screen('DrawTexture', Scr.w, UR_ptr,myVar.subRect,myVar.UR_rect);
-Screen('DrawTexture', Scr.w, RD_ptr,myVar.subRect,myVar.RD_rect);
-Screen('DrawTexture', Scr.w, DL_ptr,myVar.subRect,myVar.DL_rect);
-Screen('DrawTexture', Scr.w, LU_ptr,myVar.subRect,myVar.LU_rect);
+Screen('DrawTexture', Scr.w, choice_pointers{1},myVar.subRect,myVar.UR_rect); 
+Screen('DrawTexture', Scr.w, choice_pointers{2},myVar.subRect,myVar.RD_rect); 
+Screen('DrawTexture', Scr.w, choice_pointers{3},myVar.subRect,myVar.DL_rect); 
+Screen('DrawTexture', Scr.w, choice_pointers{4},myVar.subRect,myVar.LU_rect); 
 
 Screen('DrawDots', Scr.w, fixationCoord, 10, Scr.black, [], 2);
 Screen('FrameRect',Scr.w,quadFrameColors,myVar.RDMRects,myVar.frameLineWidth);
@@ -182,20 +182,16 @@ while and(( ~any(button_state) && noResponse),exploreFlips < exploreDur)
         error('EXIT button!\n');
     elseif KeyCode(myVar.cKey)
         fprintf('Recalibrating in middle of trial %d\n',tr);
-        Screen('Close',[UR_ptr,RD_ptr,DL_ptr,LU_ptr])
         recalib_flag = true;
         return;
     end
         
-%     Screen('DrawLines',Scr.w,all_fix_coords,myVar.lineWidthPix,Scr.white,fixationCoord,0);
     % draw the scene symbols at the bottom of the screen
-    Screen('DrawTexture', Scr.w, UR_ptr,myVar.subRect,myVar.UR_rect);
-    Screen('DrawTexture', Scr.w, RD_ptr,myVar.subRect,myVar.RD_rect);
-    Screen('DrawTexture', Scr.w, DL_ptr,myVar.subRect,myVar.DL_rect);
-    Screen('DrawTexture', Scr.w, LU_ptr,myVar.subRect,myVar.LU_rect);
-    
-%     DrawFormattedText(Scr.w,'Explore the scene...','center',Scr.wRect(4)-0.1*Scr.pixelsperdegree,[255 255 255]);
-    
+    Screen('DrawTexture', Scr.w, choice_pointers{1},myVar.subRect,myVar.UR_rect);
+    Screen('DrawTexture', Scr.w, choice_pointers{2},myVar.subRect,myVar.RD_rect);
+    Screen('DrawTexture', Scr.w, choice_pointers{3},myVar.subRect,myVar.DL_rect);
+    Screen('DrawTexture', Scr.w, choice_pointers{4},myVar.subRect,myVar.LU_rect);
+        
     if exploreFlips == 1
         exploreOnset = vbl;                                                          %%%%TIME%%%%%%%
     end
@@ -205,11 +201,13 @@ while and(( ~any(button_state) && noResponse),exploreFlips < exploreDur)
         pos_x = mouse_x;
         pos_y = mouse_y;
     else
+%         tic
         if Eyelink('NewFloatSampleAvailable')>0 % If NO EYE DATA
             evt = Eyelink('NewestFloatSample'); % take EyePosition
             pos_x = evt.gx(inf.eye +1);
             pos_y = evt.gy(inf.eye +1);
         end
+%         eyelink_timing(2) = toc;
     end
     
     % rectangular boundary conditions
@@ -288,7 +286,6 @@ while and(( ~any(button_state) && noResponse),exploreFlips < exploreDur)
             error(sprintf('EXIT button!\n'));
         elseif KeyCodeRaw(myVar.cKey)
             fprintf('Recalibrating in middle of trial %d\n',tr);
-            Screen('Close',[UR_ptr,RD_ptr,DL_ptr,LU_ptr])
             recalib_flag = true;
             return;
         else
@@ -362,10 +359,10 @@ for i = 1:choiceDur
     end
     
     % draw the scene symbols at the bottom of the screen
-    Screen('DrawTexture', Scr.w, UR_ptr,myVar.subRect,myVar.UR_rect);
-    Screen('DrawTexture', Scr.w, RD_ptr,myVar.subRect,myVar.RD_rect);
-    Screen('DrawTexture', Scr.w, DL_ptr,myVar.subRect,myVar.DL_rect);
-    Screen('DrawTexture', Scr.w, LU_ptr,myVar.subRect,myVar.LU_rect);
+    Screen('DrawTexture', Scr.w, choice_pointers{1},myVar.subRect,myVar.UR_rect);
+    Screen('DrawTexture', Scr.w, choice_pointers{2},myVar.subRect,myVar.RD_rect);
+    Screen('DrawTexture', Scr.w, choice_pointers{3},myVar.subRect,myVar.DL_rect);
+    Screen('DrawTexture', Scr.w, choice_pointers{4},myVar.subRect,myVar.LU_rect);
     
     if trialAcc == 1
         Screen('FrameRect',Scr.w,[0 200 50],myVar.choiceRects(:,sceneChoice),myVar.feedbackFrameWidth);
@@ -390,6 +387,9 @@ for i = 1:choiceDur
     
 end
 
+rew_message = sprintf('%.2f points awarded!',trialReward);
+total_score_msg = sprintf('Total score: %.2f points',prevReward + trialReward);
+
 for i = 1:feedbackDur
     
     [~,~, KeyCode] = KbCheck();     % In case if eye tracker lost eye
@@ -398,26 +398,21 @@ for i = 1:feedbackDur
         error('EXIT button!\n');
     elseif KeyCode(myVar.cKey)
         fprintf('Recalibrating in middle of trial %d\n',tr);
-        Screen('Close',[UR_ptr,RD_ptr,DL_ptr,LU_ptr])
         recalib_flag = true;
         return;
     end
     
     if trialAcc == 1
-        rew_message = sprintf('%.2f points awarded!',trialReward);
         DrawFormattedText(Scr.w,rew_message,'center',myVar.centerY,[0 200 50]);
     elseif and(trialAcc == 0,~isnan(sceneChoice))
-        rew_message = sprintf('%.2f points awarded!',trialReward);
         DrawFormattedText(Scr.w,rew_message,'center',myVar.centerY,[255 0 ceil(255/4)]);
     elseif noResponse
-        rew_message = sprintf('%.2f points awarded!',trialReward);
         DrawFormattedText(Scr.w,rew_message,'center',myVar.centerY,[255 0 ceil(255/4)]);
     else
-        rew_message = sprintf('%.2f points awarded!',trialReward);
         DrawFormattedText(Scr.w,rew_message,'center',myVar.centerY,[255 0 ceil(255/4)]);
     end
     
-    DrawFormattedText(Scr.w,sprintf('Total score: %.2f points',prevReward + trialReward),'center',myVar.centerY + (1.5 * Scr.pixelsperdegree),[255 255 255]);
+    DrawFormattedText(Scr.w,total_score_msg,'center',myVar.centerY + (1.5 * Scr.pixelsperdegree),[255 255 255]);
     
     vbl = Screen('Flip',Scr.w,vbl + (Scr.waitframes - 0.5) * Scr.ifi);
     
@@ -447,7 +442,6 @@ trial_data.trialEND = trialEND;
 % Clear screen
 Screen('FillRect',Scr.w,quadColors,myVar.RDMRects);
 Screen('FrameRect',Scr.w,quadFrameColors,myVar.RDMRects,myVar.frameLineWidth);
-Screen('Close',[UR_ptr,RD_ptr,DL_ptr,LU_ptr])
 Screen('Flip', Scr.w);
 
 

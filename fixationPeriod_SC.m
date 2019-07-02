@@ -1,4 +1,4 @@
-function vbl = fixationPeriod(Scr,myVar,fixationCoord,quadFrameColors,quadColors,fixationDur,choice_pointers,vbl)
+function vbl = fixationPeriod_SC(Scr,myVar,fixationCoord,quadFrameColors,quadColors,fixationDur,choice_pointers,vbl)
 %fixationPeriod Wrapper function for the loop over fixationDur flips that
 %waits another fixationTime seconds before beginning the exploration phase
 
