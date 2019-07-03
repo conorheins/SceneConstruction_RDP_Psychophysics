@@ -180,7 +180,7 @@ while and(( ~any(button_state) && noResponse),exploreFlips < exploreDur)
     if KeyCode(myVar.escapeKey)             % EXIT key pressed to exit experiment
         Screen('CloseAll');
         error('EXIT button!\n');
-    elseif KeyCode(myVar.cKey)
+    elseif KeyCode(myVar.kKey)
         fprintf('Recalibrating in middle of trial %d\n',tr);
         recalib_flag = true;
         return;
@@ -284,7 +284,7 @@ while and(( ~any(button_state) && noResponse),exploreFlips < exploreDur)
         if KeyCodeRaw(KbName('ESCAPE'))  % EXIT key pressed to exit experiment
             Screen('CloseAll')
             error(sprintf('EXIT button!\n'));
-        elseif KeyCodeRaw(myVar.cKey)
+        elseif KeyCodeRaw(myVar.kKey)
             fprintf('Recalibrating in middle of trial %d\n',tr);
             recalib_flag = true;
             return;
@@ -351,9 +351,8 @@ for i = 1:choiceDur
     if KeyCode(myVar.escapeKey)             % EXIT key pressed to exit experiment
         Screen('CloseAll');
         error('EXIT button!\n');
-    elseif KeyCode(myVar.cKey)
+    elseif KeyCode(myVar.kKey)
         fprintf('Recalibrating in middle of trial %d\n',tr);
-        Screen('Close',[UR_ptr,RD_ptr,DL_ptr,LU_ptr])
         recalib_flag = true;
         return;
     end
@@ -366,14 +365,19 @@ for i = 1:choiceDur
     
     if trialAcc == 1
         Screen('FrameRect',Scr.w,[0 200 50],myVar.choiceRects(:,sceneChoice),myVar.feedbackFrameWidth);
-        DrawFormattedText(Scr.w,'Correct','center',Scr.wRect(4)-0.1*Scr.pixelsperdegree,[0 200 50]);
+%         DrawFormattedText(Scr.w,'Correct','center',Scr.wRect(4)-0.1*Scr.pixelsperdegree,[0 200 50]);
+        DrawFormattedText(Scr.w,'Correct','center','center',[0 200 50]);
+
     elseif and(trialAcc == 0,~isnan(sceneChoice))
         Screen('FrameRect', Scr.w, [255 0 ceil(255/4)], myVar.choiceRects(:,sceneChoice),myVar.feedbackFrameWidth);
-        DrawFormattedText(Scr.w,'Incorrect','center',Scr.wRect(4)-1.0*Scr.pixelsperdegree,[255 0 ceil(255/4)]);
+%         DrawFormattedText(Scr.w,'Incorrect','center',Scr.wRect(4)-1.0*Scr.pixelsperdegree,[255 0 ceil(255/4)]);
+        DrawFormattedText(Scr.w,'Incorrect','center','center',[255 0 ceil(255/4)]);
     elseif noResponse
-        DrawFormattedText(Scr.w,'Ran out of time!','center',Scr.wRect(4)-1.0*Scr.pixelsperdegree,[255 0 ceil(255/4)]);
+%         DrawFormattedText(Scr.w,'Ran out of time!','center',Scr.wRect(4)-1.0*Scr.pixelsperdegree,[255 0 ceil(255/4)]);
+        DrawFormattedText(Scr.w,'Ran out of time!','center','center',[255 0 ceil(255/4)]);
     else
-        DrawFormattedText(Scr.w,'Invalid response!','center',Scr.wRect(4)-1.0*Scr.pixelsperdegree,[255 0 ceil(255/4)]);
+%         DrawFormattedText(Scr.w,'Invalid response!','center',Scr.wRect(4)-1.0*Scr.pixelsperdegree,[255 0 ceil(255/4)]);
+        DrawFormattedText(Scr.w,'Invalid response!','center','center',[255 0 ceil(255/4)]);
     end
     
 %     Screen('DrawLines',Scr.w,all_fix_coords,myVar.lineWidthPix,Scr.white,fixationCoord,0);
@@ -387,39 +391,55 @@ for i = 1:choiceDur
     
 end
 
+vbl = Screen('Flip',Scr.w,vbl + (Scr.waitframes - 0.5) * Scr.ifi);
+feedbackOnset = vbl;
+
 rew_message = sprintf('%.2f points awarded!',trialReward);
 total_score_msg = sprintf('Total score: %.2f points',prevReward + trialReward);
-
-for i = 1:feedbackDur
-    
-    [~,~, KeyCode] = KbCheck();     % In case if eye tracker lost eye
-    if KeyCode(myVar.escapeKey)             % EXIT key pressed to exit experiment
-        Screen('CloseAll');
-        error('EXIT button!\n');
-    elseif KeyCode(myVar.cKey)
-        fprintf('Recalibrating in middle of trial %d\n',tr);
-        recalib_flag = true;
-        return;
-    end
-    
-    if trialAcc == 1
-        DrawFormattedText(Scr.w,rew_message,'center',myVar.centerY,[0 200 50]);
-    elseif and(trialAcc == 0,~isnan(sceneChoice))
-        DrawFormattedText(Scr.w,rew_message,'center',myVar.centerY,[255 0 ceil(255/4)]);
-    elseif noResponse
-        DrawFormattedText(Scr.w,rew_message,'center',myVar.centerY,[255 0 ceil(255/4)]);
-    else
-        DrawFormattedText(Scr.w,rew_message,'center',myVar.centerY,[255 0 ceil(255/4)]);
-    end
-    
-    DrawFormattedText(Scr.w,total_score_msg,'center',myVar.centerY + (1.5 * Scr.pixelsperdegree),[255 255 255]);
-    
-    vbl = Screen('Flip',Scr.w,vbl + (Scr.waitframes - 0.5) * Scr.ifi);
-    
-    if i == 1
-        feedbackOnset = vbl;                                              %%%%%%%TIME%%%%%%%%%
-    end
+if trialAcc == 1
+    DrawFormattedText(Scr.w,rew_message,'center',myVar.centerY,[0 200 50]);
+elseif and(trialAcc == 0,~isnan(sceneChoice))
+    DrawFormattedText(Scr.w,rew_message,'center',myVar.centerY,[255 0 ceil(255/4)]);
+elseif noResponse
+    DrawFormattedText(Scr.w,rew_message,'center',myVar.centerY,[255 0 ceil(255/4)]);
+else
+    DrawFormattedText(Scr.w,rew_message,'center',myVar.centerY,[255 0 ceil(255/4)]);
 end
+
+DrawFormattedText(Scr.w,total_score_msg,'center',round(myVar.centerY + (1.5 * Scr.pixelsperdegree)),[255 255 255]);
+WaitSecs(myVar.feedbackTime)
+vbl = Screen('Flip',Scr.w,vbl + (Scr.waitframes - 0.5) * Scr.ifi);
+
+% for i = 1:feedbackDur
+%     
+%     [~,~, KeyCode] = KbCheck();     % In case if eye tracker lost eye
+%     if KeyCode(myVar.escapeKey)             % EXIT key pressed to exit experiment
+%         Screen('CloseAll');
+%         error('EXIT button!\n');
+%     elseif KeyCode(myVar.kKey)
+%         fprintf('Recalibrating in middle of trial %d\n',tr);
+%         recalib_flag = true;
+%         return;
+%     end
+%     
+%     if trialAcc == 1
+%         DrawFormattedText(Scr.w,rew_message,'center',myVar.centerY,[0 200 50]);
+%     elseif and(trialAcc == 0,~isnan(sceneChoice))
+%         DrawFormattedText(Scr.w,rew_message,'center',myVar.centerY,[255 0 ceil(255/4)]);
+%     elseif noResponse
+%         DrawFormattedText(Scr.w,rew_message,'center',myVar.centerY,[255 0 ceil(255/4)]);
+%     else
+%         DrawFormattedText(Scr.w,rew_message,'center',myVar.centerY,[255 0 ceil(255/4)]);
+%     end
+%     
+%     DrawFormattedText(Scr.w,total_score_msg,'center',round(myVar.centerY + (1.5 * Scr.pixelsperdegree)),[255 255 255]);
+%     
+%     vbl = Screen('Flip',Scr.w,vbl + (Scr.waitframes - 0.5) * Scr.ifi);
+%     
+%     if i == 1
+%         feedbackOnset = vbl;                                              %%%%%%%TIME%%%%%%%%%
+%     end
+% end
 
 trialEND = vbl;
             

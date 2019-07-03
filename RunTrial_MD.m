@@ -152,7 +152,7 @@ while and(((KeyIsDown~=1) && noResponse),accumFlips < accumDur)
     if KeyCode(myVar.escapeKey)             % EXIT key pressed to exit experiment
         Screen('CloseAll');
         error('EXIT button!\n');
-    elseif KeyCode(myVar.cKey)
+    elseif KeyCode(myVar.kKey)
         fprintf('Recalibrating in middle of trial %d\n',tr);
         recalib_flag = true;
         return;
@@ -181,7 +181,7 @@ while and(((KeyIsDown~=1) && noResponse),accumFlips < accumDur)
         if KeyCodeRaw(myVar.escapeKey)  % EXIT key pressed to exit experiment
             Screen('CloseAll')
             error('EXIT button!\n');
-        elseif KeyCodeRaw(myVar.cKey)
+        elseif KeyCodeRaw(myVar.kKey)
             fprintf('Recalibrating in middle of trial %d\n',tr);
             recalib_flag = true;
             return;
@@ -229,6 +229,11 @@ while and(((KeyIsDown~=1) && noResponse),accumFlips < accumDur)
     end
     
 end
+
+if ~inf.dummy
+    Eyelink('Message', 'ACCUM_END');
+end
+
         
             
 for i = 1:feedbackDur
@@ -237,7 +242,7 @@ for i = 1:feedbackDur
     if KeyCode(myVar.escapeKey)             % EXIT key pressed to exit experiment
         Screen('CloseAll');
         error('EXIT button!\n');
-    elseif KeyCode(myVar.cKey)
+    elseif KeyCode(myVar.kKey)
         fprintf('Recalibrating in middle of trial %d\n',tr);
         recalib_flag = true;
         return;
@@ -254,22 +259,22 @@ for i = 1:feedbackDur
     elseif and(~noResponse, bl < real_bl_idx)
         if KeyCodeRaw(UP_choice)
             %                         DrawFormattedText(Scr.w,'Chose UP','center',Scr.wRect(4)*0.95,[0 255 ceil(255/2)]);
-            DrawFormattedText(Scr.w,'Chose UP','center',Scr.wRect(4)*0.95,Scr.white);
+%             DrawFormattedText(Scr.w,'Chose UP','center',Scr.wRect(4)*0.95,Scr.white);
             %                         Screen('FrameRect', Scr.w, [0 200 50], myVar.UPrect, 5);
             Screen('FrameRect', Scr.w, Scr.white, myVar.UPrect, 5);
         elseif KeyCodeRaw(RIGHT_choice)
             %                         DrawFormattedText(Scr.w,'Chose RIGHT','center',Scr.wRect(4)*0.95,[0 255 ceil(255/2)]);
-            DrawFormattedText(Scr.w,'Chose RIGHT','center',Scr.wRect(4)*0.95,Scr.white);
+%             DrawFormattedText(Scr.w,'Chose RIGHT','center',Scr.wRect(4)*0.95,Scr.white);
             %                         Screen('FrameRect', Scr.w, [0 200 50], myVar.RIGHTrect, 5);
             Screen('FrameRect', Scr.w, Scr.white, myVar.RIGHTrect, 5);
         elseif KeyCodeRaw(DOWN_choice)
             %                         DrawFormattedText(Scr.w,'Chose DOWN','center',Scr.wRect(4)*0.95,[0 255 ceil(255/2)]);
-            DrawFormattedText(Scr.w,'Chose DOWN','center',Scr.wRect(4)*0.95,Scr.white);
+%             DrawFormattedText(Scr.w,'Chose DOWN','center',Scr.wRect(4)*0.95,Scr.white);
             %                         Screen('FrameRect', Scr.w, [0 200 50], myVar.DOWNrect, 5);
             Screen('FrameRect', Scr.w, Scr.white, myVar.DOWNrect, 5);
         elseif KeyCodeRaw(LEFT_choice)
             %                         DrawFormattedText(Scr.w,'Chose LEFT','center',Scr.wRect(4)*0.95,[0 255 ceil(255/2)]);
-            DrawFormattedText(Scr.w,'Chose LEFT','center',Scr.wRect(4)*0.95,Scr.white);
+%             DrawFormattedText(Scr.w,'Chose LEFT','center',Scr.wRect(4)*0.95,Scr.white);
             %                         Screen('FrameRect', Scr.w, [0 200 50], myVar.LEFTrect, 5);
             Screen('FrameRect', Scr.w, Scr.white, myVar.LEFTrect, 5);
         end

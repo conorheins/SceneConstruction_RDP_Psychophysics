@@ -71,7 +71,7 @@ myVar.rightKey  = KbName('RightArrow');
 myVar.upKey     = KbName('UpArrow');
 myVar.downKey   = KbName('DownArrow');
 myVar.pKey      = KbName('p'); % Skip EyeCheck
-myVar.cKey      = KbName('c'); % initiate caibration 
+myVar.kKey      = KbName('k'); % initiate Kalibration 
 myVar.tKey      = KbName('t'); % Do Threshold calibration before the next block
 myVar.dKey      = KbName('d'); % do drift correction
 
@@ -91,6 +91,9 @@ myVar.centerY           = Scr.height/2;
 
 myVar.centW             = 52.2;       % ViewPixx EEG (cm.)
 myVar.centD             = 91.0;       % Distance to the screen (cm.)
+% myVar.centD             = 60.0;     % Distance to the screen (cm.) in
+%                                       the psychophysics room
+
 myVar.centH             = 29.1;       % ViewPixx EEG (cm.)
 
 % PPD based on Visual Psyhcophysics book, Lu and Dosher

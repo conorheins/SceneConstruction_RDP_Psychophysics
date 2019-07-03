@@ -52,14 +52,29 @@ for b = 1:numBlocks
     [block(b).trials.feedbackOnset]     = deal(nan);
     [block(b).trials.trialEND]          = deal(nan);
     
-    randomOrder = randperm(size(block(b).trials,2)); % create random order from that.
-    block(b).trials = block(b).trials(randomOrder);
+%     randomOrder = randperm(size(block(b).trials,2)); % create random order from that.
+%     block(b).trials = block(b).trials(randomOrder);
     
     % [~,randomOrder] = CheckShuffle([block(b).trials.conSort],2); %Advanced check by Adam
     % block(b).trials = block(b).trials(randomOrder);
    
 end
-% block(length(block)+1).trials = block(4).trials;    % Block before error block Extra Conditioning
-% block(length(block)+1).trials = block(b).trials(1); % Create Extra block to store error trials
-% block(length(block)).trials(1) = [];
+
+%% THIS PERFORMS GLOBAL RANDOMIZATION ACROSS BLOCKS, THEN REDISTRIBUTES THE TRIALS BACK INTO NUMBLOCKS BLOCKS
+
+all_trials = []; % initialize array to hold all trial structures
+
+for b = 1:numBlocks
+    all_trials = [all_trials;block(b).trials'];
+end
+
+randomOrder = randperm(size(all_trials,1));
+all_trials = all_trials(randomOrder);
+
+blockSizes = linspace(0,length(all_trials),numBlocks + 1);
+for b = 1:numBlocks
+    block(b).trials = all_trials( (blockSizes(b)+1):(blockSizes(b+1)));
+end
+
+
 end
