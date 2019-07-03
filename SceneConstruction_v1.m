@@ -94,10 +94,6 @@ try
             EyeLinkCalibration(Scr,inf,inst_rdp,el); % recalibrate before main experiment
                                
         end
-            
-        
-        FileName        = ['block_' num2str(bl)];
-        [inf,myVar, edfFile]  = EyeLinkStart(Scr,inf,myVar,bl,FileName); % Instructions inside!!!!
         
          %% Experiment Trials-by-Trial-------------%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -106,15 +102,26 @@ try
         else
             tr = startT;
         end
+        
+        counter = 1;
+        FileName = sprintf('block_%d%d',bl,counter);
+        [inf,edfFile] = EyeLinkStart(Scr,inf,FileName); % Instructions inside!!!!
+           
         while tr <= length(block(bl).trials)
             
             [inf,trialData,el,recalib_flag]  = RunTrial_MD(Scr,inf,myVar,el,bl,tr,block,block(bl).trials(tr),choice_pointers,real_bl_idx);
             
-            while recalib_flag
-                EyeLinkCalibration_interrupt(Scr,inf,bl,tr,el);
-                [inf,trialData,el,recalib_flag]  = RunTrial_MD(Scr,inf,myVar,el,bl,tr,block,block(bl).trials(tr),choice_pointers,real_bl_idx);
-            end               
-        
+            if recalib_flag
+                EyeLinkStop(inf,bl,tr,edfFile);
+                counter = counter + 1;
+                FileName_next = sprintf('block_%d%d',bl,counter);
+                while recalib_flag
+                    EyeLinkCalibration_interrupt(Scr,inf,bl,tr,el);
+                    [inf,edfFile] = EyeLinkStart(Scr,inf,FileName_next); % Instructions inside!!!!
+                    [inf,trialData,el,recalib_flag]  = RunTrial_MD(Scr,inf,myVar,el,bl,tr,block,block(bl).trials(tr),choice_pointers,real_bl_idx);
+                end
+            end
+            
             % add current trial's results to block structure
             block(bl).trials(tr).trialRT = trialData.trialRT;
             block(bl).trials(tr).trialAcc= trialData.trialAcc;
@@ -133,7 +140,7 @@ try
         text = sprintf('Please Wait');
         DrawFormattedText(Scr.w, text, 'center','center', [255 255 255]);
         Screen('Flip', Scr.w);
-        EyeLinkStop(inf,bl,edfFile);
+        EyeLinkStop(inf,bl,tr-1,edfFile);
                 
         %% Saving mat data after each block
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -179,11 +186,11 @@ end
 %% Determine subject's psychometric function in order to choose coherences
 
 desired_precisions = [1 2 5]; % correspond to accuracies of ~47%, 71%, and 98%
-% [myVar.coherences2use,flags,psychometric_fit] = analyze_MDdata(block,desired_precisions,real_bl_idx);
+[myVar.coherences2use,flags,psychometric_fit] = analyze_MDdata(block,desired_precisions,real_bl_idx);
 
 % if you want to use all the data to fit the psychometric function, use
 % this code:
-[myVar.coherences2use,flags,psychometric_fit] = analyze_MDdata(block,desired_precisions,1);
+% [myVar.coherences2use,flags,psychometric_fit] = analyze_MDdata(block,desired_precisions,1);
 
 if any(flags)
     warning('Coherence calibration is sub-optimal!')
@@ -199,7 +206,7 @@ clear ans answer bl block edfFile el FileName fName inst_rdp prompt Scr text tit
 
 % Now we can proceed to the Scene Construction (main) study 
 
-real_bl_idx = 2; % this is the block number at which the experimental trials begins - everything before is just practice
+real_bl_idx = 1; % this is the block number at which the experimental trials begins - everything before is just practice
 
 try
     
@@ -229,6 +236,10 @@ try
     choice_pointers = {UR_ptr,RD_ptr,DL_ptr,LU_ptr};
 
     [el,inf]           = EyeLinkON(Scr,inf);           % Turn on EyeLink
+    
+    if ~inf.dummy
+        HideCursor();
+    end
     
     if ~inf.afterBreak
         
@@ -276,7 +287,7 @@ try
         if bl == 1
             EyeLinkCalibration(Scr,inf,inst_sc,el);
             block(bl).trials(1).Reward = 0; % initialize first trial of first block's reward to 0
-            block(bl).trials = block(bl).trials(1:40); % make the first block only have 40 trials (since it's practice)
+%             block(bl).trials = block(bl).trials(1:40); % make the first block only have 40 trials (since it's practice)
         else
             block(bl).trials(1).Reward = block(bl-1).trials(end).Reward; % initialize next block's reward to be the reward accumulated at the end of the previous block 
         end
@@ -297,17 +308,19 @@ try
              EyeLinkCalibration(Scr,inf,inst_sc,el); % calibrate in between every block before main experiment
                     
         end
- 
-        FileName        = ['block_' num2str(bl)];
-        [inf,myVar, edfFile]  = EyeLinkStart(Scr,inf,myVar,bl,FileName); % Instructions inside!!!!
         
-         %% Experiment Trials-by-Trial-------------%
+        %% Experiment Trials-by-Trial-------------%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         if ~exist('startT','var')
             tr = 1;
         else
             tr = startT;
         end
+        
+        counter = 1;
+        FileName = sprintf('block_%d%d',bl,counter);
+        [inf,edfFile] = EyeLinkStart(Scr,inf,FileName); % Instructions inside!!!!
+ 
         while tr <= length(block(bl).trials)
             
             if tr > 1
@@ -315,13 +328,21 @@ try
             end
             
             [inf,trialData,el,recalib_flag] = RunTrial_SC(Scr,inf,myVar,el,bl,tr,block,block(bl).trials(tr),choice_pointers,real_bl_idx);
-%             timing_info_all(tr,:,bl) = timing_info;
-            
-             while recalib_flag
-                EyeLinkCalibration_interrupt(Scr,inf,bl,tr,el);
-                [inf,trialData,el,recalib_flag]  = RunTrial_SC(Scr,inf,myVar,el,bl,tr,block,block(bl).trials(tr),choice_pointers,real_bl_idx);
-             end
-%              timing_info_all(tr,:,bl) = timing_info;
+
+            if recalib_flag
+                EyeLinkStop(inf,bl,tr,edfFile);
+                counter = counter + 1;
+                FileName_next = sprintf('block_%d%d',bl,counter);
+                while recalib_flag
+                    EyeLinkCalibration_interrupt(Scr,inf,bl,tr,el);
+                    text = sprintf('Calibration successful');
+                    DrawFormattedText(Scr.w, text, 'center','center', [255 255 255]);
+                    Screen('Flip', Scr.w);
+                    WaitSecs(1.0);
+                    [inf,edfFile] = EyeLinkStart(Scr,inf,FileName_next); % Instructions inside!!!!
+                    [inf,trialData,el,recalib_flag]  = RunTrial_SC(Scr,inf,myVar,el,bl,tr,block,block(bl).trials(tr),choice_pointers,real_bl_idx);
+                end
+            end
             
             % add current trial's results to block structure
             block(bl).trials(tr).trialRT = trialData.trialRT;
@@ -343,7 +364,7 @@ try
         text = sprintf('Please Wait');
         DrawFormattedText(Scr.w, text, 'center','center', [255 255 255]);
         Screen('Flip', Scr.w);
-        EyeLinkStop(inf,bl,edfFile);
+        EyeLinkStop(inf,bl,tr-1,edfFile);
                 
         %% Saving mat data after each block
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -69,7 +69,7 @@ myVar.rightKey  = KbName('RightArrow');
 myVar.upKey     = KbName('UpArrow');
 myVar.downKey   = KbName('DownArrow');
 myVar.pKey      = KbName('p'); % Skip EyeCheck
-myVar.cKey      = KbName('c'); % initiate caibration 
+myVar.kKey      = KbName('k'); % initiate Kalibration 
 myVar.tKey      = KbName('t'); % Do Threshold calibration before the next block
 myVar.dKey      = KbName('d'); % do drift correction
 
@@ -91,6 +91,8 @@ myVar.centerY           = Scr.height/2;
 
 myVar.centW             = 52.2;       % ViewPixx EEG (cm.)
 myVar.centD             = 91.0;       % Distance to the screen (cm.)
+% myVar.centD             = 60.0;     % Distance to the screen (cm.) in
+%                                       the psychophysics room
 myVar.centH             = 29.1;       % ViewPixx EEG (cm.)
 
 % PPD based on Visual Psyhcophysics book, Lu and Dosher
@@ -160,9 +162,14 @@ myVar.DL_symbol  = imread('SceneConstructionProper/images/DL_gray.png');
 myVar.LU_symbol  = imread('SceneConstructionProper/images/LU_gray.png');
 
 myVar.subRect = [275 80 715 440];
+% myVar.UR_rect = [myVar.centerX + Scr.choice_distance(1,1) myVar.centerY - Scr.vertdisplace/2 myVar.centerX + Scr.choice_distance(2,1) myVar.centerY + Scr.vertdisplace/2];
+% myVar.RD_rect = [myVar.centerX + Scr.choice_distance(1,2) myVar.centerY - Scr.vertdisplace/2 myVar.centerX + Scr.choice_distance(2,2) myVar.centerY + Scr.vertdisplace/2];
+% myVar.DL_rect = [myVar.centerX + Scr.choice_distance(1,3) myVar.centerY - Scr.vertdisplace/2 myVar.centerX + Scr.choice_distance(2,3) myVar.centerY + Scr.vertdisplace/2];
+% myVar.LU_rect = [myVar.centerX + Scr.choice_distance(1,4) myVar.centerY - Scr.vertdisplace/2 myVar.centerX + Scr.choice_distance(2,4) myVar.centerY + Scr.vertdisplace/2];
+
 myVar.UR_rect = [myVar.centerX + Scr.choice_distance(1,1) myVar.centerY - Scr.vertdisplace/2 myVar.centerX + Scr.choice_distance(2,1) myVar.centerY + Scr.vertdisplace/2];
-myVar.RD_rect = [myVar.centerX + Scr.choice_distance(1,2) myVar.centerY - Scr.vertdisplace/2 myVar.centerX + Scr.choice_distance(2,2) myVar.centerY + Scr.vertdisplace/2];
-myVar.DL_rect = [myVar.centerX + Scr.choice_distance(1,3) myVar.centerY - Scr.vertdisplace/2 myVar.centerX + Scr.choice_distance(2,3) myVar.centerY + Scr.vertdisplace/2];
+myVar.RD_rect = [myVar.centerX + Scr.choice_distance(1,3) myVar.centerY - Scr.vertdisplace/2 myVar.centerX + Scr.choice_distance(2,3) myVar.centerY + Scr.vertdisplace/2];
+myVar.DL_rect = [myVar.centerX + Scr.choice_distance(1,2) myVar.centerY - Scr.vertdisplace/2 myVar.centerX + Scr.choice_distance(2,2) myVar.centerY + Scr.vertdisplace/2];
 myVar.LU_rect = [myVar.centerX + Scr.choice_distance(1,4) myVar.centerY - Scr.vertdisplace/2 myVar.centerX + Scr.choice_distance(2,4) myVar.centerY + Scr.vertdisplace/2];
 
 myVar.choiceRects = [myVar.UR_rect;myVar.RD_rect;myVar.DL_rect;myVar.LU_rect]'; 
