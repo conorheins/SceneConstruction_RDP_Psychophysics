@@ -152,7 +152,7 @@ while and(((KeyIsDown~=1) && noResponse),accumFlips < accumDur)
     if KeyCode(myVar.escapeKey)             % EXIT key pressed to exit experiment
         Screen('CloseAll');
         error('EXIT button!\n');
-    elseif KeyCode(myVar.cKey)
+    elseif KeyCode(myVar.kKey)
         fprintf('Recalibrating in middle of trial %d\n',tr);
         recalib_flag = true;
         return;
@@ -181,7 +181,7 @@ while and(((KeyIsDown~=1) && noResponse),accumFlips < accumDur)
         if KeyCodeRaw(myVar.escapeKey)  % EXIT key pressed to exit experiment
             Screen('CloseAll')
             error('EXIT button!\n');
-        elseif KeyCodeRaw(myVar.cKey)
+        elseif KeyCodeRaw(myVar.kKey)
             fprintf('Recalibrating in middle of trial %d\n',tr);
             recalib_flag = true;
             return;
@@ -242,7 +242,7 @@ for i = 1:feedbackDur
     if KeyCode(myVar.escapeKey)             % EXIT key pressed to exit experiment
         Screen('CloseAll');
         error('EXIT button!\n');
-    elseif KeyCode(myVar.cKey)
+    elseif KeyCode(myVar.kKey)
         fprintf('Recalibrating in middle of trial %d\n',tr);
         recalib_flag = true;
         return;
