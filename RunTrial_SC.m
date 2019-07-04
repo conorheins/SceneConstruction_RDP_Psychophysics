@@ -21,6 +21,7 @@ function [inf,trial_data,el,recalib_flag] = RunTrial_SC(Scr,inf,myVar,el,bl,tr,b
 
 trial_data = struct;
 recalib_flag = false;
+left_flag = false;
 
 trialSTART = GetSecs;                                                      %%%%TIME%%%%%%%
 
@@ -40,9 +41,10 @@ feedbackOnset           = nan;
 trialEND                = nan;
 
 % Times of quadrant visits and quadrant indices;
-visitTmsp = [];
+visitStartTmsp = [];
+visitEndTmsp = [];
 visitIdx  = [];
-visitDurs = [];
+% visitDurs = [];
 
 % Prepare variables for stimulation.
 respToBeMade= true;
@@ -267,9 +269,9 @@ while and(( ~any(button_state) && noResponse),exploreFlips < exploreDur)
             
         else
             
-            if visit_counter > 1
-                visitDurs = [visitDurs, visit_counter * Scr.ifi];
-            end
+%             if visit_counter > 1
+%                 visitDurs = [visitDurs, visit_counter * Scr.ifi];
+%             end
             
             visit_counter = 0;
             
@@ -280,6 +282,12 @@ while and(( ~any(button_state) && noResponse),exploreFlips < exploreDur)
         
         
     else
+        
+        if visit_counter > 1
+            left_flag = true;
+            visit_counter = 0;
+        end
+        
         quadrant_dwell_counters = zeros(numQuads,1);
         
         Screen('FillRect',Scr.w,quadColors,myVar.RDMRects)
@@ -294,8 +302,11 @@ while and(( ~any(button_state) && noResponse),exploreFlips < exploreDur)
     vbl = Screen('Flip',Scr.w,vbl + (Scr.waitframes - 0.5) * Scr.ifi);
     
     if visit_counter == 1
-        visitTmsp = [visitTmsp, vbl];
+        visitStartTmsp = [visitStartTmsp, vbl];
         visitIdx = [visitIdx, rev_quadrant];
+    elseif left_flag
+        visitEndTmsp = [visitEndTmsp,vbl];
+        left_flag = false;
     end
     
     trialReward = myVar.discount_function(exploreFlips);
@@ -486,9 +497,10 @@ trial_data.choiceOnset = choiceOnset;
 trial_data.feedbackOnset = feedbackOnset;
 trial_data.trialEND = trialEND;
 
-trial_data.visitTmsp = visitTmsp;
+trial_data.visitStartTmsp = visitStartTmsp;
+trial_data.visitEndTmsp = visitEndTmsp;
 trial_data.visitIdx  = visitIdx;
-trial_data.visitDurs = visitDurs;
+% trial_data.visitDurs = visitDurs;
 
 % Clear screen
 Screen('FillRect',Scr.w,quadColors,myVar.RDMRects);

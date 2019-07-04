@@ -115,7 +115,7 @@ try
         if bl == 1
             EyeLinkCalibration(Scr,inf,inst_sc,el);
             block(bl).trials(1).Reward = 0; % initialize first trial of first block's reward to 0
-%             block(bl).trials = block(bl).trials(1:40); % make the first block only have 40 trials (since it's practice)
+            block(bl).trials = block(bl).trials(1:5); % make the first block only have 40 trials (since it's practice)
         else
             block(bl).trials(1).Reward = block(bl-1).trials(end).Reward; % initialize next block's reward to be the reward accumulated at the end of the previous block 
         end
@@ -126,7 +126,7 @@ try
             Screen('Flip',Scr.w); KbStrokeWait;
             Screen('Close',inst_sc.breakScreen);
             
-            CountDown(Scr,myVar,5);
+            CountDown(Scr,myVar,60);
             
             EyeLinkCalibration(Scr,inf,inst_sc,el); % recalibrate before main experiment
             
@@ -186,10 +186,11 @@ try
             block(bl).trials(tr).feedbackOnset = trialData.feedbackOnset;
             block(bl).trials(tr).trialEND = trialData.trialEND; 
             
-            block(bl).trials(tr).visitTmsp = trialData.visitTmsp;
+            block(bl).trials(tr).visitStartTmsp = trialData.visitStartTmsp;
+            block(bl).trials(tr).visitEndTmsp = trialData.visitEndTmsp;
             block(bl).trials(tr).visitIdx = trialData.visitIdx;
-            block(bl).trials(tr).visitDurs = trialData.visitDurs;
 
+%             block(bl).trials(tr).visitDurs = trialData.visitDurs;
             
             tr = tr+1;
             
@@ -238,5 +239,3 @@ catch errorInfo
     end
 end
 
-
-    

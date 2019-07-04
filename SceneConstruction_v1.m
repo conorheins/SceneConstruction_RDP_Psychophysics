@@ -358,9 +358,11 @@ try
             block(bl).trials(tr).feedbackOnset = trialData.feedbackOnset;
             block(bl).trials(tr).trialEND = trialData.trialEND; 
             
-            block(bl).trials(tr).visitTmsp = trialData.visitTmsp;
+            block(bl).trials(tr).visitStartTmsp = trialData.visitStartTmsp;
+            block(bl).trials(tr).visitEndTmsp = trialData.visitEndTmsp;
             block(bl).trials(tr).visitIdx = trialData.visitIdx;
-            block(bl).trials(tr).visitDurs = trialData.visitDurs;
+
+%             block(bl).trials(tr).visitDurs = trialData.visitDurs;
             
             tr = tr+1;
             

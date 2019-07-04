@@ -101,9 +101,10 @@ for b = 1:numBlocks
     [block(b).trials.feedbackOnset]     = deal(nan);
     [block(b).trials.trialEND]          = deal(nan);
     
-    [block(b).trials.visitTmsp]          = deal(nan);
+    [block(b).trials.visitStartTmsp]     = deal(nan);
+    [block(b).trials.visitEndTmsp]     = deal(nan);
     [block(b).trials.visitIdx]           = deal(nan);
-    [block(b).trials.visitDurs]          = deal(nan);
+%     [block(b).trials.visitDurs]          = deal(nan);
 
     randomOrder = randperm(size(block(b).trials,2)); % create random order from that.
     block(b).trials = block(b).trials(randomOrder);
