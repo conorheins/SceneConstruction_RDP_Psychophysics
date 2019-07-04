@@ -1,9 +1,40 @@
+%% CHECK THE Pp NAME
+%%%%%%%%%%%%%%%%%%%%%%
+fclose all;
+PsychDefaultSetup(1);       % to define color in range of 255 instead of 1
+delete AA_lasterrormsg.mat  % If we got an error, we would see it in root folder
+addpath(genpath('MotionDiscrim/psignifit-master'));
+addpath(genpath('utilities'));
+
+% Number of blocks to run
+prompt                  ={'Please enter the subject ID'};
+title                   ='Subject Number';  
+answer                  =inputdlg(prompt,title);
+
+if isempty(answer{1}) % If no name is provided
+    inf.isTestMode = 1; % Just assign random value, like 1.
+    inf.subNo = [];
+else
+    inf.isTestMode = 0;
+    inf.subNo                 = str2double(answer{1});  % if the name is provided, then store it into a variable
+end
+
+% addpath Calibrate\COLOR;    % Integrate TestColorFlick
+format shortG               % this command especially for date formatting.
+inf.experimentStart = clock;
+
+[inf]               = GetSubInfo(inf);              % Gather Pp information
+
+%% this is where psychometric pre-calibration would usually happen
+
+myVar.coherences2use = [10 21 59];
+
 %% SETUP EXPERIMENT
 %%%%%%%%%%%%%%%%%%%%%%
 
 % Now we can proceed to the Scene Construction (main) study 
 
-real_bl_idx = 2; % this is the block number at which the experimental trials begins - everything before is just practice
+real_bl_idx = 1; % this is the block number at which the experimental trials begins - everything before is just practice
 
 try
     
@@ -15,16 +46,28 @@ try
     % Gather answers into variables
     inf.numBlocks_SC                 = str2double(answer{1});
     
+%     timing_info_all = zeros(10,2,inf.numBlocks_SC);
+    
     % look into this -- may not need to do this if we don't close the
     % screen from before! can just add a waiting screen in between or
     % something
-    [Scr]              = InitializeWindow(inf,0,true);        % Turn on Screen
+    [Scr]              = InitializeWindow(inf,0,false);        % Turn on Screen
     
     [inst_sc]          = Instructions_SC(inf,Scr);     % Load pictures with instructions
     
     [Scr,inf,myVar]    = SetUpConstants_SC(Scr,inf,myVar);        % setUp VARIABLES
     
+    UR_ptr = Screen('MakeTexture',Scr.w,myVar.UR_symbol);
+    RD_ptr = Screen('MakeTexture',Scr.w,myVar.RD_symbol);
+    DL_ptr = Screen('MakeTexture',Scr.w,myVar.DL_symbol);
+    LU_ptr = Screen('MakeTexture',Scr.w,myVar.LU_symbol);
+    choice_pointers = {UR_ptr,RD_ptr,DL_ptr,LU_ptr};
+
     [el,inf]           = EyeLinkON(Scr,inf);           % Turn on EyeLink
+    
+    if ~inf.dummy
+        HideCursor();
+    end
     
     if ~inf.afterBreak
         
@@ -44,7 +87,7 @@ try
         Screen('Close',inst_sc.intro3);
         
         Screen('DrawTexture', Scr.w, inst_sc.intro4); % intro instruction slide 3
-        Screen('Flip',Scr.w); KbStrokeWait; startBl = 1; tr = 1;
+        Screen('Flip',Scr.w); KbStrokeWait; startBl = 1;
         Screen('Close',inst_sc.intro4);
         
     else % IF AFTER BREAK
@@ -54,10 +97,10 @@ try
         load(fileLoc); 
         if any(isnan([block(bl).trials.trialEND])) % check for whether trials got interrupted
             startBl = bl; % if so, start from the block during which the experiment was interrupted
-            tr = find(isnan([block(bl).trials.trialEND]),1); % start from the trial where the interruption happened -- here, assumed to be the same 
+            startT = find(isnan([block(bl).trials.trialEND]),1); % start from the trial where the interruption happened -- here, assumed to be the same 
             % as where the first trial where no end was detected 
         else
-            startBl = bl+1; tr = 1; % otherwise, go to the next block and start from the first trial
+            startBl = bl+1; % otherwise, go to the next block and start from the first trial
         end   
     end
         
@@ -65,11 +108,14 @@ try
     %%%%%%%%%%%%%
     for bl = startBl:length(block)
         
+        if ~inf.dummy
+            HideCursor();
+        end
         
         if bl == 1
             EyeLinkCalibration(Scr,inf,inst_sc,el);
             block(bl).trials(1).Reward = 0; % initialize first trial of first block's reward to 0
-%             block(bl).trials = block(bl).trials(1:25); % make the first block only have 25 trials (since it's practice)
+%             block(bl).trials = block(bl).trials(1:40); % make the first block only have 40 trials (since it's practice)
         else
             block(bl).trials(1).Reward = block(bl-1).trials(end).Reward; % initialize next block's reward to be the reward accumulated at the end of the previous block 
         end
@@ -85,28 +131,46 @@ try
             EyeLinkCalibration(Scr,inf,inst_sc,el); % recalibrate before main experiment
             
             block(bl).trials(1).Reward = 0; % initialize first trial of first 'real' block's reward to 0
+        elseif bl > real_bl_idx
+            
+             EyeLinkCalibration(Scr,inf,inst_sc,el); % calibrate in between every block before main experiment
                     
         end
-
         
-        FileName        = ['block_' num2str(bl)];
-        [inf,myVar, edfFile]  = EyeLinkStart(Scr,inf,myVar,bl,FileName); % Instructions inside!!!!
-        
-         %% Experiment Trials-by-Trial-------------%
+        %% Experiment Trials-by-Trial-------------%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        if ~exist('startT','var')
+            tr = 1;
+        else
+            tr = startT;
+        end
         
+        counter = 1;
+        FileName = sprintf('block_%d%d',bl,counter);
+        [inf,edfFile] = EyeLinkStart(Scr,inf,FileName); % Instructions inside!!!!
+ 
         while tr <= length(block(bl).trials)
             
             if tr > 1
                 block(bl).trials(tr).Reward = block(bl).trials(tr-1).Reward;
             end
             
-            [inf,trialData,el,recalib_flag] = RunTrial_SC(Scr,inf,myVar,el,bl,tr,block,block(bl).trials(tr),real_bl_idx);
-            
-             while recalib_flag
-                EyeLinkCalibration_interrupt(Scr,inf,bl,tr,el);
-                [inf,trialData,el,recalib_flag]  = RunTrial_SC(Scr,inf,myVar,el,bl,tr,block,block(bl).trials(tr),real_bl_idx);
-             end
+            [inf,trialData,el,recalib_flag] = RunTrial_SC(Scr,inf,myVar,el,bl,tr,block,block(bl).trials(tr),choice_pointers,real_bl_idx);
+
+            if recalib_flag
+                EyeLinkStop(inf,bl,tr,edfFile);
+                counter = counter + 1;
+                FileName_next = sprintf('block_%d%d',bl,counter);
+                while recalib_flag
+                    EyeLinkCalibration_interrupt(Scr,inf,bl,tr,el);
+                    text = sprintf('Calibration successful');
+                    DrawFormattedText(Scr.w, text, 'center','center', [255 255 255]);
+                    Screen('Flip', Scr.w);
+                    WaitSecs(1.0);
+                    [inf,edfFile] = EyeLinkStart(Scr,inf,FileName_next); % Instructions inside!!!!
+                    [inf,trialData,el,recalib_flag]  = RunTrial_SC(Scr,inf,myVar,el,bl,tr,block,block(bl).trials(tr),choice_pointers,real_bl_idx);
+                end
+            end
             
             % add current trial's results to block structure
             block(bl).trials(tr).trialRT = trialData.trialRT;
@@ -122,13 +186,18 @@ try
             block(bl).trials(tr).feedbackOnset = trialData.feedbackOnset;
             block(bl).trials(tr).trialEND = trialData.trialEND; 
             
+            block(bl).trials(tr).visitTmsp = trialData.visitTmsp;
+            block(bl).trials(tr).visitIdx = trialData.visitIdx;
+            block(bl).trials(tr).visitDurs = trialData.visitDurs;
+
+            
             tr = tr+1;
             
         end
         text = sprintf('Please Wait');
         DrawFormattedText(Scr.w, text, 'center','center', [255 255 255]);
         Screen('Flip', Scr.w);
-        EyeLinkStop(inf,bl,edfFile);
+        EyeLinkStop(inf,bl,tr-1,edfFile);
                 
         %% Saving mat data after each block
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -168,3 +237,6 @@ catch errorInfo
         CleanUpExpt(inf);
     end
 end
+
+
+    

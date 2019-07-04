@@ -19,8 +19,6 @@ function [inf,trial_data,el,recalib_flag] = RunTrial_SC(Scr,inf,myVar,el,bl,tr,b
 %                on block(bl).trials(tr).
 % - trialParams: structure containing trial-specific experimental (independent) and behavioral (dependent) measures
 
-% eyelink_timing = zeros(1,2);
-
 trial_data = struct;
 recalib_flag = false;
 
@@ -40,6 +38,11 @@ exploreOnset            = nan;
 choiceOnset             = nan;
 feedbackOnset           = nan;
 trialEND                = nan;
+
+% Times of quadrant visits and quadrant indices;
+visitTmsp = [];
+visitIdx  = [];
+visitDurs = [];
 
 % Prepare variables for stimulation.
 respToBeMade= true;
@@ -174,6 +177,8 @@ quadrant_dwell_counters = zeros(numQuads,1);
 
 button_state = false(1,3);
 
+visit_counter = 0;
+
 while and(( ~any(button_state) && noResponse),exploreFlips < exploreDur)
     
     [~,~, KeyCode] = KbCheck();     % In case if eye tracker lost eye
@@ -232,12 +237,15 @@ while and(( ~any(button_state) && noResponse),exploreFlips < exploreDur)
     
     
     if any(quadrant_idx)
-        
+                
         rev_quadrant = find(quadrant_idx);
         
         quadrant_dwell_counters(rev_quadrant) = quadrant_dwell_counters(rev_quadrant) + Scr.ifi;
         
         if  quadrant_dwell_counters(rev_quadrant) >= myVar.revealTime
+            
+            visit_counter = visit_counter + 1;
+            
             if ismember(rev_quadrant,find(filled_quad_idx))
                 
                 patt_id_temp = filled_quad_idx(rev_quadrant);
@@ -252,9 +260,18 @@ while and(( ~any(button_state) && noResponse),exploreFlips < exploreDur)
             
             Screen('FillRect',Scr.w,quadColors(:,remaining_quadrants),myVar.RDMRects(:,remaining_quadrants))
             Screen('FrameRect',Scr.w,quadFrameColors(:,remaining_quadrants),myVar.RDMRects(:,remaining_quadrants),myVar.frameLineWidth);
+            
         else
+            
+            if visit_counter > 1
+                visitDurs = [visitDurs, visit_counter * Scr.ifi];
+            end
+            
+            visit_counter = 0;
+            
             Screen('FillRect',Scr.w,quadColors,myVar.RDMRects)
             Screen('FrameRect',Scr.w,quadFrameColors,myVar.RDMRects,myVar.frameLineWidth);
+            
         end
         
         
@@ -271,6 +288,11 @@ while and(( ~any(button_state) && noResponse),exploreFlips < exploreDur)
     end
         
     vbl = Screen('Flip',Scr.w,vbl + (Scr.waitframes - 0.5) * Scr.ifi);
+    
+    if visit_counter == 1
+        visitTmsp = [visitTmsp, vbl];
+        visitIdx = [visitIdx, rev_quadrant];
+    end
     
     trialReward = myVar.discount_function(exploreFlips);
     
@@ -392,7 +414,6 @@ for i = 1:choiceDur
 end
 
 vbl = Screen('Flip',Scr.w,vbl + (Scr.waitframes - 0.5) * Scr.ifi);
-feedbackOnset = vbl;
 
 rew_message = sprintf('%.2f points awarded!',trialReward);
 total_score_msg = sprintf('Total score: %.2f points',prevReward + trialReward);
@@ -407,6 +428,8 @@ else
 end
 
 DrawFormattedText(Scr.w,total_score_msg,'center',round(myVar.centerY + (1.5 * Scr.pixelsperdegree)),[255 255 255]);
+vbl = Screen('Flip',Scr.w,vbl + (Scr.waitframes - 0.5) * Scr.ifi);
+feedbackOnset = vbl;
 WaitSecs(myVar.feedbackTime)
 vbl = Screen('Flip',Scr.w,vbl + (Scr.waitframes - 0.5) * Scr.ifi);
 
@@ -458,6 +481,10 @@ trial_data.exploreOnset = exploreOnset;
 trial_data.choiceOnset = choiceOnset;
 trial_data.feedbackOnset = feedbackOnset;
 trial_data.trialEND = trialEND;
+
+trial_data.visitTmsp = visitTmsp;
+trial_data.visitIdx  = visitIdx;
+trial_data.visitDurs = visitDurs;
 
 % Clear screen
 Screen('FillRect',Scr.w,quadColors,myVar.RDMRects);
