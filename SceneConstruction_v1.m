@@ -28,7 +28,7 @@ inf.experimentStart = clock;
 
 % First complete the motion-detection pre-calibration 
 
-real_bl_idx = 2; % this is the index after which the 'real' trials begin 
+real_bl_idx = 3; % this is the index after which the 'real' trials begin 
 
 try
     [inf]               = GetSubInfo(inf);              % Gather Pp information
@@ -90,7 +90,7 @@ try
             Screen('Flip',Scr.w); KbStrokeWait; 
             Screen('Close',inst_rdp.intro3);
             
-            CountDown(Scr,myVar,60);     
+            CountDown(Scr,myVar,30);     
             EyeLinkCalibration(Scr,inf,inst_rdp,el); % recalibrate before main experiment
                                
         end
@@ -206,7 +206,7 @@ clear ans answer bl block edfFile el FileName fName inst_rdp prompt Scr text tit
 
 % Now we can proceed to the Scene Construction (main) study 
 
-real_bl_idx = 1; % this is the block number at which the experimental trials begins - everything before is just practice
+real_bl_idx = 2; % this is the block number at which the experimental trials begins - everything before is just practice
 
 try
     
@@ -287,7 +287,7 @@ try
         if bl == 1
             EyeLinkCalibration(Scr,inf,inst_sc,el);
             block(bl).trials(1).Reward = 0; % initialize first trial of first block's reward to 0
-%             block(bl).trials = block(bl).trials(1:40); % make the first block only have 40 trials (since it's practice)
+            block(bl).trials = block(bl).trials(1:40); % make the first block only have 40 trials (since it's practice)
         else
             block(bl).trials(1).Reward = block(bl-1).trials(end).Reward; % initialize next block's reward to be the reward accumulated at the end of the previous block 
         end
@@ -298,7 +298,7 @@ try
             Screen('Flip',Scr.w); KbStrokeWait;
             Screen('Close',inst_sc.breakScreen);
             
-            CountDown(Scr,myVar,5);
+            CountDown(Scr,myVar,60);
             
             EyeLinkCalibration(Scr,inf,inst_sc,el); % recalibrate before main experiment
             
@@ -357,6 +357,10 @@ try
             block(bl).trials(tr).choiceOnset = trialData.choiceOnset;
             block(bl).trials(tr).feedbackOnset = trialData.feedbackOnset;
             block(bl).trials(tr).trialEND = trialData.trialEND; 
+            
+            block(bl).trials(tr).visitTmsp = trialData.visitTmsp;
+            block(bl).trials(tr).visitIdx = trialData.visitIdx;
+            block(bl).trials(tr).visitDurs = trialData.visitDurs;
             
             tr = tr+1;
             

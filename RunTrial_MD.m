@@ -114,7 +114,11 @@ eyeCheckOnset = vbl;                                                            
 if ~inf.dummy
     Eyelink('message', 'EYE_CHECK');
     while eyeCheck   
-        [ eyeCheck,eyeCheckDur,vbl] = doEyeCheck_MD(Scr,myVar,inf,el,fixationCoord,choice_pointers,eyeCheck,eyeCheckDur,vbl);
+        [ eyeCheck,eyeCheckDur,vbl,recalib_flag] = doEyeCheck_MD(Scr,myVar,inf,el,fixationCoord,choice_pointers,eyeCheck,eyeCheckDur,vbl);
+        if recalib_flag
+            fprintf('Recalibrating in middle of trial %d\n',tr);
+            return;
+        end
     end
 end
 

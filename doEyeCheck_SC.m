@@ -1,4 +1,4 @@
-function [ eyeCheck,eyeCheckDur,vbl] = doEyeCheck_SC(Scr,myVar,inf,el,fixationCoord,quadFrameColors,quadColors,choice_pointers,eyeCheck,eyeCheckDur,vbl)
+function [ eyeCheck,eyeCheckDur,vbl,recalib_flag] = doEyeCheck_SC(Scr,myVar,inf,el,fixationCoord,quadFrameColors,quadColors,choice_pointers,eyeCheck,eyeCheckDur,vbl)
 %DOEYECHECK: Wrapper function for Roman's eye-checking procedures (checks
 %            if eyes are in the fixation window)
 % INPUTS:   Scr: structure containing Screen-specific information
@@ -17,13 +17,13 @@ function [ eyeCheck,eyeCheckDur,vbl] = doEyeCheck_SC(Scr,myVar,inf,el,fixationCo
 % draw the scene symbols and quadrants
 Screen('DrawDots', Scr.w, fixationCoord, 20, Scr.black, [], 2);
 drawScreenDisp(Scr,myVar,choice_pointers,quadColors,quadFrameColors);
+recalib_flag = false;
 
 if KeyCode(myVar.escapeKey)     % EXIT key pressed to exit experiment
     Screen('CloseAll')
     error('EXIT button!\n');
-elseif KeyCode(myVar.cKey)      % Do whole CALIBRATION
-    Eyelink('stoprecording');
-    EyelinkDoTrackerSetup(el);  % CALIBRATION!!!!
+elseif KeyCode(myVar.kKey)      % Do whole CALIBRATION
+    recalib_flag = true;
 elseif KeyCode(myVar.dKey)      % Do DRIFT CORRECTION
     Eyelink('stoprecording');
     % Do drift correction
