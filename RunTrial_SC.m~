@@ -22,7 +22,7 @@ function [inf,trial_data,el,recalib_flag] = RunTrial_SC(Scr,inf,myVar,el,bl,tr,b
 trial_data = struct;
 recalib_flag = false;
 left_flag = false;
-visited_symbol = false;
+left_symbol = false;
 
 trialSTART = GetSecs;                                                      %%%%TIME%%%%%%%
 
@@ -183,8 +183,7 @@ quadrant_dwell_counters = zeros(numQuads,1);
 
 button_state = false(1,3);
 
-visit_counter        = 0;
-visit_counter_symbol = 0;
+visit_counter = 0;
 
 while and(( ~any(button_state) && noResponse),exploreFlips < exploreDur)
     
@@ -213,11 +212,13 @@ while and(( ~any(button_state) && noResponse),exploreFlips < exploreDur)
         pos_x = mouse_x;
         pos_y = mouse_y;
     else
+%         tic
         if Eyelink('NewFloatSampleAvailable')>0 % If NO EYE DATA
             evt = Eyelink('NewestFloatSample'); % take EyePosition
             pos_x = evt.gx(inf.eye +1);
             pos_y = evt.gy(inf.eye +1);
         end
+%         eyelink_timing(2) = toc;
     end
     
     % rectangular boundary conditions
@@ -295,27 +296,15 @@ while and(( ~any(button_state) && noResponse),exploreFlips < exploreDur)
     end
     
     if any(choice_idx)
-        visit_counter_symbol = visit_counter_symbol + 1;
+        visit_counter = visit_count
         Screen('FrameRect',Scr.w,[255 255 255],myVar.choiceRects(:,find(choice_idx)),myVar.feedbackFrameWidth);
-        visited_symbol = true;
-    else
-        if visit_counter_symbol > 1
-            left_flag = true;
-        end
-        visit_counter_symbol = 0;
-        visited_symbol = false;
     end
         
     vbl = Screen('Flip',Scr.w,vbl + (Scr.waitframes - 0.5) * Scr.ifi);
     
-    if or(visit_counter == 1,visit_counter_symbol == 1)
+    if visit_counter == 1
         visitStartTmsp = [visitStartTmsp, vbl];
-        if visited_symbol
-            visitIdx = [visitIdx, find(choice_idx) + 4];
-        else
-            visitIdx = [visitIdx, rev_quadrant];
-            visited_symbol = false;
-        end
+        visitIdx = [visitIdx, rev_quadrant];
     elseif left_flag
         visitEndTmsp = [visitEndTmsp,vbl];
         left_flag = false;
