@@ -20,8 +20,15 @@ for quad_i = 1:size(quadrant_vertices,3)
         myVar.RDMRects(4,quad_i) myVar.RDMRects(2,quad_i)];
 end
 
-%% convert all EDF files into .ASC files 
+choice_vertices = zeros(2,4,4); % 2 rows for x and y coordinates of the vertices, 4 columns for each of the four vertices, 4 slices since there are 4 choices total
+for ch_i = 1:size(choice_vertices,3)
+    choice_vertices(1,:,ch_i) = [myVar.choiceRects(1,ch_i) myVar.choiceRects(1,ch_i) ...
+        myVar.choiceRects(3,ch_i) myVar.choiceRects(3,ch_i)];
+    choice_vertices(2,:,ch_i) = [myVar.choiceRects(2,ch_i) myVar.choiceRects(4,ch_i) ...
+        myVar.choiceRects(4,ch_i) myVar.choiceRects(2,ch_i)];
+end
 
+%% convert all EDF files into .ASC files
 edf_files = dir(fullfile(data_dir,'*.edf'));
 idx2keep = find(cellfun(@(x) isempty(x), strfind(lower({edf_files.name}),'calib')));
 
@@ -64,7 +71,7 @@ asc_files = asc_files(srt_idx);
 
 block_ids = unique(sorted_indices(:,1));
 all_analyzed = [];
-for bl = 3:length(block_ids)
+for bl = 1:length(block_ids)
     
     asc_idx = find(sorted_indices(:,1) == block_ids(bl));
     eyeBlock = readEDFASC(fullfile(data_dir,asc_files{asc_idx(1)}),1,1);
@@ -90,13 +97,11 @@ for bl = 3:length(block_ids)
     
     all_analyzed = [all_analyzed; [block_ids(bl) * ones(size(block_analyzed,1),1), block_analyzed]];
     
-    
 end
-
 
 %%
 
-column_to_use = 6;
+column_to_use = 7;
 
 unique_labels = unique(all_analyzed(~isnan(all_analyzed(:,column_to_use)),column_to_use));
 durations = all_analyzed(:,5) - all_analyzed(:,4);
@@ -113,42 +118,7 @@ end
 
 barwitherr(stats_array(:,2)./1000,stats_array(:,1)./1000);
 
-%% add another column to the analyzed data matrix that indicates whether the quadrant fixated was 
-% seen (for the first time) after seeing another pattern of higher
-% coherence
 
-post_flag = zeros(size(all_analyzed,1),1);
-for sacc_i = 1:size(all_analyzed,1)
-    
-    current_sacc = all_analyzed(sacc_i,:);
-    
-    if and(~isnan(current_sacc(6)),sacc_i > 1)
-        
-        curr_bl = current_sacc(1);
-        curr_trial = current_sacc(2);
-        
-        filter_idx = find(all_analyzed(:,1) == curr_bl & all_analyzed(:,2) == curr_trial);
-        other_saccs = all_analyzed(filter_idx,:);
-        
-        previous_saccs = other_saccs(filter_idx < sacc_i,:);
-        previous_saccs = previous_saccs(~isnan(previous_saccs(:,6)),:);
-        
-        if and(~isempty(previous_saccs),~any(previous_saccs(:,6) == current_sacc(6)))
-            if any(previous_saccs(:,7) == current_sacc(7))
-                post_flag(sacc_i) = 1; % the case when a previously-fixated pattern was of the same coherence
-            end
-            
-            if any(previous_saccs(:,7) > current_sacc(7))
-                post_flag(sacc_i) = 2; % the case when the previously-fixated pattern was of higher coherence than the current one
-            elseif any(previous_saccs(:,7) < current_sacc(7))
-                post_flag(sacc_i) = 3; % the case when the previously-fixated pattern was of lower coherence than the current one
-            end
-        elseif and(~isempty(previous_saccs),any(previous_saccs(:,6) == current_sacc(6)))
-            post_flag(sacc_i) = 4; % the case when the quadrant was revisited
-        end
-    end
-    
-end
 
 %%
 
@@ -158,22 +128,26 @@ dir_column = 6;
 coh_column = 7;
 unique_labels = unique(all_analyzed(~isnan(all_analyzed(:,coh_column)),coh_column));
 
-stats_array = zeros(length(unique_labels)-1,3,2);
+sacc_idx = all_analyzed(:,8);
+revisit_idx = all_analyzed(:,9);
+prev_higher = all_analyzed(:,10);
+prev_lower = all_analyzed(:,11);
+prev_equal = all_analyzed(:,12);
 
-for lab_i = 1:length(unique_labels)-1
+stats_array = zeros(length(unique_labels),3,2);
+
+for lab_i = 1:length(unique_labels)
     
     coh_filter = all_analyzed(:,coh_column) == unique_labels(lab_i);
-    post_flag_filter = post_flag == 0;
     
-    data_temp = durations(coh_filter & post_flag_filter);
+    data_temp = durations(coh_filter & revisit_idx == 1);
     N = length(data_temp);
     stats_array(lab_i,1,1) = mean(data_temp);
     stats_array(lab_i,2,1) = std(data_temp)/sqrt(N);
 % 	stats_array(lab_i,2,1) = std(data_temp);
     stats_array(lab_i,3,1) = N;
     
-    post_flag_filter = post_flag == 2;
-    data_temp = durations(coh_filter & post_flag_filter);
+    data_temp = durations(coh_filter & revisit_idx > 1 );
     N = length(data_temp);
     stats_array(lab_i,1,2) = mean(data_temp);
     stats_array(lab_i,2,2) = std(data_temp)/sqrt(N);
@@ -186,8 +160,9 @@ means = squeeze(stats_array(:,1,:))./1000;
 sems = squeeze(stats_array(:,2,:))./1000;
 barwitherr(sems,means)
 
-set(gca,'XTickLabel',{sprintf('%.1f coherence',unique_labels(1)),sprintf('%.1f coherence',unique_labels(2))});
-legend('First saccade','After seeing a higher coherence RDP')
+coh_labels = cellfun(@(x) sprintf('%.1f',x), num2cell(unique_labels),'UniformOutput',false);
+set(gca,'XTickLabel',coh_labels);
+legend('First visit','Second or later visit')
 ylabel('Dwell time')
             
     

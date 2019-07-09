@@ -56,5 +56,40 @@ end
 
 sacc_array = sortrows(sacc_array,2);
 
+% add another column to the sacc_array that indicates whether the quadrant fixated was 
+% seen (for the first time) after seeing another pattern of higher
+% coherence
+
+sacc_idx = [1:size(sacc_array,1)]';
+sacc_array = [sacc_array,sacc_idx];
+revisit_idx = zeros(size(sacc_array,1),1);
+
+prev_higher = zeros(size(sacc_array,1),1);
+prev_lower = zeros(size(sacc_array,1),1);
+prev_equal = zeros(size(sacc_array,1),1);
+
+
+for sacc_i = 1:size(sacc_array,1)
+    
+    current_sacc = sacc_array(sacc_i,:);
+    
+    if ~isnan(current_sacc(4)) && sacc_i > 1
+        
+        previous_saccs = sacc_array(1:(sacc_i-1),:);
+        revisit_idx(sacc_i) = (sum(previous_saccs(:,1) == current_sacc(1))) + 1;
+        
+        if any(previous_saccs(:,5) < current_sacc(5))
+            prev_lower(sacc_i) = 1;
+        elseif any(previous_saccs(:,5) > current_sacc(5))
+            prev_higher(sacc_i) = 1;
+        elseif any(and(previous_saccs(:,5) == current_sacc(5),previous_saccs(:,1)~=current_sacc(1)))
+            prev_equal(sacc_i) = 1;
+        end
+            
+    end
+    
+end
+
+sacc_array = [sacc_array,revisit_idx,prev_higher,prev_lower,prev_equal];
 
 end

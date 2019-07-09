@@ -10,4 +10,19 @@ end
 ax = gca;
 ax.YDir = 'reverse';
 
-scatter(eye_pos(:,1),eye_pos(:,2),50,cool(size(eye_pos,1)))
+% scatter(eye_pos(:,1),eye_pos(:,2),50,cool(size(eye_pos,1)))
+
+%%
+
+% close all;
+% figure; hold on;
+for ch_i = 1:4
+    text(mean(choice_vertices(1,:,ch_i),2)-38,mean(choice_vertices(2,:,ch_i),2)+18,sprintf('Choice symbol %d\n',ch_i));
+    plot([choice_vertices(1,:,ch_i),choice_vertices(1,1,ch_i)],[choice_vertices(2,:,ch_i),choice_vertices(2,1,ch_i)],...
+        'r-','LineWidth',2);
+%     pause; 
+end
+ax = gca;
+ax.YDir = 'reverse';
+
+% scatter(eye_pos(:,1),eye_pos(:,2),50,cool(size(eye_pos,1)))
