@@ -28,8 +28,7 @@ inf.experimentStart = clock;
 
 % First complete the motion-detection pre-calibration 
 
-% real_bl_idx = 3; % this is the index after which the 'real' trials begin 
-real_bl_idx = 1; % this is the index after which the 'real' trials begin 
+real_bl_idx = 3; % this is the index after which the 'real' trials begin 
 
 try
     [inf]               = GetSubInfo(inf);              % Gather Pp information
@@ -91,7 +90,6 @@ try
             Screen('Flip',Scr.w); KbStrokeWait; 
             Screen('Close',inst_rdp.intro3);
             
-            CountDown(Scr,myVar,30);     
             EyeLinkCalibration(Scr,inf,inst_rdp,el); % recalibrate before main experiment
                                
         end
@@ -218,12 +216,7 @@ try
     
     % Gather answers into variables
     inf.numBlocks_SC                 = str2double(answer{1});
-    
-%     timing_info_all = zeros(10,2,inf.numBlocks_SC);
-    
-    % look into this -- may not need to do this if we don't close the
-    % screen from before! can just add a waiting screen in between or
-    % something
+        
     [Scr]              = InitializeWindow(inf,0,false);        % Turn on Screen
     
     [inst_sc]          = Instructions_SC(inf,Scr);     % Load pictures with instructions
@@ -288,8 +281,7 @@ try
         if bl == 1
             EyeLinkCalibration(Scr,inf,inst_sc,el);
             block(bl).trials(1).Reward = 0; % initialize first trial of first block's reward to 0
-%             block(bl).trials = block(bl).trials(1:40); % make the first block only have 40 trials (since it's practice)
-            block(bl).trials = block(bl).trials(1:5); % make the first block only have 40 trials (since it's practice)
+            block(bl).trials = block(bl).trials(1:40); % make the first block only have 40 trials (since it's practice)
         else
             block(bl).trials(1).Reward = block(bl-1).trials(end).Reward; % initialize next block's reward to be the reward accumulated at the end of the previous block 
         end
@@ -300,7 +292,7 @@ try
             Screen('Flip',Scr.w); KbStrokeWait;
             Screen('Close',inst_sc.breakScreen);
             
-            CountDown(Scr,myVar,60);
+            CountDown(Scr,myVar,30);
             
             EyeLinkCalibration(Scr,inf,inst_sc,el); % recalibrate before main experiment
             
@@ -386,7 +378,6 @@ try
             fName = sprintf('test%d__allData.mat',inf.subNo);
             save(fName);
         end
-        %         cd(Scr.rootDir);
         cd(Scr.mainDir); % Go back to our main directory..
     end
     
