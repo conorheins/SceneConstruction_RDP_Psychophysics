@@ -85,15 +85,15 @@ myVar.spacebar  = KbName('space'); % spacebar -- in eyetracking mode, must be pr
 myVar.centerX           = Scr.width/2;
 myVar.centerY           = Scr.height/2;
 
-myVar.centW             = 33.24;      % MacBook Pro monitor width (cm.)
-myVar.centD             = 50;         % Distance to the screen (cm.)
-myVar.centH             = 20.77;      % MacBook Pro monitor height (cm.)
+% myVar.centW             = 33.24;      % MacBook Pro monitor width (cm.)
+% myVar.centD             = 50;         % Distance to the screen (cm.)
+% myVar.centH             = 20.77;      % MacBook Pro monitor height (cm.)
 
-% myVar.centW             = 52.2;       % ViewPixx EEG (cm.)
-% % myVar.centD             = 91.0;       % Distance to the screen (cm.)
-% myVar.centD             = 60.0;     % Distance to the screen (cm.) in
-% %                                       the psychophysics room
-% myVar.centH             = 29.1;       % ViewPixx EEG (cm.)
+myVar.centW             = 52.2;       % ViewPixx EEG (cm.)
+% myVar.centD             = 91.0;       % Distance to the screen (cm.)
+myVar.centD             = 60.0;     % Distance to the screen (cm.) in
+%                                       the psychophysics room
+myVar.centH             = 29.1;       % ViewPixx EEG (cm.)
 
 % PPD based on Visual Psyhcophysics book, Lu and Dosher
 Scr.pixelsperdegree = pi/180 * myVar.centD /myVar.centH * Scr.wRect(4);

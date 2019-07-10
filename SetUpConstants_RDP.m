@@ -90,8 +90,8 @@ myVar.centerY           = Scr.height/2;
 % myVar.centH             = 20.77;      % MacBook Pro monitor height (cm.)
 
 myVar.centW             = 52.2;       % ViewPixx EEG (cm.)
-myVar.centD             = 91.0;       % Distance to the screen (cm.)
-% myVar.centD             = 60.0;     % Distance to the screen (cm.) in
+% myVar.centD             = 91.0;       % Distance to the screen (cm.)
+myVar.centD             = 60.0;     % Distance to the screen (cm.) in
 %                                       the psychophysics room
 
 myVar.centH             = 29.1;       % ViewPixx EEG (cm.)
