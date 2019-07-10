@@ -90,7 +90,7 @@ for bl = 1:length(block_ids)
     
     for trial_ii = 1:nTrials
         
-        result =  trialEyeData_analyze(eyeBlock(trial_ii),behav_blocks(block_ids(bl)).trials(trial_ii),quadrant_vertices);
+        result =  trialEyeData_analyze(eyeBlock(trial_ii),behav_blocks(block_ids(bl)).trials(trial_ii),quadrant_vertices,choice_vertices);
         block_analyzed = [block_analyzed; [trial_ii*ones(size(result,1),1), result]];
         
     end
@@ -99,7 +99,7 @@ for bl = 1:length(block_ids)
     
 end
 
-%%
+%% Main effect of coherence on dwell time
 
 column_to_use = 7;
 
@@ -120,7 +120,7 @@ barwitherr(stats_array(:,2)./1000,stats_array(:,1)./1000);
 
 
 
-%%
+%% Look at the effect of coherence + revisit index on dwell time
 
 durations = all_analyzed(:,5) - all_analyzed(:,4);
 
@@ -165,33 +165,51 @@ set(gca,'XTickLabel',coh_labels);
 legend('First visit','Second or later visit')
 ylabel('Dwell time')
             
-    
 
-%%
+%% Look at the effect of previous coherence on dwell time
 
-stats_array = zeros(length(unique_labels),3,2);
+durations = all_analyzed(:,5) - all_analyzed(:,4);
+
+dir_column = 6;
+coh_column = 7;
+unique_labels = unique(all_analyzed(~isnan(all_analyzed(:,coh_column)),coh_column));
+
+sacc_idx = all_analyzed(:,8);
+revisit_idx = all_analyzed(:,9);
+prev_higher = all_analyzed(:,10);
+prev_lower = all_analyzed(:,11);
+prev_equal = all_analyzed(:,12);
+
+stats_array = zeros(length(unique_labels),3,4);
 
 for lab_i = 1:length(unique_labels)
     
     coh_filter = all_analyzed(:,coh_column) == unique_labels(lab_i);
-    post_flag_filter = post_flag == 0;
-    
-    data_temp = durations(coh_filter & post_flag_filter);
+   
+    data_temp = durations(coh_filter & revisit_idx == 1 & prev_higher == 0 & prev_equal==0 & prev_lower == 0);
+
     N = length(data_temp);
     stats_array(lab_i,1,1) = mean(data_temp);
     stats_array(lab_i,2,1) = std(data_temp)/sqrt(N);
-% 	stats_array(lab_i,2,1) = std(data_temp);
     stats_array(lab_i,3,1) = N;
     
-%     post_flag_filter = post_flag == 1 | post_flag == 2 | post_flag == 3;
-    post_flag_filter =  post_flag == 3 | post_flag == 4;
-
-    data_temp = durations(coh_filter & post_flag_filter);
+    data_temp = durations(coh_filter & prev_lower == 1);
     N = length(data_temp);
     stats_array(lab_i,1,2) = mean(data_temp);
     stats_array(lab_i,2,2) = std(data_temp)/sqrt(N);
-% 	stats_array(lab_i,2,2) = std(data_temp);
     stats_array(lab_i,3,2) = N;
+    
+    data_temp = durations(coh_filter & prev_equal == 1);
+    N = length(data_temp);
+    stats_array(lab_i,1,3) = mean(data_temp);
+    stats_array(lab_i,2,3) = std(data_temp)/sqrt(N);
+    stats_array(lab_i,3,3) = N;
+    
+    data_temp = durations(coh_filter & prev_higher == 1);
+    N = length(data_temp);
+    stats_array(lab_i,1,4) = mean(data_temp);
+    stats_array(lab_i,2,4) = std(data_temp)/sqrt(N);
+    stats_array(lab_i,3,4) = N;
     
 end
 
@@ -199,34 +217,104 @@ means = squeeze(stats_array(:,1,:))./1000;
 sems = squeeze(stats_array(:,2,:))./1000;
 barwitherr(sems,means)
 
-coh_labels = cellfun(@(x) sprintf('%.1f',x), mat2cell(unique_labels,ones(3,1),1),'UniformOutput',false);
+coh_labels = cellfun(@(x) sprintf('%.1f',x), num2cell(unique_labels),'UniformOutput',false);
 set(gca,'XTickLabel',coh_labels);
-legend('First saccade','After seeing a previous patch')
-ylabel('Dwell time')
+legend({'First RDP seen','Previous RDP lower coherence','Previous RDP equal coherence','Previous RDP higher coherence'})
+    
+ax = gca;
+ax.FontSize = 18;
+xlabel('Coherence (%)')
+ylabel('Dwell time (seconds)')
+title('Effect of previous quadrant''s contents on current fixational dwell time')
 
-%%
+%% look at mean number of revisits, as a function of coherence
 
+coh_column = 7;
 unique_labels = unique(all_analyzed(~isnan(all_analyzed(:,coh_column)),coh_column));
+
+revisit_idx = all_analyzed(:,9);
+
 stats_array = zeros(length(unique_labels),3);
 
 for lab_i = 1:length(unique_labels)
     
     coh_filter = all_analyzed(:,coh_column) == unique_labels(lab_i);
-%     post_flag_filter = post_flag == 0;
-    
-%     data_temp = durations(coh_filter & post_flag_filter);
-    data_temp = durations(coh_filter);
+   
+    data_temp = revisit_idx(coh_filter);
 
     N = length(data_temp);
     stats_array(lab_i,1) = mean(data_temp);
     stats_array(lab_i,2) = std(data_temp)/sqrt(N);
-% 	stats_array(lab_i,2,1) = std(data_temp);
     stats_array(lab_i,3) = N;
     
-    
 end
+    
+barwitherr(stats_array(:,2),stats_array(:,1));
 
-barwitherr(stats_array(:,2),stats_array(:,1))
+%% probability of revisiting a quadrant, as a function of both that quadrant's coherence and the other quadrant's coherence
+
+coh_column = 7;
+unique_labels = unique(all_analyzed(~isnan(all_analyzed(:,coh_column)),coh_column));
+
+revisit_idx = all_analyzed(:,9);
+
+first_visits = revisit_idx == 1;
+
+revisit_probs = zeros(length(unique_labels));
+
+for lab_i = 1:length(unique_labels)
+    
+    SoI_idx = find(first_visits & all_analyzed(:,coh_column)==unique_labels(lab_i));
+    SoI = all_analyzed(SoI_idx,:);
+    
+    
+    for lab_j = 1:length(unique_labels)
+        
+        revisit_counts = NaN(size(SoI,1),1);
+
+        for s_i = 1:size(SoI,1)
+            
+            bl_tr_labs = SoI(s_i,1:2);
+            
+            bl_tr_sacc_idx = find(all_analyzed(:,1)==bl_tr_labs(1) & all_analyzed(:,2)==bl_tr_labs(2));
+            prev_sacc_idx = bl_tr_sacc_idx(bl_tr_sacc_idx < SoI_idx(s_i));
+            fut_sacc_idx = bl_tr_sacc_idx(bl_tr_sacc_idx > SoI_idx(s_i));
+            
+            if ~any(all_analyzed(prev_sacc_idx,6)) % this makes sure the saccade of interest is the first filled-quadrant of the trial
+                
+                if ~isempty(fut_sacc_idx)
+                    if any(all_analyzed(fut_sacc_idx,3)==SoI(s_i,3)) && any(all_analyzed(fut_sacc_idx,coh_column)) == unique_labels(lab_j)
+                        revisit_counts(s_i) = 1;
+                    else
+                        revisit_counts(s_i) = 0;
+                    end
+                end
+                
+            end
+            
+        end
+        revisit_probs(lab_i,lab_j) = nansum(revisit_counts)./sum(~isnan(revisit_counts));
+
+    end
+end
+    
+    
+                
+            
+            
+        
+        
+        
+        
+        
+        
+        
+    
+    
+
+
+            
+   
 
 
             
