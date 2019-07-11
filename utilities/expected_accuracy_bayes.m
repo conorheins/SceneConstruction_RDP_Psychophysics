@@ -8,20 +8,33 @@ if or(nargin < 4,~exist('likelihood','var'))
     scene1 = [1 1 0 0]';
     A = [scene1 circshift(scene1,1) circshift(scene1,2) circshift(scene1,3)];
     A = A./sum(A + exp(-16),1);
+else
+    A = likelihood;
 end
 
 %prior
 if or(nargin < 3,~exist('prior','var'))
     og_prior = ones(4,1);
     og_prior = og_prior./sum(og_prior);
+else
+    og_prior = prior;
 end
 
 % marginal likelihood of outcomes (determined by given discrimination
 % accuracies of the two RDPs, p1 and p2)
-s1 = [p1 ((1-p1)./3)*ones(1,3)]';
-s2 = circshift([p2 ((1-p2)./3)*ones(1,3)]',1); 
+if p1 == 0.25
+    s1 = ones(4,1)./4;
+else
+    s1 = [p1 ((1-p1)./3)*ones(1,3)]';
+end
 
-% first case, when you see s1 first
+if p2 == 0.25
+    s2 = ones(4,1)./4;
+else
+    s2 = circshift([p2 ((1-p2)./3)*ones(1,3)]',1); 
+end
+
+%% first case, when you see s1 first
 first_density = A'*s1; % obtain empirical prior by passing outcomes through likelihood for the first-seen RDP (s1)
 
 emp_prior = exp(log(first_density+exp(-16)) + log(og_prior + exp(-16))); % update empirical prior with original prior
@@ -30,7 +43,7 @@ second_density = A'*s2; % obtain empirical prior by passing outcomes through lik
 second_density = exp(log(emp_prior+exp(-16)) + log(second_density+exp(-16))); % combine empirical prior with 
 posterior1 = second_density./sum(second_density);
 
-% second case, when you see s2 first
+%% second case, when you see s2 first
 first_density = A'*s2; % obtain empirical prior by passing outcomes through likelihood for the first-seen RDP (s2)
 
 emp_prior = exp(log(first_density+exp(-16)) + log(og_prior + exp(-16))); % empirical prior + old prior
@@ -44,8 +57,12 @@ posterior2 = second_density./sum(second_density);
 %     fprintf('P1 = %.2f, P2 = %.2f, Not equal\n',p1,p2);
 % end
 
+
+%% average the two possibilities to get the average accuracy (assuming both cases happen equally often)
+
 average = mean([posterior1,posterior2],2);
 
+%% take the first one as the estimate of the accuracy 
 eAcc = average(1);
 
 

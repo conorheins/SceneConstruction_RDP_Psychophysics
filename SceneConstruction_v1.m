@@ -167,6 +167,21 @@ try
 catch errorInfo
     % The rest of this code is just for debugging in case something crashes
     % Output the error message that describes the error:
+    
+    %% Saving mat data in case of crash
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    inf.experimentEnd = clock;  % record when the experiment ended
+    if ~inf.isTestMode
+        cd(inf.rootSub);
+        fName = sprintf('Subject%d__allData.mat',inf.subNo);
+        save(fName);
+    else
+        cd(inf.rootTest);
+        fName = sprintf('test%d__allData.mat',inf.subNo);
+        save(fName);
+    end
+    cd(Scr.mainDir); % Go back to our main directory..
+    
     try
         for errStr = length(errorInfo.stack):-1:1
             fprintf('%s| %d\n',errorInfo.stack(errStr).name,errorInfo.stack(errStr).line);
@@ -381,7 +396,7 @@ try
         cd(Scr.mainDir); % Go back to our main directory..
     end
     
-    %% END OF FIRST EXPERIMENT
+    %% END OF SECOND EXPERIMENT
     %%%%%%%%%%%%%%%%%%%%
     
     CleanUpExpt(inf);
@@ -389,6 +404,21 @@ try
 catch errorInfo
     % The rest of this code is just for debugging in case something crashes
     % Output the error message that describes the error:
+    
+    %% Saving mat data in case of crash
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    inf.experimentEnd = clock;  % record when the experiment ended
+    if ~inf.isTestMode
+        cd(inf.rootSub);
+        fName = sprintf('Subject%d__allData.mat',inf.subNo);
+        save(fName);
+    else
+        cd(inf.rootTest);
+        fName = sprintf('test%d__allData.mat',inf.subNo);
+        save(fName);
+    end
+    cd(Scr.mainDir); % Go back to our main directory..
+    
     try
         for errStr = length(errorInfo.stack):-1:1
             fprintf('%s| %d\n',errorInfo.stack(errStr).name,errorInfo.stack(errStr).line);
