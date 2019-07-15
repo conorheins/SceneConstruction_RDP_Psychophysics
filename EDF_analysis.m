@@ -305,7 +305,7 @@ scatter(durations, all_analyzed(:,8));
     
 %% look at accuracy over time (learning)
 
-bin_size = 50;
+bin_size = 20;
 
 num_tot_trials = 0;
 for b_i = 1:length(behav_blocks)
@@ -329,8 +329,8 @@ bin_idx = 1:bin_size:num_tot_trials;
 binned_acc = zeros(length(bin_idx),1);
 binned_RT = zeros(length(bin_idx),1);
 for b_i = 1:length(bin_idx)
-    binned_acc(b_i) = mean(all_acc(bin_idx(b_i):min(bin_idx(b_i)+bin_size-1,num_tot_trials)));
-    binned_RT(b_i) = mean(all_RT(bin_idx(b_i):min(bin_idx(b_i)+bin_size-1,num_tot_trials)));
+    binned_acc(b_i) = nanmean(all_acc(bin_idx(b_i):min(bin_idx(b_i)+bin_size-1,num_tot_trials)));
+    binned_RT(b_i) = nanmean(all_RT(bin_idx(b_i):min(bin_idx(b_i)+bin_size-1,num_tot_trials)));
 end
 
 %%
