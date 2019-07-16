@@ -305,7 +305,7 @@ scatter(durations, all_analyzed(:,8));
     
 %% look at accuracy over time (learning)
 
-bin_size = 20;
+bin_size = 100;
 
 num_tot_trials = 0;
 for b_i = 1:length(behav_blocks)
