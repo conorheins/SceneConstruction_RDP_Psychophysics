@@ -267,9 +267,13 @@ try
         Screen('Flip',Scr.w); KbStrokeWait; 
         Screen('Close',inst_sc.intro3);
         
-        Screen('DrawTexture', Scr.w, inst_sc.intro4); % intro instruction slide 3
-        Screen('Flip',Scr.w); KbStrokeWait; startBl = 1;
-        Screen('Close',inst_sc.intro4);
+        if inf.language == 1 % in German version there's only 3 instruction slides
+        
+            Screen('DrawTexture', Scr.w, inst_sc.intro4); % intro instruction slide 3
+            Screen('Flip',Scr.w); KbStrokeWait; startBl = 1;
+            Screen('Close',inst_sc.intro4);
+            
+        end
         
     else % IF AFTER BREAK
         
@@ -344,7 +348,11 @@ try
                 FileName_next = sprintf('block_%d%d',bl,counter);
                 while recalib_flag
                     EyeLinkCalibration_interrupt(Scr,inf,bl,tr,el);
-                    text = sprintf('Calibration successful');
+                    if inf.language == 1
+                        text = sprintf('Calibration successful');
+                    else
+                        text = sprintf('Kalibrierung erfolgreich');
+                    end
                     DrawFormattedText(Scr.w, text, 'center','center', [255 255 255]);
                     Screen('Flip', Scr.w);
                     WaitSecs(1.0);

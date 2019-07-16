@@ -259,7 +259,13 @@ for i = 1:feedbackDur
     Screen('DrawTexture', Scr.w, choice_pointers{4},myVar.subRect,myVar.LEFTrect);
     
     if noResponse
-        DrawFormattedText(Scr.w,'No response made!','center',Scr.wRect(4)*0.95,[255 0 ceil(255/4)]);
+        
+        if inf.language == 1 
+            DrawFormattedText(Scr.w,'No response made!','center',Scr.wRect(4)*0.95,[255 0 ceil(255/4)]);
+        else
+            DrawFormattedText(Scr.w,'Keine Antwort angegeben!','center',Scr.wRect(4)*0.95,[255 0 ceil(255/4)]);
+        end
+        
     elseif and(~noResponse, bl < real_bl_idx)
         if KeyCodeRaw(UP_choice)
             %                         DrawFormattedText(Scr.w,'Chose UP','center',Scr.wRect(4)*0.95,[0 255 ceil(255/2)]);
