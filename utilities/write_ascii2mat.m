@@ -5,7 +5,7 @@ function write_ascii2mat(data_dir)
 
 subj_folders = dir(data_dir);
 
-subj_folders(1:3) = []; % this includes the dirs '.','..', and '.DS_Store';
+subj_folders(1:4) = []; % this includes the dirs '.','..', '.DS_Store', and '.Rapp.history';
 
 for s_i = 1:length(subj_folders)
     
