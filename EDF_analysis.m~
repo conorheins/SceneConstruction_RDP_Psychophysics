@@ -184,9 +184,13 @@ prev_cohers = NaN(size(all_analyzed,1),1);
 
 for row_i = 1:size(all_analyzed,1)
     if ~isnan(all_analyzed(row_i,coh_column))
-        prev_cohers_temp = all_analyzed(all_analyzed(:,2) == all_analyzed(row_i,2) & all_analyzed(:,8) < all_analyzed(row_i,8),coh_column);
-        if prev_higher(row_i) || prev_lower(row_i) || prev_equal(row_i)
-            prev_cohers(row_i) = prev_cohers_temp(find(~isnan(prev_cohers_temp),1));
+        prev_saccs = all_analyzed(all_analyzed(:,2) == all_analyzed(row_i,2) & all_analyzed(:,3) < 
+        if prev_lower(row_i)
+            prev_cohers(row_i) = unique_labels(find(coh_label_idx) - 1);
+        elseif prev_equal(row_i)
+            prev_cohers(row_i) = unique_labels(find(coh_label_idx));
+        elseif prev_higher(row_i)
+            prev_cohers(row_i) = unique_labels(find(coh_label_idx) + 1);
         end
     end
 end
@@ -226,7 +230,7 @@ ax = gca;
 ax.FontSize = 18;
 xlabel('Coherence (%)')
 ylabel('Dwell time (seconds)')
-title('Effect of previous quadrant''s coherence on current fixational dwell time')
+title('Effect of previous quadrant''s contents on current fixational dwell time')
 
 %% look at mean number of revisits, as a function of coherence
 
