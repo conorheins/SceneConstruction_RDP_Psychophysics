@@ -459,7 +459,11 @@ if inf.language == 1
     rew_message = sprintf('%.2f points awarded!',trialReward);
     total_score_msg = sprintf('Total score: %.2f points',prevReward + trialReward);
 else
-    rew_message = sprintf('%.2f Punkte hinzugefügt!',trialReward);
+    if trialReward >= 0
+        rew_message = sprintf('%.2f Punkte hinzugefügt!',trialReward);
+    else
+        rew_message = sprintf('%.2f Punkte abgezogen!',trialReward);
+    end
     total_score_msg = sprintf('Gesamtpunktzahl: %.2f Punkte',prevReward + trialReward);
 end
     
