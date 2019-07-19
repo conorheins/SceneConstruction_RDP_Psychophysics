@@ -119,8 +119,11 @@ try
     end
     
     sacc_array = [sacc_array,revisit_idx,prev_higher,prev_lower,prev_equal];
+    
 catch
+    
     debug_flag = true;
+    
 end
 
 end

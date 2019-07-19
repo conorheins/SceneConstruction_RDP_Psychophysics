@@ -12,6 +12,7 @@ subj_folders = dir(data_dir);
 subj_folders(1:4) = [];
 
 stats_array = zeros(length(subj_folders),3,3,3);
+stats_cell_array = cell(length(subj_folders),3,3);
 
 RT_array = zeros(length(subj_folders),3,3);
 
@@ -27,22 +28,47 @@ for s_i = 1:length(subj_folders)
     
     unique_labels = unique(all_analyzed(~isnan(all_analyzed(:,coh_column)),coh_column));
     
-    sacc_idx = all_analyzed(:,8);
-    revisit_idx = all_analyzed(:,9);
-    prev_higher = all_analyzed(:,10);
-    prev_lower = all_analyzed(:,11);
-    prev_equal = all_analyzed(:,12);
-    
-    prev_cohers = NaN(size(all_analyzed,1),1);
-    
-    for row_i = 1:size(all_analyzed,1)
-        if ~isnan(all_analyzed(row_i,coh_column))
-            prev_cohers_temp = all_analyzed(all_analyzed(:,2) == all_analyzed(row_i,2) & all_analyzed(:,8) < all_analyzed(row_i,8),coh_column);
-            if prev_higher(row_i) || prev_lower(row_i) || prev_equal(row_i)
-                prev_cohers(row_i) = prev_cohers_temp(find(~isnan(prev_cohers_temp),1));
-            end
+    [blocks_n_trials,trialStrt_rowIdx] = unique(all_analyzed(:,1:2),'rows'); % get all the unique trial indices (unique combinations of block i and trial j)
+    % gather mean dwell time for subsequent RDP, separated by coherence of first RDP 
+    for t_i = 1:length(trialStrt_rowIdx)-1
+        
+        trial_saccs = all_analyzed(trialStrt_rowIdx(t_i):(trialStrt_rowIdx(t_i+1)-1),:);
+        first_fix_idx = find(~isnan(trial_saccs(:,coh_column)),1);
+        first_coh_idx = find(trial_saccs(first_fix_idx,coh_column) == unique_labels);
+        all_following_idx = find(~isnan(trial_saccs(:,coh_column)) & trial_saccs(:,6) ~= trial_saccs(first_fix_idx,6));
+        all_following_idx(all_following_idx <= first_fix_idx) = [];
+        if ~isempty(all_following_idx)
+            second_coh_idx = find(trial_saccs(all_following_idx(1),coh_column) == unique_labels);
+        
+            dur_temp = sum(trial_saccs(all_following_idx,5) - trial_saccs(all_following_idx,4));
+        
+            stats_cell_array{s_i,first_coh_idx,second_coh_idx} = [stats_cell_array{s_i,first_coh_idx,second_coh_idx};dur_temp];
+        else
+            warning('Block %d, Trial %d for Subject %d only has one quadrant fixation...weird\n',blocks_n_trials(t_i,1),...
+                blocks_n_trials(t_i,2),s_i);
         end
+        
     end
+        
+       
+        
+    
+%     sacc_idx = all_analyzed(:,8);
+%     revisit_idx = all_analyzed(:,9);
+%     prev_higher = all_analyzed(:,10);
+%     prev_lower = all_analyzed(:,11);
+%     prev_equal = all_analyzed(:,12);
+%     
+%     prev_cohers = NaN(size(all_analyzed,1),1);
+    
+%     for row_i = 1:size(all_analyzed,1)
+%         if ~isnan(all_analyzed(row_i,coh_column))
+%             prev_cohers_temp = all_analyzed(all_analyzed(:,2) == all_analyzed(row_i,2) & all_analyzed(:,8) < all_analyzed(row_i,8),coh_column);
+%             if prev_higher(row_i) || prev_lower(row_i) || prev_equal(row_i)
+%                 prev_cohers(row_i) = prev_cohers_temp(find(~isnan(prev_cohers_temp),1));
+%             end
+%         end
+%     end
     
 
     for lab_i = 1:length(unique_labels)
@@ -53,15 +79,16 @@ for s_i = 1:length(subj_folders)
         RT_array(s_i,lab_i,1) = nanmean(rt_dat_temp);
         RT_array(s_i,lab_i,2) = nanstd(rt_dat_temp);
         RT_array(s_i,lab_i,3) = length(rt_dat_temp);
-        for lab_j = 1:length(unique_labels)
-            
-            coh_filter_prev = prev_cohers == unique_labels(lab_j);
-            data_temp = durations(coh_filter_current & coh_filter_prev);
-            N = length(data_temp);
-            stats_array(s_i,lab_i,1,lab_j) = nanmean(data_temp);
-            stats_array(s_i,lab_i,2,lab_j) = nanstd(data_temp)/sqrt(N);
-            stats_array(s_i,lab_i,3,lab_j) = N;
-        end
+        
+%         for lab_j = 1:length(unique_labels)
+%             
+%             coh_filter_prev = prev_cohers == unique_labels(lab_j);
+%             data_temp = durations(coh_filter_current & coh_filter_prev);
+%             N = length(data_temp);
+%             stats_array(s_i,lab_i,1,lab_j) = nanmean(data_temp);
+%             stats_array(s_i,lab_i,2,lab_j) = nanstd(data_temp)/sqrt(N);
+%             stats_array(s_i,lab_i,3,lab_j) = N;
+%         end
         
         
          
@@ -69,7 +96,18 @@ for s_i = 1:length(subj_folders)
     
 end
 
-    
+%% get the means/SEMs/Ns from the cell array
+
+means = cell2mat(cellfun(@(x) mean(x),stats_cell_array,'UniformOutput',false));
+sems  = cell2mat(cellfun(@(x) std(x)/length(x), stats_cell_array,'UniformOutput',false));
+N  = cell2mat(cellfun(@(x) length(x), stats_cell_array,'UniformOutput',false));
+
+stats_array = cat(4,means,sems,N);
+
+stats_array_pruned = stats_array;
+stats_array_pruned(6,:,:,:) = [];
+
+   
 %% Run a repeated-measures ANOVA 
 anovdata_names = cell(1,length(unique_labels)^2);
 cond_num = 1;
@@ -77,12 +115,14 @@ anovdata = [];
 
 levels = {'L','M','H'};
 
-for curr_coh = 1:length(unique_labels)
-    for prev_coh = 1:length(unique_labels)
+for first_coher = 1:length(unique_labels)
+    for next_coher = 1:length(unique_labels)
 %         coher_conditions(cond_num,1) = curr_coh;
 %         coher_conditions(cond_num,2) = prev_coh;
-        anovdata = [anovdata, squeeze(stats_array(:,curr_coh,1,prev_coh))];
-        anovdata_names{cond_num} = sprintf('%s%s',levels{curr_coh},levels{prev_coh});
+%         anovdata = [anovdata, squeeze(stats_array(:,curr_coh,1,prev_coh))];
+%         anovdata = [anovdata, squeeze(stats_array(:,first_coher,next_coher,1))];
+        anovdata = [anovdata, squeeze(stats_array_pruned(:,first_coher,next_coher,1))];
+        anovdata_names{cond_num} = sprintf('%s%s',levels{first_coher},levels{next_coher});
         cond_num = cond_num + 1;
     end
 end
@@ -92,7 +132,7 @@ for  i=1:length(anovdata_names)
 end
 
 t = array2table(anovdata,'VariableNames',subfactor);
-factorNames = {'CurrCoher','PrevCoher'};
+factorNames = {'FirstCoher','NextCoher'};
 
 within = table({'L';'L';'L';'M';'M';'M';'H';'H';'H'},... %current quadrant's coherence
     {'L';'M';'H';'L';'M';'H';'L';'M';'H'},...%previous quadrant's coherence
@@ -102,50 +142,59 @@ within = table({'L';'L';'L';'M';'M';'M';'H';'H';'H'},... %current quadrant's coh
 rm = fitrm(t,['F1-F' num2str(length(anovdata_names)) '~1'],'WithinDesign',within);
 
 % run my repeated measures anova here
-[ranovatbl] = ranova(rm, 'WithinModel','CurrCoher*PrevCoher');
+[ranovatbl] = ranova(rm, 'WithinModel','FirstCoher*NextCoher');
 
 %% Look at effect of previous quadrant's coherence on current quadrant's dwell time
 close gcf;
-subj_colors = jet(size(stats_array,1));
+subj_colors = jet(size(stats_array_pruned,1));
 
-curr_coher_horizontal = [8 10 12];
-prev_coher_horizontal = [-0.5 0 0.5];
+first_coher_horizontal = [8 10 12];
+next_coher_horizontal = [-0.5 0 0.5];
 
-for s_i = 1:size(stats_array,1)
+
+for s_i = 1:size(stats_array_pruned,1)
     
-    means_temp = squeeze(stats_array(s_i,:,1,:))./1000;
+%     means_temp = squeeze(stats_array(s_i,:,1,:))./1000;
+%     means_temp = squeeze(stats_array(s_i,:,:,1))./1000;
+    means_temp = squeeze(stats_array_pruned(s_i,:,:,1))./1000;
+
+
     
     hold on;
     
     for ii = 1:size(means_temp,1)
-        scatter(curr_coher_horizontal(ii) + prev_coher_horizontal, means_temp(ii,:),100,repmat(subj_colors(s_i,:),3,1),'filled');
-        plot(curr_coher_horizontal(ii) + prev_coher_horizontal,means_temp(ii,:),'Color',subj_colors(s_i,:),'LineWidth',2);
+        scatter(first_coher_horizontal(ii) + next_coher_horizontal, means_temp(ii,:),100,repmat(subj_colors(s_i,:),3,1),'filled');
+        plot(first_coher_horizontal(ii) + next_coher_horizontal,means_temp(ii,:),'Color',subj_colors(s_i,:),'LineWidth',2);
     end
     
 end
 
-xticks(reshape(curr_coher_horizontal + prev_coher_horizontal',1,9))
+xticks(reshape(first_coher_horizontal + next_coher_horizontal',1,9))
 xticklabels({'47%','71%','98%','47%','71%','98%','47%','71%','98%'})
 xlim([7.25, 12.75])
-ylim([0 2])
+ylim([0 3.75])
 
-ylabel('Reaction time (seconds)');
-xlabel('RDP discrimination accuracy (previous pattern)')
+ylabel('Dwell time (seconds)');
+xlabel('RDP discrimination accuracy (following pattern)')
     
 
-t0 = text(9.4,1.9,'Current pattern');
+% t0 = text(9.4,1.9,'First pattern');
+t0 = text(9.4,3.5,'First pattern');
 t0.FontSize = 22;
 t0.FontWeight = 'bold';
 
-t1 = text(7.9,1.75,'47%');
+% t1 = text(7.9,1.75,'47%');
+t1 = text(7.9,3,'47%');
 t1.FontSize = 18;
 t1.FontWeight = 'bold';
 
-t2 = text(9.9,1.75,'71%');
+% t2 = text(9.9,1.75,'71%');
+t2 = text(9.9,3,'71%');
 t2.FontSize = 18;
 t2.FontWeight = 'bold';
 
-t3 = text(11.9,1.75,'98%');
+% t3 = text(11.9,1.75,'98%');
+t3 = text(11.9,3,'98%');
 t3.FontSize = 18;
 t3.FontWeight = 'bold';
 
@@ -231,7 +280,7 @@ axis tight;
 h = findobj(gca,'Type','line');
 
 xlabel('Trials')
-ylim([0.5 1])
+ylim([0.3 1])
 ylabel('Accuracy')
 legend(h(1),'Median (all subjects)')
 
@@ -306,17 +355,17 @@ label_handle = @(x) sprintf('%d %%',x(1));
 xlabels = cellfun(@(x) label_handle(x),coher_names,'UniformOutput',false);
 
 for s_i = 1:nSubj
-    scatter(1:length(coher_names),squeeze(RT_array(s_i,:,1)),100,repmat(subj_colors(s_i,:),3,1),'filled');
+    scatter(1:length(coher_names),squeeze(RT_array(s_i,:,1))./1000,100,repmat(subj_colors(s_i,:),3,1),'filled');
     hold on;
 end
 
 median_RT = median(RT_array(:,:,1),1);
-hold on; h1 = plot((1:length(coher_names))-0.15,median_RT,'r+','MarkerSize',20,'LineWidth',5);
+hold on; h1 = plot((1:length(coher_names))-0.15,median_RT./1000,'r+','MarkerSize',20,'LineWidth',5);
 legend(h1,'Median (all subjects)')
 
 xticks([1:length(unique_conds)])
 xlim([0.75 3.25])
-ylim([0.5 2.0])
+ylim([0.5 3.0])
 xticklabels(xlabels)
 xtickangle(30)
 
