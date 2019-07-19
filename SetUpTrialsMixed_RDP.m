@@ -74,6 +74,7 @@ all_trials = all_trials(randomOrder);
 blockSizes = linspace(0,length(all_trials),numBlocks + 1);
 for b = 1:numBlocks
     block(b).trials = all_trials( (blockSizes(b)+1):(blockSizes(b+1)));
+%     block(b).trials = block(b).trials(1:2); % for debugging
 end
 
 

@@ -1,5 +1,7 @@
 %% CHECK THE Pp NAME
 %%%%%%%%%%%%%%%%%%%%%%
+% round(block(end).trials(end).Reward/20000)
+
 fclose all;
 PsychDefaultSetup(1);       % to define color in range of 255 instead of 1
 delete AA_lasterrormsg.mat  % If we got an error, we would see it in root folder
